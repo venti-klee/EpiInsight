@@ -2,20 +2,19 @@
 <template>
     <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose">
         <div class="drawer-div">
-            <div class="switch-div">
-                <div>
-                    <span>昼夜切换：</span>
+            <h2>系统设置</h2>
+            <el-form>
+                <el-form-item label="昼夜切换：">
                     <el-switch v-model="isDay" @change="handleChangeDay"
-                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #000000">
+                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff0000">
                     </el-switch>
-                </div>
-                <div>
-                    <span>自动旋转：</span>
+                </el-form-item>
+                <el-form-item label="自动旋转：">
                     <el-switch v-model="autoRotate" @change="handleChangeRotate"
-                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #000000">
+                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff0000">
                     </el-switch>
-                </div>
-            </div>
+                </el-form-item>
+            </el-form>
         </div>
     </el-drawer>
 </template>
@@ -56,18 +55,13 @@ function handleChangeRotate() {
 
 <style lang="scss" scoped>
 .drawer-div {
-    .switch-div {
-        border-radius: 20px;
-        color: #000;
-        font-size: 15px;
-        font-weight: 900;
-        background-color: rgba(255, 255, 255, 1);
-        display: inline-block;
-        padding: 10px 20px;
-
-        div {
-            margin: 5px 0px;
-        }
+    h2 {
+        margin: 0px 0px 30px 0px;
     }
+
+    padding: 5px 40px;
+    color: #000;
+    font-size: 15px;
+    font-weight: 900;
 }
 </style>
