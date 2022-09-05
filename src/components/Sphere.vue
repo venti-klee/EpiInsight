@@ -18,25 +18,14 @@
       </el-icon>
     </div>
 
-    <div class="switch-div">
-      <div>
-        <span>昼夜切换：</span>
-        <el-switch v-model="isDay" active-color="#809bdb" inactive-color="#161c46" @change="handleChangeDay">
-        </el-switch>
-      </div>
-      <div>
-        <span>自动旋转：</span>
-        <el-switch v-model="autoRotate" active-color="#809bdb" inactive-color="#161c46" @change="handleChangeRotate">
-        </el-switch>
-      </div>
-    </div>
     <div class="components">
       <!--点的标签-->
       <PointMsg :position="position" :currentPointData="currentPointData" />
       <!--图表组件-->
       <EchartCom :sortList="sortList" />
       <!--设置抽屉-->
-      <SetDrawer :isDrawer="isDrawer" @close="handleClose" />
+      <SetDrawer :isDrawer="isDrawer" @close="handleClose" @handleChangeRotate="handleChangeRotate"
+        @handleChangeDay="handleChangeDay" />
     </div>
   </div>
 </template>
@@ -66,14 +55,15 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   mouse = new THREE.Vector2(), //鼠标的二维平面
   raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
   positionData = countryPosition, //国家位置数据
+  isDay = false,
   anId: any = ref(0), //动画id
   isLoading = ref(false), //加载状态
   allData: any = ref({}), //疫情所有数据
   sphereData: any = ref([]), //球体数据
   currentPointData: any = ref({}), //当前选中点的数据
   position = ref({ x: "", y: "" }), //标签位置
-  isDay = ref(false), //是否白天
-  autoRotate = ref(true), //自动旋转
+
+
   sortList = ref([]), //排序后的球体数据
   isDrawer = ref(false);//设置抽屉状态
 
@@ -82,7 +72,8 @@ onMounted(() => {
 })
 
 //昼夜切换
-function handleChangeDay() {
+function handleChangeDay(val: any) {
+  isDay = val;
   destroyScene(); //销毁
   init(sphereData.value); //重新初始化
 };
@@ -285,9 +276,9 @@ function createSphere(data: any) {
   //地球材质
   let earthMaterial = new THREE.MeshPhongMaterial({
     map: new THREE.TextureLoader().load(
-      isDay.value ? earthImg : earthNightImg //区分昼夜纹理
+      isDay ? earthImg : earthNightImg //区分昼夜纹理
     ),
-    color: isDay.value ? dayColor : nightColor,
+    color: isDay ? dayColor : nightColor,
     // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
     // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
     normalScale: new THREE.Vector2(0, 5), //凹凸深度
@@ -375,7 +366,7 @@ function createOrbitControls() {
   orbitControls.dampingFactor = 0.05; //(默认.25)
   orbitControls.minDistance = 150; //相机距离目标最小距离
   orbitControls.maxDistance = 500; //相机距离目标最大距离
-  orbitControls.autoRotate = autoRotate; //自转(相机)
+  orbitControls.autoRotate = true; //自转(相机)
   orbitControls.autoRotateSpeed = 0.5; //自转速度
 };
 
@@ -465,21 +456,5 @@ function sortFun(arr: any) {
     }
   }
 
-  .switch-div {
-    border-radius: 20px;
-    color: #000;
-    font-size: 15px;
-    font-weight: 900;
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    background-color: rgba(255, 255, 255, 1);
-    display: inline-block;
-    padding: 10px 20px;
-
-    div {
-      margin: 5px 0px;
-    }
-  }
 }
 </style>
