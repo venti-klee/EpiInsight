@@ -1,48 +1,35 @@
+<!--球面点标签-->
 <template>
-  <div
-    class="tag-div"
-    v-if="currentPointData.name"
-    :style="{ top: position.y, left: position.x }"
-  >
+  <div class="tag-div" v-if="props.currentPointData.name" :style="{ top: props.position.y, left: props.position.x }">
     <div>
-      国家：<span>{{ currentPointData.name }}</span>
+      国家：<span>{{ props.currentPointData.name }}</span>
     </div>
     <div>
-      累计数：<span>{{ currentPointData.value }}</span>
+      累计数：<span>{{ props.currentPointData.value }}</span>
     </div>
     <div>
-      死亡数：<span>{{ currentPointData.deathNum }}</span>
+      死亡数：<span>{{ props.currentPointData.deathNum }}</span>
     </div>
     <div>
-      治愈数：<span>{{ currentPointData.cureNum }}</span>
+      治愈数：<span>{{ props.currentPointData.cureNum }}</span>
     </div>
   </div>
 </template>
-<script>
-export default {
-  name: "",
-  components: {},
-  props: {
-    //当前点数据
-    currentPointData: {
-      type: Object,
-      default: {},
-    },
-    //标签位置
-    position: {
-      type: Object,
-      default: {},
-    },
+<script lang='ts' setup>
+import { ref, computed, watch, onMounted } from 'vue';
+let props: any = defineProps({
+  //当前点数据
+  currentPointData: {
+    type: Object,
+    default: {},
   },
-  data() {
-    return {};
+  //标签位置
+  position: {
+    type: Object,
+    default: {},
   },
-  computed: {},
-  watch: {},
-  created() {},
-  mounted() {},
-  methods: {},
-};
+})
+
 </script>
 <style scoped lang='scss'>
 .tag-div {
@@ -51,9 +38,11 @@ export default {
   color: #000;
   position: absolute;
   border-radius: 20px;
+
   div {
     font-size: 15px;
     font-weight: 900;
+
     span {
       color: #f00;
       font-size: 10px;

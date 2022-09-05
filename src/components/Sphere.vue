@@ -1,4 +1,4 @@
-<!--全球疫情球体-->
+<!--疫情球体-->
 <template>
   <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.5)"
     element-loading-text="数据加载中...">
@@ -7,11 +7,11 @@
       <h4>截止时间：{{ allData.mtime }}</h4>
     </div>
     <div class="echart-div">
-      <!-- <EchartCom :sortList="sortList" /> -->
+      <EchartCom :sortList="sortList" />
     </div>
     <!--球体盒子-->
     <div id="sphereDiv"></div>
-    <!-- <PointMsg :position="position" :currentPointData="currentPointData" /> -->
+    <PointMsg :position="position" :currentPointData="currentPointData" />
     <div class="switch-div">
       <div>
         <span>昼夜切换：</span>
