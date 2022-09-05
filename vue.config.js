@@ -1,7 +1,8 @@
+const httpsAddress = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
 let devProxy = {
   //获取疫情数据
   '/getCOVID19': {
-    target: "https://interface.sina.cn/news/wap/fymap2020_data.d.json",
+    target: httpsAddress,
     ws: true,
     changeOrigin: true,
     pathRewrite: {

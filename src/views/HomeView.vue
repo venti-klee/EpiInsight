@@ -1,15 +1,13 @@
 <template>
   <div class="home">
-    <HelloWorld :msg="msg" />
+    <Sphere />
   </div>
 </template>
 
 <script lang='ts' setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue';
+import { onMounted } from 'vue';
 import Sphere from '@/components/Sphere.vue';
 onMounted(() => { })
-let msg = ref("msg");
 </script>
 
 <style lang="scss" scoped>

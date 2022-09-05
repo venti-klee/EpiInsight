@@ -7,11 +7,11 @@
       <h4>截止时间：{{ allData.mtime }}</h4>
     </div>
     <div class="echart-div">
-      <EchartCom :sortList="sortList" />
+      <!-- <EchartCom :sortList="sortList" /> -->
     </div>
     <!--球体盒子-->
     <div id="sphereDiv"></div>
-    <PointMsg :position="position" :currentPointData="currentPointData" />
+    <!-- <PointMsg :position="position" :currentPointData="currentPointData" /> -->
     <div class="switch-div">
       <div>
         <span>昼夜切换：</span>
@@ -27,14 +27,13 @@
   </div>
 </template>
 <script lang='ts' setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, getCurrentInstance } from 'vue';
 import * as THREE from "three";
 import { jsonp } from 'vue-jsonp'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import countryPosition from "@/assets/json/countryPosition.json";
 import tempData from "@/assets/json/tempData.json";
 import { getCOVID19 } from "@/api/request";
-import vueConfig from "../../vue.config.js";
 import universeImg from "@/assets/img/universe.jpg";
 import starImg from "@/assets/img/star.jpg";
 import earthImg from "@/assets/img/earth.jpg";
@@ -46,17 +45,17 @@ import PointMsg from "./PointMsg.vue";
 import EchartCom from "./EchartCom.vue";
 let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
-  orbitControls: any = null, //鼠标控件
-  mouse = new THREE.Vector2(), //鼠标点击的二维平面
-  raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
-  anId: any = null, //动画id
-  isLoading = ref(false), //加载状态
-  positionData = ref(countryPosition), //国家位置数据
-  allData: any = null, //疫情所有数据
-  sphereData: any = null, //球体数据
   dom: any = null, //需要使用canvas的dom
   renderer: any = null, //渲染器
-  currentPointData: any = null, //当前选中点的数据
+  orbitControls: any = null, //鼠标控件
+  mouse = new THREE.Vector2(), //鼠标的二维平面
+  raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
+  positionData = countryPosition, //国家位置数据
+  anId: any = ref(0), //动画id
+  isLoading = ref(false), //加载状态
+  allData: any = ref({}), //疫情所有数据
+  sphereData: any = ref([]), //球体数据
+  currentPointData: any = ref({}), //当前选中点的数据
   position = ref({ x: "", y: "" }), //标签位置
   isDay = ref(false), //是否白天
   autoRotate = ref(true), //自动旋转
@@ -69,7 +68,7 @@ onMounted(() => {
 //昼夜切换
 function handleChangeDay() {
   destroyScene(); //销毁
-  init(sphereData); //重新初始化
+  init(sphereData.value); //重新初始化
 };
 
 //旋转切换
@@ -79,7 +78,7 @@ function handleChangeRotate(val: any) {
 
 //销毁场景
 function destroyScene() {
-  cancelAnimationFrame(anId); //根据动画id停止动画渲染
+  cancelAnimationFrame(anId.value); //根据动画id停止动画渲染
   renderer.forceContextLoss(); //强制失去上下文
   renderer.dispose();
   scene.clear();
@@ -96,9 +95,9 @@ function getCOVID19Data() {
   getCOVID19()
     .then((res) => {
       console.log("代理获取数据");
-      allData = res.data.data; //记录所有数据
+      allData.value = res.data.data; //记录所有数据
       isLoading.value = false;
-      structureData(allData); //构造数据
+      structureData(allData.value); //构造数据
     })
     .catch((err) => {
       jsonpGetData();
@@ -107,19 +106,19 @@ function getCOVID19Data() {
 
 //jsonp方式获取数据
 function jsonpGetData() {
-  let temp = "/getCOVID19";
-  jsonp(vueConfig.devServer.proxy[temp].target)
+  const httpsAddress = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
+  jsonp(httpsAddress)
     .then((res) => {
       console.log("jsonp获取数据");
-      allData = res.data; //记录所有数据
+      allData.value = res.data; //记录所有数据
       isLoading.value = false;
-      structureData(allData); //构造数据
+      structureData(allData.value); //构造数据
     })
     .catch((err) => {
       console.log("使用tempData");
-      allData = tempData.data; //api失效后使用临时数据
+      allData.value = tempData.data; //api失效后使用临时数据
       isLoading.value = false;
-      structureData(allData); //构造数据
+      structureData(allData.value); //构造数据
     });
 };
 
@@ -133,10 +132,10 @@ function structureData(COVID19Data: any) {
       }
     }
   });
-  sphereData = worldlist;
-  init(sphereData); //初始化
+  sphereData.value = worldlist;
+  init(sphereData.value); //初始化
   setTimeout(() => {
-    sortList = sortFun(worldlist); //排序
+    sortList.value = sortFun(worldlist); //排序
   }, 2000);
 };
 
@@ -261,9 +260,9 @@ function createSphere(data: any) {
   //地球材质
   let earthMaterial = new THREE.MeshPhongMaterial({
     map: new THREE.TextureLoader().load(
-      isDay ? earthImg : earthNightImg //区分昼夜纹理
+      isDay.value ? earthImg : earthNightImg //区分昼夜纹理
     ),
-    color: isDay ? dayColor : nightColor,
+    color: isDay.value ? dayColor : nightColor,
     // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
     // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
     normalScale: new THREE.Vector2(0, 5), //凹凸深度
@@ -357,7 +356,7 @@ function createOrbitControls() {
 
 //渲染
 function render() {
-  anId = requestAnimationFrame(render);
+  anId.value = requestAnimationFrame(render);
   document.getElementById("sphereDiv") &&
     document
       .getElementById("sphereDiv")!
@@ -378,14 +377,14 @@ function onMousemove(e: any) {
   raycaster.setFromCamera(mouse, camera); //通过鼠标点的位置和当前相机的矩阵计算出raycaster
   let intersects = raycaster.intersectObjects(scene.children); // 获取raycaster直线与网格列表相交的集合
   if (intersects.length !== 0 && intersects[0].object.name == "病毒") {
-    currentPointData = intersects[0].object.dotData; //intersects列表是按照距离屏幕距离排序的，第一个距屏幕最近
+    currentPointData.value = intersects[0].object.dotData; //intersects列表是按照距离屏幕距离排序的，第一个距屏幕最近
     dom!.style.cursor = "pointer"; //光标样式
     position.value = {
       x: e.pageX + 20 + "px",
       y: e.pageY + "px",
     }; //获取标签位置
   } else {
-    currentPointData = {}; //置空标签数据
+    currentPointData.value = {}; //置空标签数据
     dom!.style.cursor = "move"; //光标样式
   }
 };
