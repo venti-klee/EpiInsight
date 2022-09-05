@@ -10,10 +10,11 @@
 </template>
 
 <script lang='ts' setup>
-import { defineProps, defineEmits, ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { jsonp } from 'vue-jsonp'
+import { getCOVID19 } from "@/api/request"
 onMounted(() => {
-  getData1();
+  getData();
 })
 let value2 = ref(false)
 let props = defineProps({
@@ -27,6 +28,12 @@ function getData1() {
     .catch(err => {
       console.log(err)
     })
+}
+
+function getData() {
+  getCOVID19().then(res => {
+    console.log(res)
+  })
 }
 </script>
 

@@ -18,7 +18,6 @@ module.exports = defineConfig({
   devServer: {
     port: 8080,//端口
     open: false,//项目启动后是否在浏览器自动打开
-    disableHostCheck: true,//禁用主机检查
     proxy: devProxy//代理服务器
   }
 })

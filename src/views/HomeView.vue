@@ -5,8 +5,9 @@
 </template>
 
 <script lang='ts' setup>
-import { defineProps, defineEmits, ref, computed, watch, onMounted } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import { ref, computed, watch, onMounted } from 'vue';
+import HelloWorld from '@/components/HelloWorld.vue';
+import Sphere from '@/components/Sphere.vue';
 onMounted(() => { })
 let msg = ref("msg");
 </script>

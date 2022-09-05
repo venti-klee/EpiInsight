@@ -1,4 +1,3 @@
-let tempData =
 {
     "data_title": "fymap",
     "data": {
@@ -30197,4 +30196,3 @@ let tempData =
         }
     }
 }
-export default tempData;
