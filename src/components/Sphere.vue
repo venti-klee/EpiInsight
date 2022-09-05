@@ -2,16 +2,22 @@
 <template>
   <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.5)"
     element-loading-text="数据加载中...">
+    <!--顶部标题-->
     <div class="top-tit">
       <h2>全球疫情分布</h2>
-      <h4>截止时间：{{ allData.mtime }}</h4>
+      <h4>(截止{{ allData.mtime }})</h4>
     </div>
-    <div class="echart-div">
-      <EchartCom :sortList="sortList" />
-    </div>
+
     <!--球体盒子-->
     <div id="sphereDiv"></div>
-    <PointMsg :position="position" :currentPointData="currentPointData" />
+
+    <!--设置按钮-->
+    <div class="set-div">
+      <el-icon color="#ffffff" :size="40" @click="clickSet">
+        <Setting />
+      </el-icon>
+    </div>
+
     <div class="switch-div">
       <div>
         <span>昼夜切换：</span>
@@ -24,10 +30,18 @@
         </el-switch>
       </div>
     </div>
+    <div class="components">
+      <!--点的标签-->
+      <PointMsg :position="position" :currentPointData="currentPointData" />
+      <!--图表组件-->
+      <EchartCom :sortList="sortList" />
+      <!--设置抽屉-->
+      <SetDrawer :isDrawer="isDrawer" @close="handleClose" />
+    </div>
   </div>
 </template>
 <script lang='ts' setup>
-import { ref, computed, watch, onMounted, getCurrentInstance } from 'vue';
+import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue';
 import * as THREE from "three";
 import { jsonp } from 'vue-jsonp'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -43,6 +57,7 @@ import earthCloudsImg from "@/assets/img/earthClouds.jpg";
 import virusImg from "@/assets/img/virus.png";
 import PointMsg from "./PointMsg.vue";
 import EchartCom from "./EchartCom.vue";
+import SetDrawer from "./SetDrawer.vue";
 let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
@@ -59,7 +74,8 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   position = ref({ x: "", y: "" }), //标签位置
   isDay = ref(false), //是否白天
   autoRotate = ref(true), //自动旋转
-  sortList = ref([]); //排序后的球体数据
+  sortList = ref([]), //排序后的球体数据
+  isDrawer = ref(false);//设置抽屉状态
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
@@ -69,6 +85,15 @@ onMounted(() => {
 function handleChangeDay() {
   destroyScene(); //销毁
   init(sphereData.value); //重新初始化
+};
+
+//点击设置按钮
+function clickSet() {
+  isDrawer.value = true;//打开抽屉状态
+};
+
+function handleClose(data: any) {
+  isDrawer.value = data;
 };
 
 //旋转切换
@@ -411,20 +436,33 @@ function sortFun(arr: any) {
   width: 100%;
 
   .top-tit {
+    width: 100%;
     position: absolute;
-    padding: 0px 20px;
-    border-radius: 20px;
-  }
+    text-align: center;
+    background-color: rgba(255, 255, 255, .1);
 
-  .echart-div {
-    position: absolute;
-    right: 0px;
+    h2,
+    h4 {
+      display: inline-block;
+      margin: 10px 5px;
+    }
   }
 
   #sphereDiv {
     height: 100%;
     width: 100%;
     cursor: move;
+  }
+
+  .set-div {
+    position: absolute;
+    bottom: 0px;
+    margin: 0px 0px 20px 20px;
+
+    i:hover {
+      cursor: pointer;
+      color: #f00;
+    }
   }
 
   .switch-div {
