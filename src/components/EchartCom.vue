@@ -1,6 +1,7 @@
 <!--echarts图表-->
 <template>
   <div id="echartDiv">
+    <div id="histogramDiv"></div>
   </div>
 </template>
 <script lang='ts' setup>
@@ -26,7 +27,7 @@ watch(
 
 //初始化图表
 function initChart(list: any) {
-  let chartDom = document.getElementById("echartDiv");
+  let chartDom = document.getElementById("histogramDiv");
   let myChart = echarts.init(chartDom);
   let option: any = {
     backgroundColor: "",
@@ -91,7 +92,13 @@ function initChart(list: any) {
 </script>
 <style scoped lang='scss'>
 #echartDiv {
-  height: 200px;
-  width: 400px;
+  position: absolute;
+  right: 0px;
+  top: 50px;
+  #histogramDiv {
+    height: 200px;
+    width: 400px;
+  }
+
 }
 </style>
