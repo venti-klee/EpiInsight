@@ -1,4 +1,24 @@
+let devProxy = {
+  //获取疫情数据
+  '/getCOVID19': {
+    target: "https://interface.sina.cn/news/wap/fymap2020_data.d.json",
+    ws: true,
+    changeOrigin: true,
+    pathRewrite: {
+      '/getCOVID19': ''
+    },
+  },
+};
+
 const { defineConfig } = require('@vue/cli-service')
+const BASE_URL = process.env.NODE_ENV === "production" ? "/covid19-visualization/" : "/";
 module.exports = defineConfig({
-  transpileDependencies: true
+  transpileDependencies: true,
+  publicPath: BASE_URL,
+  devServer: {
+    port: 8080,//端口
+    open: false,//项目启动后是否在浏览器自动打开
+    disableHostCheck: true,//禁用主机检查
+    proxy: devProxy//代理服务器
+  }
 })
