@@ -3,9 +3,31 @@
   <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.5)"
     element-loading-text="数据加载中...">
     <!--顶部标题-->
-    <div class="top-tit">
-      <h2>全球疫情分布</h2>
-      <h4>(截止{{ allData.mtime }})</h4>
+    <div class="top-div">
+      <div class="name-div">
+        <h2>全球疫情分布</h2>
+        <h4>(截止{{ allData.mtime }})</h4>
+      </div>
+      <div class="btn-div">
+        <el-button class="btn" color="#ff656599" round @click="clickSphereData">
+          <el-icon :size="20" style="margin-right: 10px;">
+            <List />
+          </el-icon>
+          全球数据
+        </el-button>
+        <el-button class="btn" color="#ff656599" round @click="clickChinaData">
+          <el-icon :size="20" style="margin-right:10px;">
+            <List />
+          </el-icon>
+          国内数据
+        </el-button>
+        <el-button class="btn" color="#ff656599" round @click="clickEchart">
+          <el-icon :size="20" style="margin-right: 10px;">
+            <TrendCharts />
+          </el-icon>
+          图表分析
+        </el-button>
+      </div>
     </div>
 
     <!--球体盒子-->
@@ -13,7 +35,7 @@
 
     <!--设置按钮-->
     <div class="set-div">
-      <el-icon color="#ffffff" :size="40" @click="clickSet">
+      <el-icon color="#fff" :size="40" @click="clickSet">
         <Setting />
       </el-icon>
     </div>
@@ -22,10 +44,9 @@
       <!--点的标签-->
       <PointMsg :position="position" :currentPointData="currentPointData" />
       <!--图表组件-->
-      <EchartCom :sortList="sortList" />
+      <!-- <EchartCom :sortList="sortList" /> -->
       <!--设置抽屉-->
-      <SetDrawer :isDrawer="isDrawer" @close="handleClose" @handleChangeRotate="handleChangeRotate"
-        @handleChangeDay="handleChangeDay" />
+      <SetDrawer :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
     </div>
   </div>
 </template>
@@ -44,9 +65,9 @@ import earthNightImg from "@/assets/img/earthNight.jpg";
 import normalImg from "@/assets/img/earthNormal.jpg";
 import earthCloudsImg from "@/assets/img/earthClouds.jpg";
 import virusImg from "@/assets/img/virus.png";
-import PointMsg from "./PointMsg.vue";
-import EchartCom from "./EchartCom.vue";
-import SetDrawer from "./SetDrawer.vue";
+import PointMsg from "@/components/PointMsg.vue";
+import EchartCom from "@/components/EchartCom.vue";
+import SetDrawer from "@/components/SetDrawer.vue";
 let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
@@ -55,7 +76,8 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   mouse = new THREE.Vector2(), //鼠标的二维平面
   raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
   positionData = countryPosition, //国家位置数据
-  isDay = false,
+  isDay = false,//昼夜切换
+  isTag = true,//标签显示
   anId: any = ref(0), //动画id
   isLoading = ref(false), //加载状态
   allData: any = ref({}), //疫情所有数据
@@ -71,25 +93,36 @@ onMounted(() => {
   getCOVID19Data(); //获取疫情数据
 })
 
-//昼夜切换
-function handleChangeDay(val: any) {
-  isDay = val;
-  destroyScene(); //销毁
-  init(sphereData.value); //重新初始化
+function clickSphereData() {
+
 };
 
-//点击设置按钮
+function clickChinaData() {
+
+};
+
+function clickEchart() {
+
+};
+
+//打开设置
 function clickSet() {
   isDrawer.value = true;//打开抽屉状态
 };
 
-function handleClose(data: any) {
-  isDrawer.value = data;
-};
-
-//旋转切换
-function handleChangeRotate(val: any) {
-  orbitControls.autoRotate = val;
+//设置切换
+function changeSetData(type: string, setData: any) {
+  //昼夜切换
+  if (type == "isDay") {
+    isDay = setData.value.isDay;
+    destroyScene(); //销毁
+    init(sphereData.value); //重新初始化
+  }
+  (type == "isDrag") && (orbitControls.enableRotate = setData.value.isDrag);//鼠标旋转
+  (type == "isZoom") && (orbitControls.enableZoom = setData.value.isZoom);//鼠标缩放
+  (type == "isTag") && (isTag = setData.value.isTag);//标签显示
+  (type == "autoRotate") && (orbitControls.autoRotate = setData.value.autoRotate);//自转切换
+  (type == "rotateSpeed") && (orbitControls.autoRotateSpeed = setData.value.rotateSpeed / 50)//自转速度
 };
 
 //销毁场景
@@ -367,7 +400,8 @@ function createOrbitControls() {
   orbitControls.minDistance = 150; //相机距离目标最小距离
   orbitControls.maxDistance = 500; //相机距离目标最大距离
   orbitControls.autoRotate = true; //自转(相机)
-  orbitControls.autoRotateSpeed = 0.5; //自转速度
+  orbitControls.autoRotateSpeed = 1; //自转速度
+  orbitControls.enableRotate = true;//鼠标左键控制旋转
 };
 
 //渲染
@@ -393,7 +427,7 @@ function onMousemove(e: any) {
   raycaster.setFromCamera(mouse, camera); //通过鼠标点的位置和当前相机的矩阵计算出raycaster
   let intersects = raycaster.intersectObjects(scene.children); // 获取raycaster直线与网格列表相交的集合
   if (intersects.length !== 0 && intersects[0].object.name == "病毒") {
-    currentPointData.value = intersects[0].object.dotData; //intersects列表是按照距离屏幕距离排序的，第一个距屏幕最近
+    (isTag) && (currentPointData.value = intersects[0].object.dotData); //intersects列表是按照距离屏幕距离排序的，第一个距屏幕最近
     dom!.style.cursor = "pointer"; //光标样式
     position.value = {
       x: e.pageX + 20 + "px",
@@ -426,17 +460,31 @@ function sortFun(arr: any) {
   height: 100%;
   width: 100%;
 
-  .top-tit {
+  .top-div {
     width: 100%;
     position: absolute;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
     background-color: rgba(255, 255, 255, .1);
 
-    h2,
-    h4 {
-      display: inline-block;
-      margin: 10px 5px;
+    .name-div {
+
+      h2,
+      h4 {
+        display: inline-block;
+        margin: 10px 5px;
+      }
     }
+
+    .btn-div {
+      margin: auto 10px;
+
+      .btn {
+        border: none;
+        color: #fff
+      }
+    }
+
   }
 
   #sphereDiv {

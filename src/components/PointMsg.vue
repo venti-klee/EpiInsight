@@ -34,18 +34,18 @@ let props: any = defineProps({
 <style scoped lang='scss'>
 .tag-div {
   padding: 10px 20px;
-  background-color: rgba(255, 255, 255, 1);
+  background-color: rgba(255, 255, 255, .8);
   color: #000;
   position: absolute;
   border-radius: 20px;
 
   div {
-    font-size: 15px;
+    font-size: 20px;
     font-weight: 900;
 
     span {
       color: #f00;
-      font-size: 10px;
+      font-size: 15px;
       //   font-weight: 500;
     }
   }

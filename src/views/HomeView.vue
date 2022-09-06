@@ -1,3 +1,4 @@
+<!--主页-->
 <template>
   <div class="home">
     <Sphere />
@@ -6,7 +7,7 @@
 
 <script lang='ts' setup>
 import { onMounted } from 'vue';
-import Sphere from '@/components/Sphere.vue';
+import Sphere from './Sphere.vue';
 onMounted(() => { })
 </script>
 
