@@ -147,7 +147,7 @@ function getCOVID19Data() {
 //jsonp方式获取数据
 function jsonpGetData() {
   const httpsAddress = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
-  jsonp(httpsAddress)
+  jsonp("httpsAddress")
     .then((res) => {
       console.log("jsonp获取数据");
       allData.value = res.data; //记录所有数据
