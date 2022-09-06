@@ -30,7 +30,7 @@
 </template>
 
 <script lang='ts' setup>
-import { defineEmits, ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 let props: any = defineProps({
     isSphere: {
         type: Boolean,

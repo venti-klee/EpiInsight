@@ -61,7 +61,7 @@ import * as THREE from "three";
 import { jsonp } from 'vue-jsonp'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import countryPosition from "@/assets/json/countryPosition.json";
-import tempData from "@/assets/json/tempData.json";
+import tempData from "@/assets/json/tempData1.json";
 import { getCOVID19 } from "@/api/request";
 import universeImg from "@/assets/img/universe.jpg";
 import starImg from "@/assets/img/star.jpg";
@@ -147,7 +147,7 @@ function getCOVID19Data() {
 //jsonp方式获取数据
 function jsonpGetData() {
   const httpsAddress = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
-  jsonp("httpsAddress")
+  jsonp(httpsAddress)
     .then((res) => {
       console.log("jsonp获取数据");
       allData.value = res.data; //记录所有数据

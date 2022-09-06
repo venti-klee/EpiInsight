@@ -4,7 +4,7 @@ import createServe from "./http"
 export function getCOVID19(params = {}) {
     return createServe({
         method: "GET",
-        url: '/getCOVID19_',
+        url: '/getCOVID19',
         params
     })
 }
