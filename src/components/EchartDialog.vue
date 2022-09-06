@@ -1,17 +1,22 @@
 <!--echarts对话框-->
 <template>
-  <el-dialog v-model="isEchart" width="94%" :close-on-click-modal="false" :show-close="false"
-    :before-close="handleClose" :destroy-on-close="true" style="--el-dialog-bg-color: #ffffff55;">
-    <template #header="{ close, titleId, titleClass }">
-      <div class="my-header">
-        <span :id="titleId" :class="titleClass">图表分析</span>
-        <el-icon :size="40" @click="close" class="close-icon" color="#fff">
-          <CircleClose />
-        </el-icon>
-      </div>
-    </template>
+  <el-dialog v-model="isEchart" :fullscreen="true" :close-on-click-modal="false" :before-close="handleClose"
+    :show-close="false" :destroy-on-close="true"
+    style="--el-dialog-bg-color: #ffffff55;--el-dialog-padding-primary:0px;">
+    <div class="my-header">
+      <span>图表分析</span>
+      <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+        <CircleClose />
+      </el-icon>
+    </div>
+
     <div class="echartDiv">
       <div id="histogramDiv"></div>
+      <p>国内累计总数：{{ props.daily.addcon }}</p>
+      <p>国内死亡总数：{{ props.daily.adddeath }}</p>
+      <p>国内治愈总数：{{ props.daily.addcure }}</p>
+      <p>国内现存确诊：{{ props.daily.addecon_new }}</p>
+      <p>境外输入前十省份{{ props.jwsrTop }}</p>
     </div>
   </el-dialog>
 
@@ -27,7 +32,15 @@ let props: any = defineProps({
   sortList: {
     type: Array,
     default: [],
-  }
+  },
+  daily: {
+    type: Object,
+    default: {}
+  },
+  jwsrTop: {
+    type: Array,
+    default: [],
+  },
 })
 
 let isEchart = ref(false),
@@ -60,7 +73,7 @@ function initChart(list: any) {
   let option: any = {
     backgroundColor: "",
     title: {
-      text: "累计病例数前五",
+      text: "全球累计数前五国家",
       left: "center",
       top: "3%",
       textStyle: {
@@ -120,16 +133,21 @@ function initChart(list: any) {
 </script>
 <style scoped lang='scss'>
 .my-header {
+  height: 50px;
   display: flex;
   justify-content: space-between;
+  background-color: #000;
 
   span {
+    margin: auto 0px;
     font-weight: 900;
     font-size: 25px;
     color: #fff;
   }
 
   .close-icon {
+    margin: auto 0px;
+
     &:hover {
       color: #f00;
       cursor: pointer;
@@ -138,7 +156,7 @@ function initChart(list: any) {
 }
 
 .echartDiv {
-
+  color: #fff;
 
   #histogramDiv {
     height: 200px;
