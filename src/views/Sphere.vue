@@ -1,27 +1,27 @@
 <!--疫情球体-->
 <template>
-  <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.5)"
+  <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.8)"
     element-loading-text="数据加载中...">
     <!--顶部标题-->
     <div class="top-div">
       <div class="name-div">
-        <h2>全球疫情分布</h2>
+        <h2>全球疫情</h2>
         <h4>(截止{{ allData.mtime }})</h4>
       </div>
       <div class="btn-div">
-        <el-button class="btn" color="#ff656599" round @click="clickSphereData">
+        <el-button class="btn" color="#ff656599" round @click="isSphere = true">
           <el-icon :size="20" style="margin-right: 10px;">
             <List />
           </el-icon>
           全球数据
         </el-button>
-        <el-button class="btn" color="#ff656599" round @click="clickChinaData">
+        <el-button class="btn" color="#ff656599" round @click="isChina = true">
           <el-icon :size="20" style="margin-right:10px;">
             <List />
           </el-icon>
           国内数据
         </el-button>
-        <el-button class="btn" color="#ff656599" round @click="clickEchart">
+        <el-button class="btn" color="#ff656599" round @click="isEchart = true">
           <el-icon :size="20" style="margin-right: 10px;">
             <TrendCharts />
           </el-icon>
@@ -35,7 +35,7 @@
 
     <!--设置按钮-->
     <div class="set-div">
-      <el-icon color="#fff" :size="40" @click="clickSet">
+      <el-icon color="#fff" :size="40" @click="isDrawer = true">
         <Setting />
       </el-icon>
     </div>
@@ -43,10 +43,15 @@
     <div class="components">
       <!--点的标签-->
       <PointMsg :position="position" :currentPointData="currentPointData" />
-      <!--图表组件-->
-      <!-- <EchartCom :sortList="sortList" /> -->
       <!--设置抽屉-->
       <SetDrawer :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
+      <!--全球数据表格弹窗-->
+      <SphereTabDialog :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
+      <!--国内数据表格弹窗-->
+      <ChinaTabDialog :isChina="isChina" :list="allData.list" @close="isChina = false" />
+      <!--图表组件-->
+      <EchartDialog :sortList="sortList" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop" :isEchart="isEchart"
+        @close="isEchart = false" />
     </div>
   </div>
 </template>
@@ -66,8 +71,10 @@ import normalImg from "@/assets/img/earthNormal.jpg";
 import earthCloudsImg from "@/assets/img/earthClouds.jpg";
 import virusImg from "@/assets/img/virus.png";
 import PointMsg from "@/components/PointMsg.vue";
-import EchartCom from "@/components/EchartCom.vue";
+import EchartDialog from "@/components/EchartDialog.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
+import SphereTabDialog from "@/components/SphereTabDialog.vue";
+import ChinaTabDialog from "@/components/ChinaTabDialog.vue";
 let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
@@ -78,37 +85,21 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   positionData = countryPosition, //国家位置数据
   isDay = false,//昼夜切换
   isTag = true,//标签显示
+  isSphere = ref(false),//全球数据对话框状态
+  isChina = ref(false),//国内数据对话框状态
+  isEchart = ref(false),//图表分析对话框状态
   anId: any = ref(0), //动画id
   isLoading = ref(false), //加载状态
   allData: any = ref({}), //疫情所有数据
   sphereData: any = ref([]), //球体数据
   currentPointData: any = ref({}), //当前选中点的数据
   position = ref({ x: "", y: "" }), //标签位置
-
-
   sortList = ref([]), //排序后的球体数据
   isDrawer = ref(false);//设置抽屉状态
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
 })
-
-function clickSphereData() {
-
-};
-
-function clickChinaData() {
-
-};
-
-function clickEchart() {
-
-};
-
-//打开设置
-function clickSet() {
-  isDrawer.value = true;//打开抽屉状态
-};
 
 //设置切换
 function changeSetData(type: string, setData: any) {
@@ -180,6 +171,9 @@ function structureData(COVID19Data: any) {
         w.position = positionData[key];
       }
     }
+    w.value = Number(w.value);//字符串转换为数字类型
+    w.deathNum = Number(w.deathNum);
+    w.cureNum = Number(w.cureNum);
   });
   sphereData.value = worldlist;
   init(sphereData.value); //初始化

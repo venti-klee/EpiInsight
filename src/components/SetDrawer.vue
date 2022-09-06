@@ -2,7 +2,7 @@
 <template>
     <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size="300px">
         <div class="drawer-div">
-            <h2>系统设置</h2>
+            <h2>球体设置</h2>
             <el-form>
                 <el-form-item label="昼夜切换：">
                     <el-switch v-model="setData.isDay" @change="changeSetData('isDay')"
@@ -91,6 +91,7 @@ function refreshPage() {
     h2 {
         margin: 0px 0px 30px 0px;
     }
+
     color: #000;
     font-size: 15px;
     font-weight: 900;
