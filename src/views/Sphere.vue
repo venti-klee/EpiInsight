@@ -21,11 +21,11 @@
           </el-icon>
           国内数据
         </el-button>
-        <el-button class="btn" color="#ff656599" round @click="isEchart = true">
+        <el-button class="btn" color="#ff656599" round @click="isEchart = true;">
           <el-icon :size="20" style="margin-right: 10px;">
             <TrendCharts />
           </el-icon>
-          图表分析
+          国内分析
         </el-button>
       </div>
     </div>
@@ -35,9 +35,36 @@
 
     <!--设置按钮-->
     <div class="set-div">
-      <el-icon color="#fff" :size="40" @click="isDrawer = true">
+      <el-icon color="#ffffff88" :size="40" @click="isDrawer = true">
         <Setting />
       </el-icon>
+    </div>
+
+    <!--全球柱状图-->
+    <div class="sphereDataDiv">
+      <p>累计确诊前{{sliceNum}}国家</p>
+      <div class="histogramDivDiv">
+        <div id="histogramDiv"></div>
+      </div>
+    </div>
+
+    <!--数字盒子-->
+    <div class="numDiv">
+      <div class="addconDiv">
+        <p>全球现存确诊</p>
+        <h1>{{addcon}}万</h1>
+        <span>今日{{othertotal.certain_inc}}</span>
+      </div>
+      <div class="addcureDiv">
+        <p>全球累计治愈</p>
+        <h1>{{addcure}}万</h1>
+        <span>今日{{othertotal.recure_inc}}</span>
+      </div>
+      <div class="addDieDiv">
+        <p>全球累计死亡</p>
+        <h1>{{addDie}}万</h1>
+        <span>今日{{othertotal.die_inc}}</span>
+      </div>
     </div>
 
     <div class="components">
@@ -50,7 +77,7 @@
       <!--国内数据表格弹窗-->
       <ChinaTabDialog :isChina="isChina" :list="allData.list" @close="isChina = false" />
       <!--图表组件-->
-      <EchartDialog :sortList="sortList" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop" :isEchart="isEchart"
+      <EchartDialog :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop" :isEchart="isEchart"
         @close="isEchart = false" :historylist="allData.historylist" />
     </div>
   </div>
@@ -58,6 +85,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue';
 import * as THREE from "three";
+import * as echarts from "echarts";
 import { jsonp } from 'vue-jsonp'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import countryPosition from "@/assets/json/countryPosition.json";
@@ -91,11 +119,19 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   anId: any = ref(0), //动画id
   isLoading = ref(false), //加载状态
   allData: any = ref({}), //疫情所有数据
+  othertotal: any = ref({}),//全球基本数据
   sphereData: any = ref([]), //球体数据
   currentPointData: any = ref({}), //当前选中点的数据
   position = ref({ x: "", y: "" }), //标签位置
-  sortList = ref([]), //排序后的球体数据
-  isDrawer = ref(false);//设置抽屉状态
+  isDrawer = ref(false),//设置抽屉状态
+  histogramChart: any = null,//柱状图
+  sliceNum: number = 50,//柱状图截取数量
+  addcon: any = ref(0),//全球现存确诊
+  certain = 0,
+  addcure: any = ref(0),//全球治愈数
+  addcureNum = 0,
+  addDie: any = ref(0),//全球死亡数
+  addDieNum = 0;
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
@@ -197,10 +233,8 @@ function structureData(COVID19Data: any) {
     w.cureNum = Number(w.cureNum);
   });
   sphereData.value = worldlist;
+  othertotal.value = allData.value.othertotal;
   init(sphereData.value); //初始化
-  setTimeout(() => {
-    sortList.value = sortFun(worldlist); //排序
-  }, 2000);
 };
 
 //初始化
@@ -226,6 +260,9 @@ function init(data: any) {
   createSphere(data); //创建球体
   createOrbitControls();
   render();
+  setTimeout(() => {
+    initEchart();
+  }, 1000);
 };
 
 //创建宇宙(球形宇宙)
@@ -454,6 +491,19 @@ function onMousemove(e: any) {
   }
 };
 
+//初始化图表
+function initEchart() {
+  let sortList: any = sortFun(sphereData.value);//球体数据排序
+  histogramChartFun(sortList.slice(0, sliceNum)); //绘制国家排名柱状图
+  (addcon.value !== 0) && (addcon.value = 0);//置空
+  certain = numTransform(Number(allData.value.othertotal.certain));//单位转换
+  addconAnimation();//现存确诊动画
+  addcureNum = numTransform(Number(allData.value.othertotal.recure));//单位转换
+  addcureAnimation();
+  addDieNum = numTransform(Number(allData.value.othertotal.die));//单位转换
+  addDieAnimation();
+}
+
 //排序(冒泡法)
 function sortFun(arr: any) {
   arr.forEach((a: any, index: number) => {
@@ -468,6 +518,118 @@ function sortFun(arr: any) {
   return arr;
 };
 
+//国家排名柱状图
+function histogramChartFun(list: any) {
+  let chartDom = document.getElementById("histogramDiv");
+  (histogramChart) && (histogramChart.dispose());//销毁实例
+  histogramChart = echarts.init(chartDom);
+  let option: any = {
+    backgroundColor: "",
+    title: {
+      left: "center",
+      top: "3%",
+      textStyle: {
+        color: "#fff",
+      },
+    },
+    grid: {
+      top: "0%",
+      left: "25%",
+      right: "5%",
+      bottom: "0%",
+    },
+    xAxis: {
+      type: "value",
+      show: false,
+    },
+    yAxis: {
+      type: "category",
+      axisLabel: {
+        color: "#fff",
+      },
+      data: [],
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+      },
+    },
+    series: [
+      {
+        data: [],
+        type: "bar",
+        showBackground: true,
+        backgroundStyle: {
+          color: "rgba(255, 185, 185,.1)",
+        },
+        itemStyle: {
+          color: "#f00",
+        },
+        label: {
+          color: "#fff",
+          fontWeight: "bolder",
+          show: true,
+          align: "left",
+          formatter: "{c}",
+        },
+      },
+    ],
+  };
+  list.forEach((l: any) => {
+    option.yAxis.data.push(l.name);
+    option.series[0].data.push(l.value);
+  });
+  option.yAxis.data.reverse();
+  option.series[0].data.reverse();
+  option && histogramChart.setOption(option);
+}
+
+//数字转换
+function numTransform(value: any) {
+  var param: any = 0;
+  var k = 10000;
+  if (value < k) {
+    param = value;
+  } else {
+    param = Number((value / k).toFixed(0));
+  }
+  return param;
+};
+
+//现存确诊动画
+function addconAnimation() {
+  let animationTime = 5 * 60;
+  let addconNum: any = certain;
+  let step = Math.round(addconNum / animationTime);//增加步长
+  (addconNum - addcon.value) <= step && (step = 1);//判断剩余数字
+  addcon.value = addcon.value + step;//更新响应式数据
+  if (addcon.value == addconNum) { return; }
+  requestAnimationFrame(addconAnimation)
+}
+
+//全球治愈动画
+function addcureAnimation() {
+  let animationTime = 5 * 60;
+  let addconNum: any = addcureNum;
+  let step = Math.round(addconNum / animationTime);//增加步长
+  (addconNum - addcure.value) <= step && (step = 1);//判断剩余数字
+  addcure.value = addcure.value + step;//更新响应式数据
+  if (addcure.value == addconNum) { return; }
+  requestAnimationFrame(addcureAnimation)
+}
+
+//全球死亡动画
+function addDieAnimation() {
+  let animationTime = 5 * 60;
+  let addconNum: any = addDieNum;
+  let step = Math.round(addconNum / animationTime);//增加步长
+  (addconNum - addDie.value) <= step && (step = 1);//判断剩余数字
+  addDie.value = addDie.value + step;//更新响应式数据
+  if (addDie.value == addconNum) { return; }
+  requestAnimationFrame(addDieAnimation)
+}
+
 </script>
 <style scoped lang='scss'>
 .container {
@@ -477,12 +639,16 @@ function sortFun(arr: any) {
 
   .top-div {
     width: 100%;
+    height: 50px;
     position: absolute;
     display: flex;
-    justify-content: space-between;
-    background-color: rgba(255, 255, 255, .1);
+    text-align: center;
+    // justify-content: space-between;
+    background-color: rgba(255, 255, 255, .2);
 
     .name-div {
+      margin: auto;
+      // display: inline-block;
 
       h2,
       h4 {
@@ -492,7 +658,10 @@ function sortFun(arr: any) {
     }
 
     .btn-div {
-      margin: auto 10px;
+      margin: 10px;
+      position: absolute;
+      top: 0px;
+      right: 0px;
 
       .btn {
         border: none;
@@ -508,6 +677,80 @@ function sortFun(arr: any) {
     cursor: move;
   }
 
+  .sphereDataDiv {
+    pointer-events: none;
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    height: calc(100vh - 150px);
+    width: 300px;
+    text-align: center;
+
+    p {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .histogramDivDiv {
+      height: calc(100% - 50px);
+      width: 100%;
+      overflow: auto;
+      pointer-events: auto;
+
+      #histogramDiv {
+        height: 1500px;
+        width: 100%;
+      }
+    }
+
+  }
+
+  .numDiv {
+    position: absolute;
+    top: 50px;
+    right: 0px;
+    pointer-events: none;
+    padding-top: 5%;
+
+    .addconDiv,
+    .addcureDiv,
+    .addDieDiv {
+      margin: 20px 0%;
+      background-color: rgba(255, 255, 255, .2);
+      text-align: center;
+      padding: 5px 30px;
+
+      h1 {
+        color: #f4c25e;
+        margin: 0px;
+        font-size: 50px;
+      }
+
+      p {
+        margin: 5px 0px;
+        font-weight: 900;
+        font-size: 20px;
+      }
+
+      span {
+        color: rgba(255, 255, 255, .5);
+      }
+
+    }
+
+    .addcureDiv {
+      h1 {
+        color: #48c56b;
+      }
+    }
+
+    .addDieDiv {
+      h1 {
+        color: #f00;
+      }
+    }
+  }
+
   .set-div {
     position: absolute;
     bottom: 0px;
@@ -515,7 +758,7 @@ function sortFun(arr: any) {
 
     i:hover {
       cursor: pointer;
-      color: #f00;
+      color: #fff;
     }
   }
 
