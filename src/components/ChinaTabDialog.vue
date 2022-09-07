@@ -33,7 +33,10 @@
                         <el-table-column prop="name" label="省/区" />
                         <el-table-column prop="conNum" label="累计数" sortable />
                         <el-table-column prop="econNum" label="现存确诊" sortable />
+                        <el-table-column prop="deathNum" label="死亡数" sortable />
+                        <el-table-column prop="cureNum" label="治愈数" sortable />
                         <el-table-column prop="asymptomNum" label="较昨日新增数" sortable />
+                        <el-table-column prop="zerodays" label="0增天数" sortable />
                     </el-table>
                 </template>
             </el-table-column>
@@ -41,6 +44,7 @@
             <el-table-column prop="econNum" label="现存确诊" sortable />
             <el-table-column prop="deathNum" label="死亡数" sortable />
             <el-table-column prop="cureNum" label="治愈数" sortable />
+            <el-table-column prop="asymptomNum" label="较昨日新增数" sortable />
             <el-table-column prop="jwsrNum" label="境外输入" sortable />
         </el-table>
     </el-dialog>
@@ -69,11 +73,15 @@ let list = computed(() => {
         t.deathNum = Number(t.deathNum);
         t.cureNum = Number(t.cureNum);
         t.jwsrNum = Number(t.jwsrNum);
+        t.asymptomNum = Number(t.asymptomNum);
         if (t.city.length !== 0) {
             t.city.forEach((c: any) => {
                 c.conNum = Number(c.conNum);
                 c.econNum = Number(c.econNum);
+                c.deathNum = Number(c.deathNum);
+                c.cureNum = Number(c.cureNum);
                 c.asymptomNum = Number(c.asymptomNum);
+                c.zerodays = Number(c.zerodays);
             })
         }
     });
