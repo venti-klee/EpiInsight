@@ -61,8 +61,8 @@ import * as THREE from "three";
 import { jsonp } from 'vue-jsonp'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import countryPosition from "@/assets/json/countryPosition.json";
-import tempData from "@/assets/json/tempData1.json";
-import { getCOVID19 } from "@/api/request";
+import { dataSource1, dataSource2 } from "@/api/request";
+import tempData from "@/assets/json/tempData.json";
 import universeImg from "@/assets/img/universe.jpg";
 import starImg from "@/assets/img/star.jpg";
 import earthImg from "@/assets/img/earth.jpg";
@@ -129,37 +129,51 @@ function destroyScene() {
   renderer = null;
 };
 
-//获取疫情数据
+//解码返回的unicode
+function decodingStr(str: any) {
+  let repStr: any = str.replace(/\\/g, "%");//用%替换\
+  let str1 = repStr.split("jsoncallback(")[1]
+  let str2 = str1.split(");")[0]//截取出需要的字符串
+  let unStr = unescape(str2);//解码出汉字(方法弃用)
+  let jsonObj = JSON.parse(unStr);//转换成json对象
+  return jsonObj;
+};
+
+//vue代理方式获取数据
 function getCOVID19Data() {
   isLoading.value = true;
-  getCOVID19()
+  dataSource1()
     .then((res) => {
-      console.log("代理获取数据");
-      allData.value = res.data.data; //记录所有数据
-      isLoading.value = false;
+      console.log("vue代理dataSource1获取数据");
+      let decodingObj = decodingStr(res.data);//解码unicode
+      allData.value = decodingObj.data; //记录所有数据
       structureData(allData.value); //构造数据
+      isLoading.value = false;
     })
     .catch((err) => {
-      jsonpGetData();
+      jsonpGetData();//代理获取失败则使用jsonp方式获取
     });
 };
 
 //jsonp方式获取数据
 function jsonpGetData() {
-  const httpsAddress = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
-  jsonp(httpsAddress)
+  const dataAddress1 = "https://news.sina.com.cn/project/fymap/ncp2020_full_data.json";
+  const dataAddress2 = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
+  jsonp(dataAddress1)
     .then((res) => {
+      // 此处不执行，调用下方挂载到window的jsoncallback
+    });
+  (window as any).jsoncallback = (res: any) => {
+    if (res.status.msg = "success") {
       console.log("jsonp获取数据");
       allData.value = res.data; //记录所有数据
-      isLoading.value = false;
-      structureData(allData.value); //构造数据
-    })
-    .catch((err) => {
-      console.log("使用tempData");
-      allData.value = tempData.data; //api失效后使用临时数据
-      isLoading.value = false;
-      structureData(allData.value); //构造数据
-    });
+    } else {
+      console.log("使用tempData数据");
+      allData.value = tempData.data; //记录所有数据
+    }
+    structureData(allData.value); //构造数据  
+    isLoading.value = false;
+  }
 };
 
 //构造球体数据
