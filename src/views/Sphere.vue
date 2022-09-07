@@ -178,9 +178,9 @@ function jsonpGetData() {
       console.log("使用tempData数据");
       allData.value = tempData.data;
     }
+    structureData(allData.value); //构造数据  
+    isLoading.value = false;
   }
-  structureData(allData.value); //构造数据  
-  isLoading.value = false;
 };
 
 //构造球体数据
