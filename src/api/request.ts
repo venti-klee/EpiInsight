@@ -1,10 +1,18 @@
 import createServe from "./http"
 
-//获取疫情数据
-export function getCOVID19(params = {}) {
+//获取疫情数据1
+export function dataSource1(params = {}) {
     return createServe({
         method: "GET",
-        url: '/getCOVID19',
+        url: '/dataSource1',
+        params
+    })
+}
+//获取疫情数据2
+export function dataSource2(params = {}) {
+    return createServe({
+        method: "GET",
+        url: '/dataSource2',
         params
     })
 }

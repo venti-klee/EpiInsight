@@ -1,12 +1,22 @@
-const httpsAddress = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
+const dataAddress1 = "https://news.sina.com.cn/project/fymap/ncp2020_full_data.json";
+const dataAddress2 = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
 let devProxy = {
-  //获取疫情数据
-  '/getCOVID19': {
-    target: httpsAddress,
+  //获取疫情数据1
+  '/dataSource1': {
+    target: dataAddress1,
     ws: true,
     changeOrigin: true,
     pathRewrite: {
-      '/getCOVID19': ''
+      '/dataSource1': ''
+    },
+  },
+  //获取疫情数据2
+  '/dataSource2': {
+    target: dataAddress2,
+    ws: true,
+    changeOrigin: true,
+    pathRewrite: {
+      '/dataSource2': ''
     },
   },
 };
