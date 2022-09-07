@@ -5,7 +5,7 @@
     <!--顶部标题-->
     <div class="top-div">
       <div class="name-div">
-        <h2>全球疫情</h2>
+        <h2>疫情可视化</h2>
         <h4>(截止{{ allData.mtime }})</h4>
       </div>
       <div class="btn-div">

@@ -1,8 +1,7 @@
 <!--echarts对话框-->
 <template>
   <el-dialog v-model="isEchart" :fullscreen="true" :close-on-click-modal="false" :before-close="handleClose"
-    :show-close="false" :destroy-on-close="true"
-    style="--el-dialog-bg-color: #ffffff55;--el-dialog-padding-primary:0px;">
+    :show-close="false" style="--el-dialog-bg-color: #ffffff55;--el-dialog-padding-primary:0px;">
     <div class="my-header">
       <span>图表分析</span>
       <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
@@ -68,7 +67,7 @@ function handleClose() {
 //初始化图表
 function initChart(list: any) {
   let chartDom = document.getElementById("histogramDiv");
-  // (histogramChart) && (histogramChart.dispose());//销毁实例
+  (histogramChart) && (histogramChart.dispose());//销毁实例
   histogramChart = echarts.init(chartDom);
   let option: any = {
     backgroundColor: "",
