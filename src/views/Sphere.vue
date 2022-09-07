@@ -51,7 +51,7 @@
       <ChinaTabDialog :isChina="isChina" :list="allData.list" @close="isChina = false" />
       <!--图表组件-->
       <EchartDialog :sortList="sortList" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop" :isEchart="isEchart"
-        @close="isEchart = false" />
+        @close="isEchart = false" :historylist="allData.historylist" />
     </div>
   </div>
 </template>
@@ -139,27 +139,34 @@ function decodingStr(str: any) {
   return jsonObj;
 };
 
-//vue代理方式获取数据
+//获取数据
 function getCOVID19Data() {
   isLoading.value = true;
-  dataSource1()
-    .then((res) => {
-      console.log("vue代理dataSource1获取数据");
-      let decodingObj = decodingStr(res.data);//解码unicode
-      allData.value = decodingObj.data; //记录所有数据
-      structureData(allData.value); //构造数据
-      isLoading.value = false;
-    })
-    .catch((err) => {
-      jsonpGetData();//代理获取失败则使用jsonp方式获取
-    });
+  //开发环境用tempData数据，生产环境用vue代理dataSource1
+  if (process.env.NODE_ENV !== "development") {
+    dataSource1()
+      .then((res) => {
+        console.log("vue代理dataSource1获取数据");
+        let decodingObj = decodingStr(res.data);//解码unicode
+        allData.value = decodingObj.data; //记录所有数据
+        structureData(allData.value); //构造数据  
+        isLoading.value = false;
+      })
+      .catch((err) => {
+        jsonpGetData();//代理获取失败则使用jsonp方式获取
+      });
+  } else {
+    console.log("使用tempData数据");
+    allData.value = tempData.data;
+    structureData(allData.value); //构造数据  
+    isLoading.value = false;
+  }
 };
 
 //jsonp方式获取数据
 function jsonpGetData() {
-  const dataAddress1 = "https://news.sina.com.cn/project/fymap/ncp2020_full_data.json";
-  const dataAddress2 = "https://interface.sina.cn/news/wap/fymap2020_data.d.json";
-  jsonp(dataAddress1)
+  let jsonpUrl: any = process.env.VUE_APP_1;//获取环境变量中的url地址
+  jsonp(jsonpUrl)
     .then((res) => {
       // 此处不执行，调用下方挂载到window的jsoncallback
     });
@@ -169,11 +176,11 @@ function jsonpGetData() {
       allData.value = res.data; //记录所有数据
     } else {
       console.log("使用tempData数据");
-      allData.value = tempData.data; //记录所有数据
+      allData.value = tempData.data;
     }
-    structureData(allData.value); //构造数据  
-    isLoading.value = false;
   }
+  structureData(allData.value); //构造数据  
+  isLoading.value = false;
 };
 
 //构造球体数据
