@@ -10,12 +10,24 @@
     </div>
 
     <div class="echartDiv">
-      <div id="histogramDiv"></div>
+      <div class="addconDiv">
+        <p>国内现存确诊</p>
+        <h1>{{addcon}}</h1>
+        <span>今日{{daily.addcon_new}}</span>
+      </div>
+      <div class="addcureDiv">
+        <p>国内治愈总数</p>
+        <h1>{{addcure}}</h1>
+        <span>今日{{daily.addcure_new}}</span>
+      </div>
+      <div class="addDieDiv">
+        <p>国内死亡总数</p>
+        <h1>{{addDie}}</h1>
+        <span>今日{{daily.adddeath_new}}</span>
+      </div>
+
       <div id="historyLineDiv"></div>
-      <p>国内累计总数：{{ props.daily.addcon }}</p>
       <p>国内死亡总数：{{ props.daily.adddeath }}</p>
-      <p>国内治愈总数：{{ props.daily.addcure }}</p>
-      <p>国内现存确诊：{{ props.daily.addecon_new }}</p>
       <p>境外输入前十省份{{ props.jwsrTop }}</p>
     </div>
   </el-dialog>
@@ -24,13 +36,14 @@
 <script lang='ts' setup>
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
+import { number } from 'echarts';
 let props: any = defineProps({
   isEchart: {
     type: Boolean,
     default: false
   },
   //国家排名
-  sortList: {
+  sphereData: {
     type: Array,
     default: [],
   },
@@ -48,12 +61,19 @@ let props: any = defineProps({
   historylist: {
     type: Array,
     default: [],
-  }
+  },
+  //所有数据
+  allData: {
+    type: Object,
+    default: {}
+  },
 })
 
 let isEchart = ref(false),
-  histogramChart: any = null,//柱状图
-  historyLineChart: any = null;//历史折线图
+  historyLineChart: any = null,//历史折线图
+  addcon: any = ref(0),//现存确诊
+  addcure: any = ref(0),//国内治愈总数
+  addDie: any = ref(0);//国内死亡总数
 
 //watch可监听指定属性watchEffect不能
 watch(
@@ -61,7 +81,9 @@ watch(
   async (val) => {
     if (val) {
       await (isEchart.value = val);
-      initChart();
+      setTimeout(() => {
+        initChart();
+      }, 500);
     }
   },
 )
@@ -76,73 +98,13 @@ function handleClose() {
 
 //初始化图表
 function initChart() {
-  histogramChartFun(props.sortList.slice(0, 5)); //取出前五个，绘制国家排名柱状图
   historyLineChartFun(props.historylist);//绘制历史折线图
-}
-
-//国家排名柱状图
-function histogramChartFun(list: any) {
-  let chartDom = document.getElementById("histogramDiv");
-  (histogramChart) && (histogramChart.dispose());//销毁实例
-  histogramChart = echarts.init(chartDom);
-  let option: any = {
-    backgroundColor: "",
-    title: {
-      text: "全球累计数前五国家",
-      left: "center",
-      top: "3%",
-      textStyle: {
-        color: "#fff",
-      },
-    },
-    grid: {
-      top: "15%",
-      left: "10%",
-      right: "5%",
-      bottom: "10%",
-    },
-    xAxis: {
-      type: "value",
-      show: false,
-    },
-    yAxis: {
-      type: "category",
-      axisLabel: {
-        color: "#fff",
-      },
-      data: [],
-    },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "shadow",
-      },
-    },
-    series: [
-      {
-        data: [],
-        type: "bar",
-        showBackground: true,
-        backgroundStyle: {
-          color: "rgba(255, 185, 185,1)",
-        },
-        itemStyle: {
-          color: "rgba(255, 0, 0,1)",
-        },
-        label: {
-          show: true,
-          position: "inside",
-          formatter: "{c}",
-        },
-      },
-    ],
-  };
-  list.forEach((l: any) => {
-    option.yAxis.data.push(l.name);
-    option.series[0].data.push(l.value);
-  });
-  option.series[0].data.reverse();
-  option && histogramChart.setOption(option);
+  (addcon.value !== 0) && (addcon.value = 0);//置空
+  addconAnimation();//现存确诊动画
+  (addcure.value !== 0) && (addcure.value = 0);//置空
+  addcureAnimation();//治愈人数动画
+  (addDie.value !== 0) && (addDie.value = 0);//置空
+  addDieAnimation();//死亡人数动画
 }
 
 //历史折线图
@@ -247,6 +209,39 @@ function historyLineChartFun(list: any) {
   option && historyLineChart.setOption(option);
 };
 
+//现存确诊动画
+function addconAnimation() {
+  let animationTime = 2 * 60;//动画时间
+  let toNum = Number(props.allData.gntotal);
+  let step = Math.round(toNum / animationTime);//增加步长
+  (toNum - addcon.value) <= step && (step = 1);//判断剩余数字
+  addcon.value = addcon.value + step;//更新响应式数据
+  if (addcon.value == toNum) { return; }
+  requestAnimationFrame(addconAnimation)
+}
+
+//治愈人数动画
+function addcureAnimation() {
+  let animationTime = 3 * 60;//动画时间
+  let toNum = Number(props.allData.curetotal);
+  let step = Math.round(toNum / animationTime);//增加步长
+  (toNum - addcure.value) <= step && (step = 1);//判断剩余数字
+  addcure.value = addcure.value + step;//更新响应式数据
+  if (addcure.value == toNum) { return; }
+  requestAnimationFrame(addcureAnimation)
+}
+
+//死亡人数动画
+function addDieAnimation() {
+  let animationTime = 2 * 60;//动画时间
+  let toNum = Number(props.allData.deathtotal);
+  let step = Math.round(toNum / animationTime);//增加步长
+  (toNum - addDie.value) <= step && (step = 1);//判断剩余数字
+  addDie.value = addDie.value + step;//更新响应式数据
+  if (addDie.value == toNum) { return; }
+  requestAnimationFrame(addDieAnimation);
+}
+
 </script>
 <style scoped lang='scss'>
 .my-header {
@@ -274,10 +269,35 @@ function historyLineChartFun(list: any) {
 
 .echartDiv {
   color: #fff;
+  height: calc(100vh - 80px);
+  overflow: auto;
 
-  #histogramDiv {
-    height: 200px;
-    width: 400px;
+  .addconDiv,
+  .addcureDiv,
+  .addDieDiv {
+    margin: 10px;
+    // width: 300px;
+    background-color: rgba(0, 0, 0, .6);
+    text-align: center;
+    padding: 5px 20px;
+
+    h1 {
+      color: #f4c25e;
+      margin: 0px;
+      font-size: 50px;
+    }
+  }
+
+  .addcureDiv {
+    h1 {
+      color: #48c56b;
+    }
+  }
+
+  .addDieDiv {
+    h1 {
+      color: #f00;
+    }
   }
 
   #historyLineDiv {

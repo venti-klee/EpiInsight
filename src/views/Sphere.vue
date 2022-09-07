@@ -78,7 +78,7 @@
       <ChinaTabDialog :isChina="isChina" :list="allData.list" @close="isChina = false" />
       <!--图表组件-->
       <EchartDialog :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop" :isEchart="isEchart"
-        @close="isEchart = false" :historylist="allData.historylist" />
+        @close="isEchart = false" :historylist="allData.historylist" :allData="allData"/>
     </div>
   </div>
 </template>
