@@ -1,48 +1,51 @@
 <!--设置抽屉-->
 <template>
-    <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size="300px">
-        <div class="drawer-div">
-            <h2>球体设置</h2>
-            <el-form>
-                <el-form-item label="昼夜切换：">
-                    <el-switch v-model="setData.isDay" @change="changeSetData('isDay')"
-                        style=" --el-switch-off-color: #ff0000">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="允许拖拽：">
-                    <el-switch v-model="setData.isDrag" @change="changeSetData('isDrag')"
-                        style=" --el-switch-off-color: #ff0000">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="允许缩放：">
-                    <el-switch v-model="setData.isZoom" @change="changeSetData('isZoom')"
-                        style="--el-switch-off-color: #ff0000">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="标签显示：">
-                    <el-switch v-model="setData.isTag" @change="changeSetData('isTag')"
-                        style="--el-switch-off-color: #ff0000">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="自动旋转：">
-                    <el-switch v-model="setData.autoRotate" @change="changeSetData('autoRotate')"
-                        style=" --el-switch-off-color: #ff0000">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="旋转速度：" v-if="setData.autoRotate">
-                    <el-slider v-model="setData.rotateSpeed" @input="changeSetData('rotateSpeed')" />
-                </el-form-item>
-            </el-form>
-            <div style="text-align:center;width:100%;">
-                <el-button round type="danger" @click="refreshPage">
-                    <el-icon style="margin-right:10px;" :size="20">
-                        <Refresh />
-                    </el-icon>
-                    重置
-                </el-button>
+    <div class="set-drawer">
+        <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='300px'>
+            <div class="drawer-div" style="--el-text-color-regular:#fff">
+                <h2>球体设置</h2>
+                <el-form>
+                    <el-form-item label="昼夜切换：">
+                        <el-switch v-model="setData.isDay" @change="changeSetData('isDay')"
+                            style=" --el-switch-off-color: #ff0000">
+                        </el-switch>
+                    </el-form-item>
+                    <el-form-item label="允许拖拽：">
+                        <el-switch v-model="setData.isDrag" @change="changeSetData('isDrag')"
+                            style=" --el-switch-off-color: #ff0000">
+                        </el-switch>
+                    </el-form-item>
+                    <el-form-item label="允许缩放：">
+                        <el-switch v-model="setData.isZoom" @change="changeSetData('isZoom')"
+                            style="--el-switch-off-color: #ff0000">
+                        </el-switch>
+                    </el-form-item>
+                    <el-form-item label="标签显示：">
+                        <el-switch v-model="setData.isTag" @change="changeSetData('isTag')"
+                            style="--el-switch-off-color: #ff0000">
+                        </el-switch>
+                    </el-form-item>
+                    <el-form-item label="自动旋转：">
+                        <el-switch v-model="setData.autoRotate" @change="changeSetData('autoRotate')"
+                            style=" --el-switch-off-color: #ff0000">
+                        </el-switch>
+                    </el-form-item>
+                    <el-form-item label="旋转速度：" v-if="setData.autoRotate">
+                        <el-slider v-model="setData.rotateSpeed" @input="changeSetData('rotateSpeed')" />
+                    </el-form-item>
+                </el-form>
+                <div style="text-align:center;width:100%;">
+                    <el-button round type="danger" @click="refreshPage">
+                        <el-icon style="margin-right:10px;" :size="20">
+                            <Refresh />
+                        </el-icon>
+                        重置
+                    </el-button>
+                </div>
             </div>
-        </div>
-    </el-drawer>
+        </el-drawer>
+    </div>
+
 </template>
 
 <script lang='ts' setup>
@@ -87,13 +90,18 @@ function refreshPage() {
 </script>
 
 <style lang="scss" scoped>
-.drawer-div {
-    h2 {
-        margin: 0px 0px 30px 0px;
-    }
+.set-drawer {
+    --el-bg-color: rgba(0, 0, 0, .8);
 
-    color: #000;
-    font-size: 15px;
-    font-weight: 900;
+    .drawer-div {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 900;
+
+        h2 {
+            margin: 0px 0px 30px 0px;
+        }
+
+    }
 }
 </style>

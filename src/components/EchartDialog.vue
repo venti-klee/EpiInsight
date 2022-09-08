@@ -36,7 +36,6 @@
 <script lang='ts' setup>
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
-import { number } from 'echarts';
 let props: any = defineProps({
   isEchart: {
     type: Boolean,
@@ -82,7 +81,7 @@ watch(
     if (val) {
       await (isEchart.value = val);
       setTimeout(() => {
-        initChart();
+        initChart();//初始化图表
       }, 500);
     }
   },
@@ -211,7 +210,7 @@ function historyLineChartFun(list: any) {
 
 //现存确诊动画
 function addconAnimation() {
-  let animationTime = 2 * 60;//动画时间
+  let animationTime = 1 * 60;//动画时间
   let toNum = Number(props.allData.gntotal);
   let step = Math.round(toNum / animationTime);//增加步长
   (toNum - addcon.value) <= step && (step = 1);//判断剩余数字
@@ -233,7 +232,7 @@ function addcureAnimation() {
 
 //死亡人数动画
 function addDieAnimation() {
-  let animationTime = 2 * 60;//动画时间
+  let animationTime = 5 * 60;//动画时间
   let toNum = Number(props.allData.deathtotal);
   let step = Math.round(toNum / animationTime);//增加步长
   (toNum - addDie.value) <= step && (step = 1);//判断剩余数字

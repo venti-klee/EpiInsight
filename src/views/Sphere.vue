@@ -599,7 +599,7 @@ function numTransform(value: any) {
 
 //现存确诊动画
 function addconAnimation() {
-  let animationTime = 5 * 60;
+  let animationTime = 3 * 60;
   let addconNum: any = certain;
   let step = Math.round(addconNum / animationTime);//增加步长
   (addconNum - addcon.value) <= step && (step = 1);//判断剩余数字
@@ -610,7 +610,7 @@ function addconAnimation() {
 
 //全球治愈动画
 function addcureAnimation() {
-  let animationTime = 5 * 60;
+  let animationTime = 3 * 60;
   let addconNum: any = addcureNum;
   let step = Math.round(addconNum / animationTime);//增加步长
   (addconNum - addcure.value) <= step && (step = 1);//判断剩余数字
