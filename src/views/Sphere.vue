@@ -554,6 +554,12 @@ function histogramChartFun(list: any) {
       axisPointer: {
         type: "shadow",
       },
+      backgroundColor: "rgba(0,0,0,.5)",
+      textStyle: {
+        color: "#fff",
+        fontWeight: "bolder"
+      },
+      borderWidth:"0",
     },
     series: [
       {
@@ -706,13 +712,15 @@ function addDieAnimation() {
     top: 50px;
     right: 0px;
     pointer-events: none;
-    margin: 10px;
-    margin-top: 0px;
+    height: calc(100% - 50px);
+    // background-color: #f00;
+    display: flex;
+    flex-direction: column;
 
     .addconDiv,
     .addcureDiv,
     .addDieDiv {
-      margin: 10px 0%;
+      margin: auto 0%;
       background-color: rgba(255, 255, 255, .2);
       text-align: center;
       padding: 5px 30px;
