@@ -641,14 +641,12 @@ function addDieAnimation() {
     width: 100%;
     height: 50px;
     position: absolute;
-    display: flex;
-    text-align: center;
-    // justify-content: space-between;
     background-color: rgba(255, 255, 255, .2);
+    display: flex;
+    justify-content: space-between;
 
     .name-div {
-      margin: auto;
-      // display: inline-block;
+      margin-left: 10px;
 
       h2,
       h4 {
@@ -659,11 +657,9 @@ function addDieAnimation() {
 
     .btn-div {
       margin: 10px;
-      position: absolute;
-      top: 0px;
-      right: 0px;
 
       .btn {
+        border-radius: 0px;
         border: none;
         color: #fff
       }
@@ -710,12 +706,13 @@ function addDieAnimation() {
     top: 50px;
     right: 0px;
     pointer-events: none;
-    padding-top: 5%;
+    margin: 10px;
+    margin-top: 0px;
 
     .addconDiv,
     .addcureDiv,
     .addDieDiv {
-      margin: 20px 0%;
+      margin: 10px 0%;
       background-color: rgba(255, 255, 255, .2);
       text-align: center;
       padding: 5px 30px;

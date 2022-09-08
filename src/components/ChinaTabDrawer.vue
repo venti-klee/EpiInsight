@@ -1,10 +1,10 @@
 <template>
     <div class="chinaTab-drawer">
         <el-drawer v-model="isChina" :with-header="false" direction="ttb" :close-on-click-modal="false"
-            :before-close="handleClose" size='100%' :modal="false">
+            :before-close="handleClose" size='100%'>
             <div class="my-header">
                 <span>国内数据</span>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
                     <CircleClose />
                 </el-icon>
             </div>
@@ -130,7 +130,7 @@ function handleClose() {
             margin: auto 0px;
 
             &:hover {
-                color: #f00;
+                color: #fff;
                 cursor: pointer;
             }
         }

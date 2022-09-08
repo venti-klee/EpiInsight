@@ -2,10 +2,10 @@
 <template>
   <div class="chinaEchart-drawer">
     <el-drawer v-model="isEchart" :with-header="false" direction="ttb" :close-on-click-modal="false"
-      :before-close="handleClose" size='100%' :modal="false">
+      :before-close="handleClose" size='100%'>
       <div class="my-header">
         <span>国内分析</span>
-        <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+        <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
           <CircleClose />
         </el-icon>
       </div>
@@ -129,11 +129,6 @@ function historyLineChartFun(list: any) {
     },
     tooltip: {
       trigger: 'axis',
-
-    },
-    grid: {
-      // bottom: '20%',
-      // top: '20%',
     },
     xAxis: {
       data: lineData.map(function (item: any) {
@@ -145,16 +140,6 @@ function historyLineChartFun(list: any) {
         color: "#fff",
       },
     },
-    // toolbox: {
-    //   right: 10,
-    //   feature: {
-    //     dataZoom: {
-    //       yAxisIndex: 'none'
-    //     },
-    //     restore: {},
-    //     saveAsImage: {}
-    //   }
-    // },
     dataZoom: [
       {
         startValue: '2.10',
@@ -269,7 +254,7 @@ function addDieAnimation() {
       margin: auto 0px;
 
       &:hover {
-        color: #f00;
+        color: #fff;
         cursor: pointer;
       }
     }
