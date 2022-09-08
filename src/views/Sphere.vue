@@ -235,9 +235,12 @@ function structureData(COVID19Data: any) {
   sphereData.value = worldlist;
   othertotal.value = allData.value.othertotal;
   init(sphereData.value); //初始化
+  setTimeout(() => {
+    initEchart();//初始化图表
+  }, 1000);
 };
 
-//初始化
+//初始化球体
 function init(data: any) {
   dom = document.getElementById("sphereDiv"); //获取dom
   let width = dom.clientWidth;
@@ -260,9 +263,6 @@ function init(data: any) {
   createSphere(data); //创建球体
   createOrbitControls();
   render();
-  setTimeout(() => {
-    initEchart();
-  }, 1000);
 };
 
 //创建宇宙(球形宇宙)
