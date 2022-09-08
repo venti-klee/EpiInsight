@@ -1,37 +1,41 @@
 <!--echarts对话框-->
 <template>
-  <el-dialog v-model="isEchart" :fullscreen="true" :close-on-click-modal="false" :before-close="handleClose"
-    :show-close="false" style="--el-dialog-bg-color: #ffffff55;--el-dialog-padding-primary:0px;">
-    <div class="my-header">
-      <span>图表分析</span>
-      <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
-        <CircleClose />
-      </el-icon>
-    </div>
-
-    <div class="echartDiv">
-      <div class="addconDiv">
-        <p>国内现存确诊</p>
-        <h1>{{addcon}}</h1>
-        <span>今日{{daily.addcon_new}}</span>
-      </div>
-      <div class="addcureDiv">
-        <p>国内治愈总数</p>
-        <h1>{{addcure}}</h1>
-        <span>今日{{daily.addcure_new}}</span>
-      </div>
-      <div class="addDieDiv">
-        <p>国内死亡总数</p>
-        <h1>{{addDie}}</h1>
-        <span>今日{{daily.adddeath_new}}</span>
+  <div class="chinaEchart-drawer">
+    <el-drawer v-model="isEchart" :with-header="false" direction="ttb" :close-on-click-modal="false"
+      :before-close="handleClose" size='100%' :modal="false">
+      <div class="my-header">
+        <span>国内分析</span>
+        <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+          <CircleClose />
+        </el-icon>
       </div>
 
-      <div id="historyLineDiv"></div>
-      <p>国内死亡总数：{{ props.daily.adddeath }}</p>
-      <p>境外输入前十省份{{ props.jwsrTop }}</p>
-    </div>
-  </el-dialog>
+      <div class="echartDiv">
+        <div class="top-div">
+          <div class="num-div">
+            <div class="addconDiv">
+              <p>国内现存确诊</p>
+              <p class="amNum">{{addcon}}</p>
+              <p class="add-p">今日{{daily.addcon_new}}</p>
+            </div>
+            <div class="addcureDiv">
+              <p>国内治愈总数</p>
+              <p class="amNum">{{addcure}}</p>
+              <p class="add-p">今日{{daily.addcure_new}}</p>
+            </div>
+            <div class="addDieDiv">
+              <p>国内死亡总数</p>
+              <p class="amNum">{{addDie}}</p>
+              <p class="add-p">今日{{daily.adddeath_new}}</p>
+            </div>
+          </div>
+          <div id="historyLineDiv"></div>
+        </div>
 
+        <!-- <p>境外输入前十省份{{ props.jwsrTop }}</p> -->
+      </div>
+    </el-drawer>
+  </div>
 </template>
 <script lang='ts' setup>
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
@@ -114,21 +118,22 @@ function historyLineChartFun(list: any) {
   (historyLineChart) && (historyLineChart.dispose());//销毁实例
   historyLineChart = echarts.init(chartDom);
   let option: any = {
-    backgroundColor: "#000000aa",
+    backgroundColor: "",
     title: {
       text: '国内历史数据',
       left: "center",
+      top: '5%',
       textStyle: {
         color: "#fff",
       },
     },
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
+
     },
     grid: {
-      // left: '5%',
-      // right: '15%',
-      // bottom: '10%'
+      // bottom: '20%',
+      // top: '20%',
     },
     xAxis: {
       data: lineData.map(function (item: any) {
@@ -243,65 +248,100 @@ function addDieAnimation() {
 
 </script>
 <style scoped lang='scss'>
-.my-header {
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
-  background-color: #000;
+.chinaEchart-drawer {
+  --el-bg-color: rbba(0, 0, 0, 0);
 
-  span {
-    margin: auto 0px;
-    font-weight: 900;
-    font-size: 25px;
+  .my-header {
+    padding: 0px 10px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #000;
+
+    span {
+      margin: auto 0px;
+      font-weight: 900;
+      font-size: 25px;
+      color: #fff;
+    }
+
+    .close-icon {
+      margin: auto 0px;
+
+      &:hover {
+        color: #f00;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .echartDiv {
+    background-color: rgba(255, 255, 255, .7);
     color: #fff;
-  }
+    height: calc(100vh - 100px);
+    overflow: auto;
 
-  .close-icon {
-    margin: auto 0px;
+    .top-div {
+      width: 100%;
+      height: 400px;
+      display: flex;
 
-    &:hover {
-      color: #f00;
-      cursor: pointer;
+      .num-div {
+        width: 25%;
+        height: 100%;
+        display: inline-block;
+        margin: 10px 10px;
+
+        .addconDiv,
+        .addcureDiv,
+        .addDieDiv {
+          height: 31%;
+          margin: 1% 0px;
+          width: 100%;
+          background-color: rgba(0, 0, 0, .8);
+          text-align: center;
+          padding: 2px 0px;
+
+          p {
+            margin: 5px;
+            font-weight: 900;
+          }
+
+          .amNum {
+            color: #f4c25e;
+            font-size: 40px;
+          }
+
+          .add-p {
+            color: #666
+          }
+        }
+
+        .addcureDiv {
+          .amNum {
+            font-size: 40px;
+            color: #48c56b;
+          }
+        }
+
+        .addDieDiv {
+          .amNum {
+            font-size: 40px;
+            color: #f00;
+          }
+        }
+      }
+
+      #historyLineDiv {
+        background-color: rgba(0, 0, 0, .8);
+        display: inline-block;
+        height: 100%;
+        width: calc(75% - 30px);
+        margin: 10px auto;
+      }
+
     }
-  }
-}
 
-.echartDiv {
-  color: #fff;
-  height: calc(100vh - 80px);
-  overflow: auto;
-
-  .addconDiv,
-  .addcureDiv,
-  .addDieDiv {
-    margin: 10px;
-    // width: 300px;
-    background-color: rgba(0, 0, 0, .6);
-    text-align: center;
-    padding: 5px 20px;
-
-    h1 {
-      color: #f4c25e;
-      margin: 0px;
-      font-size: 50px;
-    }
-  }
-
-  .addcureDiv {
-    h1 {
-      color: #48c56b;
-    }
-  }
-
-  .addDieDiv {
-    h1 {
-      color: #f00;
-    }
-  }
-
-  #historyLineDiv {
-    height: 400px;
-    width: 800px;
   }
 }
 </style>

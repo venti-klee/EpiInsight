@@ -72,13 +72,13 @@
       <PointMsg :position="position" :currentPointData="currentPointData" />
       <!--设置抽屉-->
       <SetDrawer :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
-      <!--全球数据表格弹窗-->
-      <SphereTabDialog :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
-      <!--国内数据表格弹窗-->
-      <ChinaTabDialog :isChina="isChina" :list="allData.list" @close="isChina = false" />
-      <!--图表组件-->
-      <EchartDialog :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop" :isEchart="isEchart"
-        @close="isEchart = false" :historylist="allData.historylist" :allData="allData"/>
+      <!--全球数据表格-->
+      <SphereTabDrawer :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
+      <!--国内数据表格-->
+      <ChinaTabDrawer :isChina="isChina" :list="allData.list" @close="isChina = false" />
+      <!--国内图表分析-->
+      <ChinaEchartDrawer :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop"
+        :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist" :allData="allData" />
     </div>
   </div>
 </template>
@@ -99,10 +99,10 @@ import normalImg from "@/assets/img/earthNormal.jpg";
 import earthCloudsImg from "@/assets/img/earthClouds.jpg";
 import virusImg from "@/assets/img/virus.png";
 import PointMsg from "@/components/PointMsg.vue";
-import EchartDialog from "@/components/EchartDialog.vue";
+import ChinaEchartDrawer from "@/components/ChinaEchartDrawer.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
-import SphereTabDialog from "@/components/SphereTabDialog.vue";
-import ChinaTabDialog from "@/components/ChinaTabDialog.vue";
+import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
+import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
 let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
@@ -733,6 +733,7 @@ function addDieAnimation() {
       }
 
       span {
+        font-weight: 900;
         color: rgba(255, 255, 255, .5);
       }
 
