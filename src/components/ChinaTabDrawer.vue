@@ -4,14 +4,13 @@
             :before-close="handleClose" size='100%'>
             <div class="my-header">
                 <div class="top-left">
-                    <p>国内数据</p>
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
                             @keyup.enter="enterSearch(nameValue)" />
                     </div>
                     <el-button class="btn" color="#009f5d" @click="clickXlsxBtn('province','','')">
                         <img :src=xlsxImg />
-                        下载表格
+                        国内数据下载
                     </el-button>
                 </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
@@ -81,6 +80,10 @@ let props = defineProps({
     list: {
         type: Array,
         default: []
+    },
+    allData: {
+        type: Object,
+        default: {}
     }
 }),
     isChina = ref(false),
@@ -108,6 +111,7 @@ let props = defineProps({
         });
         return temp;
     }),
+    highAndMiddle = ref([]),//中高风险地区列表
     emits = defineEmits(["close"]);
 
 watch(
@@ -116,6 +120,7 @@ watch(
         if (val) {
             isChina.value = val;
             tabData.value = props.list;//打开表格后赋值数据
+            highAndMiddle.value = props.allData.highAndMiddle;//获取中高风险地区列表
         }
     },
 )

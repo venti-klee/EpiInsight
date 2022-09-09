@@ -75,7 +75,7 @@
       <!--全球数据表格-->
       <SphereTabDrawer :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
       <!--国内数据表格-->
-      <ChinaTabDrawer :isChina="isChina" :list="allData.list" @close="isChina = false" />
+      <ChinaTabDrawer :allData="allData" :isChina="isChina" :list="allData.list" @close="isChina = false" />
       <!--国内图表分析-->
       <ChinaEchartDrawer :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop"
         :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist" :allData="allData" />
@@ -228,12 +228,14 @@ function structureData(COVID19Data: any) {
         w.position = positionData[key];
       }
     }
+    //国外数据类型转换
     w.value = Number(w.value);//字符串转换为数字类型
     w.deathNum = Number(w.deathNum);
     w.cureNum = Number(w.cureNum);
   });
   sphereData.value = worldlist;
   othertotal.value = allData.value.othertotal;
+  //国内省份数据类型转换
   allData.value.list.forEach((l: any) => {
     l.value = Number(l.value);
     l.econNum = Number(l.econNum);
@@ -241,6 +243,17 @@ function structureData(COVID19Data: any) {
     l.cureNum = Number(l.cureNum);
     l.asymptomNum = Number(l.asymptomNum);
     l.jwsrNum = Number(l.jwsrNum);
+    //市/区数据类型转换
+    if (l.city.length !== 0) {
+      l.city.forEach((c: any) => {
+        c.conNum = Number(c.conNum);
+        c.econNum = Number(c.econNum);
+        c.deathNum = Number(c.deathNum);
+        c.cureNum = Number(c.cureNum);
+        c.asymptomNum = Number(c.asymptomNum);
+        c.zerodays = Number(c.zerodays);
+      })
+    }
   })
   init(sphereData.value); //初始化
   setTimeout(() => {

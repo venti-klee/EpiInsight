@@ -4,14 +4,13 @@
             :before-close="handleClose" size='100%'>
             <div class="my-header">
                 <div class="top-left">
-                    <p>全球数据</p>
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
                             @keyup.enter="enterSearch(nameValue)" />
                     </div>
                     <el-button class="btn" color="#009f5d" @click="clickXlsxBtn">
                         <img :src=xlsxImg />
-                        下载表格
+                        全球数据下载
                     </el-button>
                 </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
@@ -118,7 +117,6 @@ function clickXlsxBtn() {
 
         .top-left {
             display: flex;
-
             p {
                 font-weight: 900;
                 font-size: 25px;
