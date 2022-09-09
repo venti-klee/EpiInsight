@@ -9,19 +9,19 @@
         <h4>(截止{{ allData.mtime }})</h4>
       </div>
       <div class="btn-div">
-        <el-button class="btn" color="#ff656599" round @click="isSphere = true">
+        <el-button class="btn" color="#ff656599" @click="isSphere = true">
           <el-icon :size="20" style="margin-right: 10px;">
             <List />
           </el-icon>
           全球数据
         </el-button>
-        <el-button class="btn" color="#ff656599" round @click="isChina = true">
+        <el-button class="btn" color="#ff656599" @click="isChina = true">
           <el-icon :size="20" style="margin-right:10px;">
             <List />
           </el-icon>
           国内数据
         </el-button>
-        <el-button class="btn" color="#ff656599" round @click="isEchart = true;">
+        <el-button class="btn" color="#ff656599" @click="isEchart = true;">
           <el-icon :size="20" style="margin-right: 10px;">
             <TrendCharts />
           </el-icon>

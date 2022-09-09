@@ -9,6 +9,10 @@
                         <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
                             @keyup.enter="enterSearch(nameValue)" />
                     </div>
+                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn">
+                        <img :src=xlsxImg />
+                        下载表格
+                    </el-button>
                 </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
                     <CircleClose />
@@ -40,6 +44,8 @@
 
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
+import xlsxImg from "@/assets/img/xlsx.png";
+import { downloadXlsx } from "./xlsxUtils.js"
 let props = defineProps({
     isSphere: {
         type: Boolean,
@@ -83,7 +89,18 @@ function enterSearch(matchStr: string) {
             tabData.value.push(s);
         }
     })
-}
+};
+
+//导出数据表格
+function clickXlsxBtn() {
+    let tabObj = {
+        tabHead: ["国家", "累计数", "死亡数", "治愈数", "地区代码", "坐标"],
+        keyList: ["name", "value", "deathNum", "cureNum", "citycode", "position"],
+        tabData: tabData.value
+    };
+    downloadXlsx(tabObj);
+};
+
 </script>
 
 <style lang="scss" scoped>
@@ -112,6 +129,17 @@ function enterSearch(matchStr: string) {
                 margin: auto 20px;
                 margin-left: 20px;
                 width: 200px;
+            }
+
+            .btn {
+                margin: auto;
+                border-radius: 0px;
+                border: none;
+                color: #fff;
+
+                img {
+                    height: 25px;
+                }
             }
         }
 
