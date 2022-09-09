@@ -50,20 +50,19 @@
 
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
-let setData = ref({
+let props = defineProps({
+    isDrawer: Boolean,//抽屉状态
+}),
+setData = ref({
     isDay: false,//是否白天
     isDrag: true,//拖拽
     isZoom: true,//缩放
     isTag: true,//标签
     autoRotate: true,//自动旋转
     rotateSpeed: 50,//旋转速度
-});
-
-let props: any = defineProps({
-    isDrawer: Boolean,//抽屉状态
-})
-
-let isDrawer = ref(false);
+}),
+isDrawer = ref(false),
+emits = defineEmits(["close", "changeSetData"]);
 
 //监听props值变化改变isDrawer
 watch(
@@ -71,15 +70,13 @@ watch(
     (val) => { val && (isDrawer.value = true); }
 )
 
-let emits = defineEmits(["close", "changeSetData"])
-
 function handleClose() {
     isDrawer.value = false;
     emits("close");
 };
 
 //改变设置数据
-function changeSetData(type: any) {
+function changeSetData(type: string) {
     emits("changeSetData", type, setData)//传递至父组件
 }
 

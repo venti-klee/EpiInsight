@@ -116,7 +116,7 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   isSphere = ref(false),//全球数据对话框状态
   isChina = ref(false),//国内数据对话框状态
   isEchart = ref(false),//图表分析对话框状态
-  anId: any = ref(0), //动画id
+  anId = ref(0), //动画id
   isLoading = ref(false), //加载状态
   allData: any = ref({}), //疫情所有数据
   othertotal: any = ref({}),//全球基本数据
@@ -126,11 +126,11 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   isDrawer = ref(false),//设置抽屉状态
   histogramChart: any = null,//柱状图
   sliceNum: number = 50,//柱状图截取数量
-  addcon: any = ref(0),//全球现存确诊
+  addcon = ref(0),//全球现存确诊
   certain = 0,
-  addcure: any = ref(0),//全球治愈数
+  addcure = ref(0),//全球治愈数
   addcureNum = 0,
-  addDie: any = ref(0),//全球死亡数
+  addDie = ref(0),//全球死亡数
   addDieNum = 0;
 
 onMounted(() => {
@@ -559,7 +559,7 @@ function histogramChartFun(list: any) {
         color: "#fff",
         fontWeight: "bolder"
       },
-      borderWidth:"0",
+      borderWidth: "0",
     },
     series: [
       {

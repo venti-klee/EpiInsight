@@ -45,7 +45,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
-let props: any = defineProps({
+let props = defineProps({
   isEchart: {
     type: Boolean,
     default: false
@@ -75,9 +75,8 @@ let props: any = defineProps({
     type: Object,
     default: {}
   },
-})
-
-let isEchart = ref(false),
+}),
+  isEchart = ref(false),
   historyLineChart: any = null,//历史折线图
   diagnosedChart: any = null,//确诊图
   dieChart: any = null,//死亡图
@@ -88,87 +87,80 @@ let isEchart = ref(false),
   addcon: any = ref(0),//现存确诊
   addcure: any = ref(0),//国内治愈总数
   addDie: any = ref(0),//国内死亡总数
-  sliceNum: number = 10;//截取数量
-
-//确诊数前10
-let diagnosedList10 = computed(() => {
-  let tempList: any = [];
-  props.allData.list.forEach((l: any) => {
-    tempList.push({
-      name: l.name,
-      value: Number(l.value)
+  sliceNum: number = 10,//截取数量
+  //确诊数前10
+  diagnosedList10 = computed(() => {
+    let tempList: any = [];
+    props.allData.list.forEach((l: any) => {
+      tempList.push({
+        name: l.name,
+        value: Number(l.value)
+      })
+    });
+    tempList = sortFun(tempList);
+    return tempList.slice(0, sliceNum);
+  }),
+  //死亡数前10
+  dieList10 = computed(() => {
+    let tempList: any = [];
+    props.allData.list.forEach((l: any) => {
+      tempList.push({
+        name: l.name,
+        value: Number(l.deathNum)
+      })
+    });
+    tempList = sortFun(tempList);
+    return tempList.slice(0, sliceNum);
+  }),
+  //当日新增数前10
+  dayAddList10 = computed(() => {
+    let tempList: any = [];
+    props.allData.list.forEach((l: any) => {
+      tempList.push({
+        name: l.name,
+        value: Number(l.asymptomNum)
+      })
+    });
+    tempList = sortFun(tempList);
+    return tempList.slice(0, sliceNum);
+  }),
+  //治愈数前10
+  cureList = computed(() => {
+    let tempList: any = [];
+    props.allData.list.forEach((l: any) => {
+      tempList.push({
+        name: l.name,
+        value: Number(l.cureNum)
+      })
+    });
+    tempList = sortFun(tempList);
+    return tempList.slice(0, sliceNum);
+  }),
+  //本地新增前10
+  locIncrProTop = computed(() => {
+    let tempList: any = [];
+    props.allData.locIncrProTop.forEach((l: any) => {
+      tempList.push({
+        name: l.name,
+        value: Number(l.locIncrNum)
+      })
     })
-  });
-  tempList = sortFun(tempList);
-  return tempList.slice(0, sliceNum);
-})
-
-//死亡数前10
-let dieList10 = computed(() => {
-  let tempList: any = [];
-  props.allData.list.forEach((l: any) => {
-    tempList.push({
-      name: l.name,
-      value: Number(l.deathNum)
+    tempList = sortFun(tempList);
+    return tempList.slice(0, sliceNum);
+  }),
+  //境外输入前10
+  jwsrTop = computed(() => {
+    let tempList: any = [];
+    props.jwsrTop.forEach((l: any) => {
+      tempList.push({
+        name: l.name,
+        value: Number(l.jwsrNum)
+      })
     })
-  });
-  tempList = sortFun(tempList);
-  return tempList.slice(0, sliceNum);
-})
-
-//当日新增数前10
-let dayAddList10 = computed(() => {
-  let tempList: any = [];
-  props.allData.list.forEach((l: any) => {
-    tempList.push({
-      name: l.name,
-      value: Number(l.asymptomNum)
-    })
-  });
-  tempList = sortFun(tempList);
-  return tempList.slice(0, sliceNum);
-})
-
-//治愈数前10
-let cureList = computed(() => {
-  let tempList: any = [];
-  props.allData.list.forEach((l: any) => {
-    tempList.push({
-      name: l.name,
-      value: Number(l.cureNum)
-    })
-  });
-  tempList = sortFun(tempList);
-  return tempList.slice(0, sliceNum);
-})
-
-//本地新增前10
-let locIncrProTop = computed(() => {
-  let tempList: any = [];
-  props.allData.locIncrProTop.forEach((l: any) => {
-    tempList.push({
-      name: l.name,
-      value: Number(l.locIncrNum)
-    })
-  })
-  tempList = sortFun(tempList);
-  return tempList.slice(0, sliceNum);
-})
-
-//境外输入前10
-let jwsrTop = computed(() => {
-  let tempList: any = [];
-  props.jwsrTop.forEach((l: any) => {
-    tempList.push({
-      name: l.name,
-      value: Number(l.jwsrNum)
-    })
-  })
-  tempList = sortFun(tempList);
-  return tempList.slice(0, sliceNum);
-})
-
-let emits = defineEmits(["close"])
+    tempList = sortFun(tempList);
+    return tempList.slice(0, sliceNum);
+  }),
+  emits = defineEmits(["close"]);
 
 //watch可监听指定属性watchEffect不能
 watch(
@@ -270,7 +262,6 @@ function initHistogram() {
   jwsrTopChart = echarts.init(document.getElementById("jwsrTopChart"));//境外输入图
   jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", "#8903ba"));
 }
-
 
 //排序(冒泡法)
 function sortFun(arr: any) {

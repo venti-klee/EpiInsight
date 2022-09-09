@@ -17,7 +17,7 @@
 </template>
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
-let props: any = defineProps({
+let props = defineProps({
   //当前点数据
   currentPointData: {
     type: Object,

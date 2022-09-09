@@ -2,9 +2,13 @@
     <div class="sphereTab-drawer">
         <el-drawer v-model="isSphere" :with-header="false" direction="ttb" :close-on-click-modal="false"
             :before-close="handleClose" size='100%'>
-
             <div class="my-header">
-                <span>全球数据</span>
+                <div class="top-left">
+                    <p>全球数据</p>
+                    <div class="name-Inp">
+                        <el-input v-model="nameValue" placeholder="输入国家回车检索" @keyup.enter="enterSearch" />
+                    </div>
+                </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
                     <CircleClose />
                 </el-icon>
@@ -19,7 +23,7 @@
             --el-table-row-hover-bg-color:#333;
             --el-table-border-color:#333">
                 <el-table-column type="index" label="序号" width="100" />
-                <el-table-column prop="name" label="国家" />
+                <el-table-column prop="name" label="国家" sortable />
                 <el-table-column prop="value" label="累计数" sortable />
                 <el-table-column prop="deathNum" label="死亡数" sortable />
                 <el-table-column prop="cureNum" label="治愈数" sortable />
@@ -35,7 +39,7 @@
 
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
-let props: any = defineProps({
+let props = defineProps({
     isSphere: {
         type: Boolean,
         default: false
@@ -44,45 +48,59 @@ let props: any = defineProps({
         type: Array,
         default: [],
     }
-})
-
-
-let isSphere = ref(false);
+}),
+    nameValue = ref(""),//检索名字
+    isSphere = ref(false),
+    emits = defineEmits(["close"]);
 
 watch(
     () => props.isSphere,
-    async (val) => {
+    (val) => {
         if (val) {
-            await (isSphere.value = val);
-
+            (isSphere.value = val);
         }
     },
 )
-
-let emits = defineEmits(["close"])
 
 //关闭对话框
 function handleClose() {
     isSphere.value = false;
     emits("close");
 };
+
+//回车检索
+function enterSearch() {
+    console.log(nameValue.value);
+}
 </script>
 
 <style lang="scss" scoped>
 .sphereTab-drawer {
     --el-bg-color: rgba(0, 0, 0, 0);
+
     .my-header {
+        color: #fff;
         padding: 0px 10px;
         height: 50px;
         display: flex;
         justify-content: space-between;
         background-color: #000;
 
-        span {
-            margin: auto 0px;
-            font-weight: 900;
-            font-size: 25px;
-            color: #fff;
+        .top-left {
+            display: flex;
+
+            p {
+                font-weight: 900;
+                font-size: 25px;
+                margin: auto 0px;
+                color: #fff;
+            }
+
+            .name-Inp {
+                margin: auto 20px;
+                margin-left: 20px;
+                width: 200px;
+            }
         }
 
         .close-icon {

@@ -54,7 +54,7 @@
 
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
-let props: any = defineProps({
+let props = defineProps({
     isChina: {
         type: Boolean,
         default: false
@@ -63,32 +63,31 @@ let props: any = defineProps({
         type: Array,
         default: []
     }
-})
-
-
-let isChina = ref(false);
-let list = computed(() => {
-    let temp: any = JSON.parse(JSON.stringify(props.list));
-    temp.forEach((t: any) => {
-        t.value = Number(t.value);
-        t.econNum = Number(t.econNum);
-        t.deathNum = Number(t.deathNum);
-        t.cureNum = Number(t.cureNum);
-        t.jwsrNum = Number(t.jwsrNum);
-        t.asymptomNum = Number(t.asymptomNum);
-        if (t.city.length !== 0) {
-            t.city.forEach((c: any) => {
-                c.conNum = Number(c.conNum);
-                c.econNum = Number(c.econNum);
-                c.deathNum = Number(c.deathNum);
-                c.cureNum = Number(c.cureNum);
-                c.asymptomNum = Number(c.asymptomNum);
-                c.zerodays = Number(c.zerodays);
-            })
-        }
-    });
-    return temp;
-})
+}),
+    isChina = ref(false),
+    list = computed(() => {
+        let temp: any = JSON.parse(JSON.stringify(props.list));
+        temp.forEach((t: any) => {
+            t.value = Number(t.value);
+            t.econNum = Number(t.econNum);
+            t.deathNum = Number(t.deathNum);
+            t.cureNum = Number(t.cureNum);
+            t.jwsrNum = Number(t.jwsrNum);
+            t.asymptomNum = Number(t.asymptomNum);
+            if (t.city.length !== 0) {
+                t.city.forEach((c: any) => {
+                    c.conNum = Number(c.conNum);
+                    c.econNum = Number(c.econNum);
+                    c.deathNum = Number(c.deathNum);
+                    c.cureNum = Number(c.cureNum);
+                    c.asymptomNum = Number(c.asymptomNum);
+                    c.zerodays = Number(c.zerodays);
+                })
+            }
+        });
+        return temp;
+    }),
+    emits = defineEmits(["close"]);
 
 watch(
     () => props.isChina,
@@ -98,8 +97,6 @@ watch(
         }
     },
 )
-
-let emits = defineEmits(["close"])
 
 //关闭对话框
 function handleClose() {
