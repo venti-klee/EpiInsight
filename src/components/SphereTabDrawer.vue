@@ -6,7 +6,8 @@
                 <div class="top-left">
                     <p>全球数据</p>
                     <div class="name-Inp">
-                        <el-input v-model="nameValue" placeholder="输入国家回车检索" @keyup.enter="enterSearch" />
+                        <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
+                            @keyup.enter="enterSearch(nameValue)" />
                     </div>
                 </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
@@ -14,7 +15,7 @@
                 </el-icon>
             </div>
             <!--表格-->
-            <el-table :data="props.sphereData" style="width: 100%;height: calc(100vh - 100px);
+            <el-table :data="tabData" style="width: 100%;height: calc(100vh - 100px);
             --el-table-bg-color:rgba(0,0,0,.8);
             --el-table-tr-bg-color:transparent;
             --el-table-header-bg-color:#333;
@@ -51,13 +52,15 @@ let props = defineProps({
 }),
     nameValue = ref(""),//检索名字
     isSphere = ref(false),
+    tabData: any = ref([]),//表格数据
     emits = defineEmits(["close"]);
 
 watch(
     () => props.isSphere,
     (val) => {
         if (val) {
-            (isSphere.value = val);
+            isSphere.value = val;
+            tabData.value = props.sphereData;//打开表格后赋值数据
         }
     },
 )
@@ -69,8 +72,17 @@ function handleClose() {
 };
 
 //回车检索
-function enterSearch() {
-    console.log(nameValue.value);
+function enterSearch(matchStr: string) {
+    if (matchStr == "") {
+        tabData.value = props.sphereData;//获取所有数据
+        return;
+    }
+    tabData.value = [];//置空表格数据
+    props.sphereData.forEach((s: any) => {
+        if (s.name.search(matchStr) >= 0) {
+            tabData.value.push(s);
+        }
+    })
 }
 </script>
 

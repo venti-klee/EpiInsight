@@ -3,13 +3,19 @@
         <el-drawer v-model="isChina" :with-header="false" direction="ttb" :close-on-click-modal="false"
             :before-close="handleClose" size='100%'>
             <div class="my-header">
-                <span>国内数据</span>
+                <div class="top-left">
+                    <p>国内数据</p>
+                    <div class="name-Inp">
+                        <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
+                            @keyup.enter="enterSearch(nameValue)" />
+                    </div>
+                </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
                     <CircleClose />
                 </el-icon>
             </div>
             <!--表格-->
-            <el-table :data="list" style="width: 100%;height: calc(100vh - 100px);
+            <el-table :data="tabData" style="width: 100%;height: calc(100vh - 100px);
             --el-table-bg-color:rgba(0,0,0,.8);
             --el-table-tr-bg-color:transparent;
             --el-table-header-bg-color:#333;
@@ -65,6 +71,8 @@ let props = defineProps({
     }
 }),
     isChina = ref(false),
+    nameValue = ref(""),//检索名字
+    tabData: any = ref([]),//表格数据
     list = computed(() => {
         let temp: any = JSON.parse(JSON.stringify(props.list));
         temp.forEach((t: any) => {
@@ -91,9 +99,10 @@ let props = defineProps({
 
 watch(
     () => props.isChina,
-    async (val) => {
+    (val) => {
         if (val) {
-            await (isChina.value = val);
+            isChina.value = val;
+            tabData.value = props.list;//打开表格后赋值数据
         }
     },
 )
@@ -103,6 +112,20 @@ function handleClose() {
     isChina.value = false;
     emits("close");
 };
+
+//回车检索
+function enterSearch(matchStr: string) {
+    if (matchStr == "") {
+        tabData.value = props.list;//获取所有数据
+        return;
+    }
+    tabData.value = [];//置空表格数据
+    props.list.forEach((s: any) => {
+        if (s.name.search(matchStr) >= 0) {
+            tabData.value.push(s);
+        }
+    })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -116,11 +139,21 @@ function handleClose() {
         justify-content: space-between;
         background-color: #000;
 
-        span {
-            margin: auto 0px;
-            font-weight: 900;
-            font-size: 25px;
-            color: #fff;
+        .top-left {
+            display: flex;
+
+            p {
+                font-weight: 900;
+                font-size: 25px;
+                margin: auto 0px;
+                color: #fff;
+            }
+
+            .name-Inp {
+                margin: auto 20px;
+                margin-left: 20px;
+                width: 200px;
+            }
         }
 
         .close-icon {
