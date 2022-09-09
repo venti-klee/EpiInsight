@@ -2,6 +2,7 @@ import * as XLSX from "xlsx";
 
 //入参示例
 let eg = {
+    fileName: "测试",//文件名
     tabHead: ["国家", "人口", "测试"],//表头列表
     keyList: ["name", "population", "test"],//表头对应的属性名,顺序必须与表头对应
     tabData: [
@@ -28,5 +29,5 @@ export async function downloadXlsx(tabObj) {
     workSheet = XLSX.utils.aoa_to_sheet(aoaList); //将列表数据添加到工作表
     let workBook = XLSX.utils.book_new(); //创建一个工作薄
     XLSX.utils.book_append_sheet(workBook, workSheet, "1"); //将工作表添加到工作薄中
-    await XLSX.writeFile(workBook, "各国疫情数据.xlsx"); //写入文件，下载工作薄
+    await XLSX.writeFile(workBook, tabObj.fileName + ".xlsx"); //写入文件，下载工作薄
 };

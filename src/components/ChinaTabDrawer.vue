@@ -9,6 +9,10 @@
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
                             @keyup.enter="enterSearch(nameValue)" />
                     </div>
+                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn">
+                        <img :src=xlsxImg />
+                        下载表格
+                    </el-button>
                 </div>
                 <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
                     <CircleClose />
@@ -37,7 +41,7 @@
             --el-table-row-hover-bg-color:#333;
             --el-table-border-color:#333">
                             <el-table-column type="index" label="序号" width="100" />
-                            <el-table-column prop="name" label="省/区" />
+                            <el-table-column prop="name" label="市/区" />
                             <el-table-column prop="conNum" label="累计数" sortable />
                             <el-table-column prop="econNum" label="现存确诊" sortable />
                             <el-table-column prop="deathNum" label="死亡数" sortable />
@@ -60,6 +64,8 @@
 
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
+import xlsxImg from "@/assets/img/xlsx.png";
+import { downloadXlsx } from "./xlsxUtils.js"
 let props = defineProps({
     isChina: {
         type: Boolean,
@@ -126,6 +132,17 @@ function enterSearch(matchStr: string) {
         }
     })
 }
+
+//导出数据表格
+function clickXlsxBtn() {
+    let tabObj = {
+        fileName: "国内疫情数据",
+        tabHead: ["省份", "累计数", "现存确诊", "死亡数", "治愈数", "较昨日新增数", "境外输入"],
+        keyList: ["name", "value", "econNum", "econNum", "cureNum", "asymptomNum", "jwsrNum"],
+        tabData: tabData.value
+    };
+    downloadXlsx(tabObj);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -153,6 +170,18 @@ function enterSearch(matchStr: string) {
                 margin: auto 20px;
                 margin-left: 20px;
                 width: 200px;
+            }
+
+            .btn {
+                margin: auto;
+                border-radius: 0px;
+                border: none;
+                color: #fff;
+                padding: 0px 10px;
+
+                img {
+                    height: 25px;
+                }
             }
         }
 

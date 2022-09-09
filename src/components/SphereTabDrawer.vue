@@ -94,6 +94,7 @@ function enterSearch(matchStr: string) {
 //导出数据表格
 function clickXlsxBtn() {
     let tabObj = {
+        fileName: "各国疫情数据",
         tabHead: ["国家", "累计数", "死亡数", "治愈数", "地区代码", "坐标"],
         keyList: ["name", "value", "deathNum", "cureNum", "citycode", "position"],
         tabData: tabData.value
@@ -136,6 +137,7 @@ function clickXlsxBtn() {
                 border-radius: 0px;
                 border: none;
                 color: #fff;
+                padding: 0px 10px;
 
                 img {
                     height: 25px;
