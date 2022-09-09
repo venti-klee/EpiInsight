@@ -28,7 +28,7 @@
             --el-table-row-hover-bg-color:#333;
             --el-table-border-color:#333">
                 <el-table-column type="index" label="序号" width="100" />
-                <el-table-column prop="name" label="国家" sortable />
+                <el-table-column prop="name" label="国家" />
                 <el-table-column prop="value" label="累计数" sortable />
                 <el-table-column prop="deathNum" label="死亡数" sortable />
                 <el-table-column prop="cureNum" label="治愈数" sortable />
