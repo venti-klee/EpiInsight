@@ -234,6 +234,14 @@ function structureData(COVID19Data: any) {
   });
   sphereData.value = worldlist;
   othertotal.value = allData.value.othertotal;
+  allData.value.list.forEach((l: any) => {
+    l.value = Number(l.value);
+    l.econNum = Number(l.econNum);
+    l.deathNum = Number(l.deathNum);
+    l.cureNum = Number(l.cureNum);
+    l.asymptomNum = Number(l.asymptomNum);
+    l.jwsrNum = Number(l.jwsrNum);
+  })
   init(sphereData.value); //初始化
   setTimeout(() => {
     initEchart();//初始化图表
