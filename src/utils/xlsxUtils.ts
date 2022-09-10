@@ -25,7 +25,6 @@ export async function downloadXlsx(tabObj: any) {
                 (aoaList[tabIndex + 1][keyIndex] = val + "");//添加空字符串，防类型为非字符串
         })
     });
-    console.log(aoaList);
     let workSheet = null;
     workSheet = XLSX.utils.aoa_to_sheet(aoaList); //将列表数据添加到工作表
     let workBook = XLSX.utils.book_new(); //创建一个工作薄

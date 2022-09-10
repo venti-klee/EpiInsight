@@ -63,16 +63,35 @@
                 <el-table-column prop="cureNum" label="治愈数" sortable />
                 <el-table-column prop="asymptomNum" label="较昨日新增数" sortable />
                 <el-table-column prop="jwsrNum" label="境外输入" sortable />
-                <el-table-column prop="isHM" label="风险地" />
+                <el-table-column prop="isHM" label="风险地">
+                    <template #default="props">
+                        <span v-if="props.row.isHM"
+                            style="color: #ff7272;display: flex;justify-content: space-between;">
+                            {{props.row.highAndMiddle.province_total}}个
+                            <el-button class="btn" color="#ff7272" @click="clickMore(props.row.highAndMiddle)"
+                                style="color:#fff;padding: 0px 10px;border-radius: 0px;margin: 0px 20px 0px 0px;">
+                                详情
+                            </el-button>
+                        </span>
+                        <span v-else style="color:#5ccff8">
+                            0个或未公布
+                        </span>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-drawer>
+        <div class="components">
+            <RiskDetails :isRiskDetails="isRiskDetails" :currentDetails="currentDetails"
+                @close="isRiskDetails = false" />
+        </div>
     </div>
 </template>
 
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import xlsxImg from "@/assets/img/xlsx.png";
-import { downloadXlsx } from "@/utils/xlsxUtils"
+import { downloadXlsx } from "@/utils/xlsxUtils";
+import RiskDetails from "./RiskDetails.vue"
 let props = defineProps({
     isChina: {
         type: Boolean,
@@ -113,6 +132,8 @@ let props = defineProps({
         return temp;
     }),
     highAndMiddle = ref([]),//中高风险地区列表
+    currentDetails = ref({}),//风险详情
+    isRiskDetails = ref(false),//详情抽屉状态
     emits = defineEmits(["close"]);
 
 watch(
@@ -125,12 +146,12 @@ watch(
             tabData.value.forEach((t: any) => {
                 highAndMiddle.value.forEach((h: any) => {
                     if (t.name.search(h.province.slice(0, 2)) >= 0) {
-                        t.isHM = true;
-                        t.highAndMiddle = h;
+                        t.isHM = true;//添加风险状态
+                        t.highAndMiddle = h;//添加风险对象
                     }
                 })
             })
-            console.log(tabData.value);
+            // console.log(tabData.value);
         }
     },
 )
@@ -158,6 +179,7 @@ function enterSearch(matchStr: string) {
 //导出数据表格
 function clickXlsxBtn(type: string, name: string, data: any) {
     let tabObj = {};
+    //省份数据
     if (type == "province") {
         tabObj = {
             fileName: "国内疫情数据",
@@ -166,6 +188,7 @@ function clickXlsxBtn(type: string, name: string, data: any) {
             tabData: tabData.value
         };
     }
+    //市/区数据
     if (type == "city") {
         tabObj = {
             fileName: name + "疫情数据",
@@ -177,6 +200,12 @@ function clickXlsxBtn(type: string, name: string, data: any) {
 
     downloadXlsx(tabObj);
 };
+
+//显示详情
+function clickMore(moreData: any) {
+    isRiskDetails.value = true;//打开抽屉
+    currentDetails.value = moreData;//传递详情数据
+}
 </script>
 
 <style lang="scss" scoped>
