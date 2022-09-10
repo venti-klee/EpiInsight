@@ -10,8 +10,11 @@
             <div class="tit-num">
                 <div class="h-ap">高风险地区{{currentDetails.province_high_num}}个</div>
                 <div class="m-ap">中风险地区{{currentDetails.province_middle_num}}个</div>
+                <el-button class="btn" color="#009f5d" @click="clickXlsxBtn">
+                    <img :src=xlsxImg />
+                    {{currentDetails.province}}风险地下载
+                </el-button>
             </div>
-            <!-- <div class="h-tab"> -->
             <el-table class="city-tab" :data="currentDetails.list" :show-overflow-tooltip="true" style="width:100%;height:calc(100vh - 150px);
             --el-table-bg-color:rgba(0,0,0,.8);
             --el-table-tr-bg-color:transparent;
@@ -22,8 +25,9 @@
             --el-table-border-color:#333;
             --el-text-color-regular:#fff">
                 <el-table-column type="index" label="序号" />
-                <el-table-column prop="city" label="省份" />
+                <el-table-column prop="city" label="城市" />
                 <el-table-column type="expand">
+                    <!--风险地标签-->
                     <template #default="props">
                         <div class="places-div">
                             <div class="h-p">
@@ -52,13 +56,14 @@
                 <el-table-column prop="middle_num" label="中风险" sortable />
                 <el-table-column prop="city_total" label="总数" sortable />
             </el-table>
-            <!-- </div> -->
         </el-drawer>
     </div>
 </template>
 
 <script lang='ts' setup>
 import { defineEmits, ref, computed, watch, onMounted } from 'vue';
+import xlsxImg from "@/assets/img/xlsx.png";
+import { downloadXlsx } from "@/utils/xlsxUtils";
 let props = defineProps({
     isRiskDetails: {
         type: Boolean,
@@ -86,6 +91,17 @@ watch(
 function handleClose() {
     isRiskDetails.value = false;
     emits("close");
+}
+
+//风险地下载
+function clickXlsxBtn() {
+    let tabObj = {
+        fileName: props.currentDetails.province + "风险地数据",
+        tabHead: ["城市", "高风险数", "中风险数", "总数", "高风险地", "中风险地"],
+        keyList: ["city", "high_num", "middle_num", "city_total", "high_areas", "middle_areas"],
+        tabData: props.currentDetails.list
+    };
+    downloadXlsx(tabObj);
 }
 </script>
 
@@ -117,6 +133,18 @@ function handleClose() {
         .m-ap {
             color: #ffa200;
         }
+
+        .btn {
+            margin: auto 0px;
+            border-radius: 0px;
+            border: none;
+            color: #fff;
+            padding: 0px 10px;
+
+            img {
+                height: 25px;
+            }
+        }
     }
 
     .city-tab {
@@ -139,7 +167,7 @@ function handleClose() {
 
                 .tag-tex {
                     margin: 2px;
-                    width: 90%;
+                    width: 96%;
                     overflow: hidden;
                     // text-overflow: ellipsis !important;
                     // display: flex;
