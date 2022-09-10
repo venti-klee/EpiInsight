@@ -63,6 +63,7 @@
                 <el-table-column prop="cureNum" label="治愈数" sortable />
                 <el-table-column prop="asymptomNum" label="较昨日新增数" sortable />
                 <el-table-column prop="jwsrNum" label="境外输入" sortable />
+                <el-table-column prop="isHM" label="风险地" />
             </el-table>
         </el-drawer>
     </div>
@@ -71,7 +72,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import xlsxImg from "@/assets/img/xlsx.png";
-import { downloadXlsx } from "./xlsxUtils.js"
+import { downloadXlsx } from "@/utils/xlsxUtils"
 let props = defineProps({
     isChina: {
         type: Boolean,
@@ -121,6 +122,15 @@ watch(
             isChina.value = val;
             tabData.value = props.list;//打开表格后赋值数据
             highAndMiddle.value = props.allData.highAndMiddle;//获取中高风险地区列表
+            tabData.value.forEach((t: any) => {
+                highAndMiddle.value.forEach((h: any) => {
+                    if (t.name.search(h.province.slice(0, 2)) >= 0) {
+                        t.isHM = true;
+                        t.highAndMiddle = h;
+                    }
+                })
+            })
+            console.log(tabData.value);
         }
     },
 )

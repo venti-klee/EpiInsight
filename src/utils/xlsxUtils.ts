@@ -13,18 +13,19 @@ let eg = {
 }
 
 //导出数据表格
-export async function downloadXlsx(tabObj) {
-    let aoaList = [];
+export async function downloadXlsx(tabObj: any) {
+    let aoaList: any = [];
     aoaList[0] = tabObj.tabHead; //赋值表头列表
-    tabObj.tabData.forEach((tabItem, tabIndex) => {
+    tabObj.tabData.forEach((tabItem: any, tabIndex: number) => {
         aoaList[tabIndex + 1] = [];//该二维度数组必须多加一个元素，因为表头占第一个元素
-        tabObj.keyList.forEach((keyItem, keyIndex) => {
+        tabObj.keyList.forEach((keyItem: any, keyIndex: number) => {
             let val = tabItem[keyItem];//获取表格属性的值
             ((typeof val == "undefined") || (val == "")) ?
                 (aoaList[tabIndex + 1][keyIndex] = "-") ://数据未定义或者为空则用"-"代替
                 (aoaList[tabIndex + 1][keyIndex] = val + "");//添加空字符串，防类型为非字符串
         })
     });
+    console.log(aoaList);
     let workSheet = null;
     workSheet = XLSX.utils.aoa_to_sheet(aoaList); //将列表数据添加到工作表
     let workBook = XLSX.utils.book_new(); //创建一个工作薄
