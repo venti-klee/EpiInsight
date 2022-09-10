@@ -138,20 +138,21 @@ let props = defineProps({
 
 watch(
     () => props.isChina,
-    (val) => {
+    async (val) => {
         if (val) {
             isChina.value = val;
             tabData.value = props.list;//打开表格后赋值数据
             highAndMiddle.value = props.allData.highAndMiddle;//获取中高风险地区列表
             tabData.value.forEach((t: any) => {
                 highAndMiddle.value.forEach((h: any) => {
-                    if (t.name.search(h.province.slice(0, 2)) >= 0) {
+                    if ((h.province !== "") && t.name.search(h.province.slice(0, 2)) >= 0) {
                         t.isHM = true;//添加风险状态
                         t.highAndMiddle = h;//添加风险对象
                     }
                 })
             })
             // console.log(tabData.value);
+            // console.log(highAndMiddle.value)
         }
     },
 )
