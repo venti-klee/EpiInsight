@@ -73,7 +73,7 @@
                                 详情
                             </el-button>
                         </span>
-                        <span v-else style="color:#5ccff8">
+                        <span v-else style="color:#83deff">
                             0个或未公布
                         </span>
                     </template>

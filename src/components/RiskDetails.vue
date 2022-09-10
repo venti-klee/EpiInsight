@@ -127,11 +127,11 @@ function clickXlsxBtn() {
         margin: 10px 0px;
 
         .h-ap {
-            color: #f00;
+            color: #ff6a6a;
         }
 
         .m-ap {
-            color: #ffa200;
+            color: #ffd889;
         }
 
         .btn {
@@ -157,7 +157,7 @@ function clickXlsxBtn() {
 
             .h-p,
             .m-p {
-                color: #f00;
+                color: #ff6a6a;
                 width: 50%;
 
                 p {
@@ -177,7 +177,7 @@ function clickXlsxBtn() {
             }
 
             .m-p {
-                color: #ffa200;
+                color: #ffd889;
             }
 
         }

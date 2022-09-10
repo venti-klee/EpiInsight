@@ -7,27 +7,27 @@
                 <el-form>
                     <el-form-item label="昼夜切换：">
                         <el-switch v-model="setData.isDay" @change="changeSetData('isDay')"
-                            style=" --el-switch-off-color: #ff0000">
+                            style=" --el-switch-off-color: #ff6a6a">
                         </el-switch>
                     </el-form-item>
                     <el-form-item label="允许拖拽：">
                         <el-switch v-model="setData.isDrag" @change="changeSetData('isDrag')"
-                            style=" --el-switch-off-color: #ff0000">
+                            style=" --el-switch-off-color: #ff6a6a">
                         </el-switch>
                     </el-form-item>
                     <el-form-item label="允许缩放：">
                         <el-switch v-model="setData.isZoom" @change="changeSetData('isZoom')"
-                            style="--el-switch-off-color: #ff0000">
+                            style="--el-switch-off-color: #ff6a6a">
                         </el-switch>
                     </el-form-item>
                     <el-form-item label="标签显示：">
                         <el-switch v-model="setData.isTag" @change="changeSetData('isTag')"
-                            style="--el-switch-off-color: #ff0000">
+                            style="--el-switch-off-color: #ff6a6a">
                         </el-switch>
                     </el-form-item>
                     <el-form-item label="自动旋转：">
                         <el-switch v-model="setData.autoRotate" @change="changeSetData('autoRotate')"
-                            style=" --el-switch-off-color: #ff0000">
+                            style=" --el-switch-off-color: #ff6a6a">
                         </el-switch>
                     </el-form-item>
                     <el-form-item label="旋转速度：" v-if="setData.autoRotate">

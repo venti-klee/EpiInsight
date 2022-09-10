@@ -261,7 +261,7 @@ function initHistogram() {
   diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", "#ffaa00"));
   (dieChart) && (dieChart.dispose());//销毁实例
   dieChart = echarts.init(document.getElementById("dieChart"));//死亡图
-  dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#f00"));
+  dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#ff6a6a"));
   (dayAddChart) && (dayAddChart.dispose());//销毁实例
   dayAddChart = echarts.init(document.getElementById("dayAddChart"));//当日新增图
   dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", "#ba4c03"));
@@ -488,20 +488,21 @@ function historyLineChartFun(list: any) {
         p {
           margin: 5px;
           font-weight: 900;
+          color: #ffd889;
         }
 
         .amNum {
-          color: #f4c25e;
+          color: #ffd889;
           font-size: 40px;
           font-weight: 900;
-        }
-
-        .add-p {
-          color: #666
         }
       }
 
       .addcureDiv {
+        p {
+          color: #48c56b;
+        }
+
         .amNum {
           font-size: 40px;
           color: #48c56b;
@@ -510,9 +511,13 @@ function historyLineChartFun(list: any) {
       }
 
       .addDieDiv {
+        p {
+          color: #ff6a6a;
+        }
+
         .amNum {
           font-size: 40px;
-          color: #f00;
+          color: #ff6a6a;
           font-weight: 900;
         }
       }

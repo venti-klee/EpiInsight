@@ -51,25 +51,19 @@
     <!--数字盒子-->
     <div class="numDiv">
       <div class="addconDiv">
-        <p>全球现存确诊</p>
-        <h1 class="certain-h1">
-          <addNumber :value="certain" :time="10" :thousandSign="true" />
-        </h1>
-        <span>今日{{othertotal.certain_inc}}</span>
+        <div class="tit">全球现存确诊</div>
+        <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
+        <div class="day-tit">今日{{othertotal.certain_inc}}</div>
       </div>
       <div class="addcureDiv">
-        <p>全球累计治愈</p>
-        <h1 class="addcure-h1">
-          <addNumber :value="addcure" :time="10" :thousandSign="true" />
-        </h1>
-        <span>今日{{othertotal.recure_inc}}</span>
+        <div class="tit">全球累计治愈</div>
+        <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
+        <div class="day-tit">今日{{othertotal.recure_inc}}</div>
       </div>
       <div class="addDieDiv">
-        <p>全球累计死亡</p>
-        <h1 class="addDie-h1">
-          <addNumber :value="addDie" :time="10" :thousandSign="true" />
-        </h1>
-        <span>今日{{othertotal.die_inc}}</span>
+        <div class="tit">全球累计死亡</div>
+        <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
+        <div class="day-tit">今日{{othertotal.die_inc}}</div>
       </div>
     </div>
 
@@ -591,7 +585,7 @@ function histogramChartFun(list: any) {
           color: "rgba(255, 185, 185,.1)",
         },
         itemStyle: {
-          color: "#f00",
+          color: "#ff6a6a",
         },
         label: {
           color: "#fff",
@@ -695,49 +689,55 @@ function histogramChartFun(list: any) {
     .addconDiv,
     .addcureDiv,
     .addDieDiv {
-      margin: 10px 0%;
-      background-color: rgba(255, 255, 255, .2);
-      text-align: center;
-      padding: 5px 30px;
+      background-color: rgba(255, 255, 255, .1);
+      margin: auto 0px;
+      text-align: right;
+      color: #fff;
+      font-weight: 900;
+      padding: 10px 30px;
+      border-bottom-left-radius: 100px;
+      border-top-left-radius: 100px;
 
-      span {
-        font-weight: 900;
-        color: rgba(255, 255, 255, 1);
-      }
-
-      p {
-        margin: 5px 0px;
-        font-weight: 900;
+      .tit {
         font-size: 20px;
       }
 
-      .certain-h1 {
-        span {
-          color: #f4c25e;
-        }
-
-        margin: 0px;
-        font-size: 50px;
+      .certain-div,
+      .addDie-div,
+      .addcure-div {
+        font-size: 45px;
       }
 
-      .addDie-h1 {
-        span {
-          color: #f00;
-        }
-
-        margin: 0px;
-        font-size: 50px;
+      .day-tit {
+        font-size: 20px;
       }
+    }
 
-      .addcure-h1 {
-        span {
-          color: #48c56b;
-        }
+    .addconDiv {
 
-        margin: 0px;
-        font-size: 50px;
+      .tit,
+      .day-tit,
+      .certain-div {
+        color: #ffd889;
       }
+    }
 
+    .addDieDiv {
+
+      .tit,
+      .day-tit,
+      .addDie-div {
+        color: #ff6a6a;
+      }
+    }
+
+    .addcureDiv {
+
+      .tit,
+      .day-tit,
+      .addcure-div {
+        color: #66f68f;
+      }
     }
   }
 
