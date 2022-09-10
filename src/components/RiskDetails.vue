@@ -61,7 +61,7 @@
 </template>
 
 <script lang='ts' setup>
-import { defineEmits, ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import xlsxImg from "@/assets/img/xlsx.png";
 import { downloadXlsx } from "@/utils/xlsxUtils";
 let props = defineProps({

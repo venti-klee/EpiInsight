@@ -45,6 +45,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
+import { jsonp } from 'vue-jsonp'
 let props = defineProps({
   isEchart: {
     type: Boolean,
@@ -165,15 +166,26 @@ let props = defineProps({
 //watch可监听指定属性watchEffect不能
 watch(
   () => props.isEchart,
-  async (val) => {
+  (val) => {
     if (val) {
-      await (isEchart.value = val);
+      (isEchart.value = val);
+      getLocationMsg();//获取位置数据
       setTimeout(() => {
         initChart();//初始化图表
       }, 500);
     }
   },
 )
+
+//获取位置信息
+function getLocationMsg() {
+  let jsonpUrl: any = process.env.VUE_APP_3;
+  jsonp(jsonpUrl).then(res => {
+    console.log(res)
+  }).catch(err => {
+    console.log(err)
+  })
+};
 
 //柱状图数据
 function histogramOption(list: any, titName: string, color: string) {

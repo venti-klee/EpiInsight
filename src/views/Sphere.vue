@@ -612,7 +612,7 @@ function histogramChartFun(list: any) {
   option && histogramChart.setOption(option);
 }
 
-//数字转换
+//数字转换为万
 function numTransform(value: any) {
   var param: any = 0;
   var k = 10000;
