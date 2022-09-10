@@ -52,17 +52,23 @@
     <div class="numDiv">
       <div class="addconDiv">
         <p>全球现存确诊</p>
-        <h1>{{addcon}}万</h1>
+        <h1 class="certain-h1">
+          <addNumber :value="certain" :time="10" :thousandSign="true" />
+        </h1>
         <span>今日{{othertotal.certain_inc}}</span>
       </div>
       <div class="addcureDiv">
         <p>全球累计治愈</p>
-        <h1>{{addcure}}万</h1>
+        <h1 class="addcure-h1">
+          <addNumber :value="addcure" :time="10" :thousandSign="true" />
+        </h1>
         <span>今日{{othertotal.recure_inc}}</span>
       </div>
       <div class="addDieDiv">
         <p>全球累计死亡</p>
-        <h1>{{addDie}}万</h1>
+        <h1 class="addDie-h1">
+          <addNumber :value="addDie" :time="10" :thousandSign="true" />
+        </h1>
         <span>今日{{othertotal.die_inc}}</span>
       </div>
     </div>
@@ -85,9 +91,10 @@
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue';
 import * as THREE from "three";
-import * as echarts from "echarts";
-import { jsonp } from 'vue-jsonp'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import * as echarts from "echarts";
+import { jsonp } from 'vue-jsonp';
+import addNumber from "@/components/addNumber.vue";
 import countryPosition from "@/assets/json/countryPosition.json";
 import { dataSource1, dataSource2 } from "@/api/request";
 import tempData from "@/assets/json/tempData.json";
@@ -126,12 +133,9 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   isDrawer = ref(false),//设置抽屉状态
   histogramChart: any = null,//柱状图
   sliceNum: number = 50,//柱状图截取数量
-  addcon = ref(0),//全球现存确诊
-  certain = 0,
+  certain = ref(0),//全球现存确诊
   addcure = ref(0),//全球治愈数
-  addcureNum = 0,
-  addDie = ref(0),//全球死亡数
-  addDieNum = 0;
+  addDie = ref(0);//全球死亡数
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
@@ -516,13 +520,9 @@ function onMousemove(e: any) {
 function initEchart() {
   let sortList: any = sortFun(sphereData.value);//球体数据排序
   histogramChartFun(sortList.slice(0, sliceNum)); //绘制国家排名柱状图
-  (addcon.value !== 0) && (addcon.value = 0);//置空
-  certain = numTransform(Number(allData.value.othertotal.certain));//单位转换
-  addconAnimation();//现存确诊动画
-  addcureNum = numTransform(Number(allData.value.othertotal.recure));//单位转换
-  addcureAnimation();
-  addDieNum = numTransform(Number(allData.value.othertotal.die));//单位转换
-  addDieAnimation();
+  certain.value = Number(allData.value.othertotal.certain);//获取确诊值
+  addcure.value = Number(allData.value.othertotal.recure);///获取治愈值
+  addDie.value = Number(allData.value.othertotal.die);///获取死亡值
 }
 
 //排序(冒泡法)
@@ -612,51 +612,6 @@ function histogramChartFun(list: any) {
   option && histogramChart.setOption(option);
 }
 
-//数字转换为万
-function numTransform(value: any) {
-  var param: any = 0;
-  var k = 10000;
-  if (value < k) {
-    param = value;
-  } else {
-    param = Number((value / k).toFixed(0));
-  }
-  return param;
-};
-
-//现存确诊动画
-function addconAnimation() {
-  let animationTime = 3 * 60;
-  let addconNum: any = certain;
-  let step = Math.round(addconNum / animationTime);//增加步长
-  (addconNum - addcon.value) <= step && (step = 1);//判断剩余数字
-  addcon.value = addcon.value + step;//更新响应式数据
-  if (addcon.value == addconNum) { return; }
-  requestAnimationFrame(addconAnimation)
-}
-
-//全球治愈动画
-function addcureAnimation() {
-  let animationTime = 3 * 60;
-  let addconNum: any = addcureNum;
-  let step = Math.round(addconNum / animationTime);//增加步长
-  (addconNum - addcure.value) <= step && (step = 1);//判断剩余数字
-  addcure.value = addcure.value + step;//更新响应式数据
-  if (addcure.value == addconNum) { return; }
-  requestAnimationFrame(addcureAnimation)
-}
-
-//全球死亡动画
-function addDieAnimation() {
-  let animationTime = 5 * 60;
-  let addconNum: any = addDieNum;
-  let step = Math.round(addconNum / animationTime);//增加步长
-  (addconNum - addDie.value) <= step && (step = 1);//判断剩余数字
-  addDie.value = addDie.value + step;//更新响应式数据
-  if (addDie.value == addconNum) { return; }
-  requestAnimationFrame(addDieAnimation)
-}
-
 </script>
 <style scoped lang='scss'>
 .container {
@@ -734,22 +689,20 @@ function addDieAnimation() {
     right: 0px;
     pointer-events: none;
     height: calc(100% - 50px);
-    // background-color: #f00;
     display: flex;
     flex-direction: column;
 
     .addconDiv,
     .addcureDiv,
     .addDieDiv {
-      margin: auto 0%;
+      margin: 10px 0%;
       background-color: rgba(255, 255, 255, .2);
       text-align: center;
       padding: 5px 30px;
 
-      h1 {
-        color: #f4c25e;
-        margin: 0px;
-        font-size: 50px;
+      span {
+        font-weight: 900;
+        color: rgba(255, 255, 255, 1);
       }
 
       p {
@@ -758,23 +711,33 @@ function addDieAnimation() {
         font-size: 20px;
       }
 
-      span {
-        font-weight: 900;
-        color: rgba(255, 255, 255, .5);
+      .certain-h1 {
+        span {
+          color: #f4c25e;
+        }
+
+        margin: 0px;
+        font-size: 50px;
       }
 
-    }
+      .addDie-h1 {
+        span {
+          color: #f00;
+        }
 
-    .addcureDiv {
-      h1 {
-        color: #48c56b;
+        margin: 0px;
+        font-size: 50px;
       }
-    }
 
-    .addDieDiv {
-      h1 {
-        color: #f00;
+      .addcure-h1 {
+        span {
+          color: #48c56b;
+        }
+
+        margin: 0px;
+        font-size: 50px;
       }
+
     }
   }
 

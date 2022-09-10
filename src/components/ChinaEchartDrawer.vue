@@ -15,17 +15,17 @@
         <div class="num-div">
           <div class="addconDiv">
             <p>国内确诊数</p>
-            <p class="amNum">{{addcon}}</p>
+            <addNumber class="amNum" :value="addcon" :time="10" :thousandSign="true" />
             <p class="add-p">今日{{daily.addcon_new}}</p>
           </div>
           <div class="addcureDiv">
             <p>国内治愈数</p>
-            <p class="amNum">{{addcure}}</p>
+            <addNumber class="amNum" :value="addcure" :time="10" :thousandSign="true" />
             <p class="add-p">今日{{daily.addcure_new}}</p>
           </div>
           <div class="addDieDiv">
             <p>国内死亡数</p>
-            <p class="amNum">{{addDie}}</p>
+            <addNumber class="amNum" :value="addDie" :time="10" :thousandSign="true" />
             <p class="add-p">今日{{daily.adddeath_new}}</p>
           </div>
         </div>
@@ -46,6 +46,7 @@
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
 import { jsonp } from 'vue-jsonp'
+import addNumber from "@/components/addNumber.vue";
 let props = defineProps({
   isEchart: {
     type: Boolean,
@@ -297,16 +298,9 @@ function handleClose() {
 
 //初始化图表
 function initChart() {
-  if (1) {
-    addcon.value = Number(props.allData.gntotal);
-  } else {
-    (addcon.value !== 0) && (addcon.value = 0);//置空
-    addconAnimation();//现存确诊动画(数字位数过多会动画异常)
-  }
-  (addcure.value !== 0) && (addcure.value = 0);//置空
-  addcureAnimation();//治愈人数动画
-  (addDie.value !== 0) && (addDie.value = 0);//置空
-  addDieAnimation();//死亡人数动画
+  addcon.value = Number(props.allData.gntotal);
+  addcure.value = Number(props.allData.curetotal);
+  addDie.value = Number(props.allData.deathtotal);
   historyLineChartFun(props.historylist);//绘制历史折线图
   initHistogram();//绘制柱状图
 }
@@ -442,39 +436,6 @@ function historyLineChartFun(list: any) {
   option && historyLineChart.setOption(option);
 };
 
-//现存确诊动画
-function addconAnimation() {
-  let animationTime = 1 * 60;//动画时间
-  let toNum = Number(props.allData.gntotal);
-  let step = Math.round(toNum / animationTime);//增加步长
-  (toNum - addcon.value) <= step && (step = 1);//判断剩余数字
-  addcon.value = addcon.value + step;//更新响应式数据
-  if (addcon.value == toNum) { return; }
-  requestAnimationFrame(addconAnimation)
-}
-
-//治愈人数动画
-function addcureAnimation() {
-  let animationTime = 3 * 60;//动画时间
-  let toNum = Number(props.allData.curetotal);
-  let step = Math.round(toNum / animationTime);//增加步长
-  (toNum - addcure.value) <= step && (step = 1);//判断剩余数字
-  addcure.value = addcure.value + step;//更新响应式数据
-  if (addcure.value == toNum) { return; }
-  requestAnimationFrame(addcureAnimation)
-}
-
-//死亡人数动画
-function addDieAnimation() {
-  let animationTime = 5 * 60;//动画时间
-  let toNum = Number(props.allData.deathtotal);
-  let step = Math.round(toNum / animationTime);//增加步长
-  (toNum - addDie.value) <= step && (step = 1);//判断剩余数字
-  addDie.value = addDie.value + step;//更新响应式数据
-  if (addDie.value == toNum) { return; }
-  requestAnimationFrame(addDieAnimation);
-}
-
 </script>
 <style scoped lang='scss'>
 .chinaEchart-drawer {
@@ -532,6 +493,7 @@ function addDieAnimation() {
         .amNum {
           color: #f4c25e;
           font-size: 40px;
+          font-weight: 900;
         }
 
         .add-p {
@@ -543,6 +505,7 @@ function addDieAnimation() {
         .amNum {
           font-size: 40px;
           color: #48c56b;
+          font-weight: 900;
         }
       }
 
@@ -550,6 +513,7 @@ function addDieAnimation() {
         .amNum {
           font-size: 40px;
           color: #f00;
+          font-weight: 900;
         }
       }
     }
