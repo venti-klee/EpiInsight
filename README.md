@@ -1,21 +1,16 @@
-# covid19-visualization
+# 疫情可视化
 
-## Project setup
-```
-npm install
-```
+数据来源为新浪的公共疫情api。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+# 技术
+vue3、TypeScript、Three.js、Echarts、elementPlus。
 
-### Compiles and minifies for production
-```
-npm run build
-```
+# 使用
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+下载项目后安装依赖：npm i
+
+运行项目：npm run serve
+
+打包项目：npm run build
 
 mdImgTest![img](./md_img/mdImg.jpg)

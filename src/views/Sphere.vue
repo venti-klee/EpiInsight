@@ -27,6 +27,12 @@
           </el-icon>
           国内分析
         </el-button>
+        <el-button class="btn" color="#ff656599" @click="downloadReport" round>
+          <el-icon :size="20" style="margin-right: 10px;">
+            <Download />
+          </el-icon>
+          下载本地疫情报告
+        </el-button>
       </div>
     </div>
 
@@ -129,7 +135,8 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   sliceNum: number = 50,//柱状图截取数量
   certain = ref(0),//全球现存确诊
   addcure = ref(0),//全球治愈数
-  addDie = ref(0);//全球死亡数
+  addDie = ref(0),//全球死亡数
+  userMsg: any = ref({});//使用者信息
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
@@ -610,9 +617,20 @@ function histogramChartFun(list: any) {
 function getLocationMsg() {
   let jsonpUrl: any = process.env.VUE_APP_3;
   jsonp(jsonpUrl, (res: any) => {
-    console.log("userMsg:", res);
+    userMsg.value = res;
   })
 };
+
+//下载本地疫情报告
+function downloadReport() {
+  alert(
+    "当前信息" +
+    "\nIP：" + userMsg.value.ip +
+    "\n省份：" + userMsg.value.pro +
+    "\n城市：" + userMsg.value.city +
+    "\n正在开发中,请等待..."
+  );
+}
 
 </script>
 <style scoped lang='scss'>
