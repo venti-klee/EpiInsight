@@ -90,7 +90,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import xlsxImg from "@/assets/img/xlsx.png";
-import { downloadXlsx } from "@/utils/xlsxUtils";
+import downloadXlsx from "@/utils/xlsxUtils";
 import RiskDetails from "./RiskDetails.vue"
 let props = defineProps({
     isChina: {

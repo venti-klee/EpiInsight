@@ -87,7 +87,7 @@ import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue'
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
-import { jsonp } from 'vue-jsonp';
+import jsonp from "@/utils/jsonpUtils";
 import addNumber from "@/components/addNumber.vue";
 import countryPosition from "@/assets/json/countryPosition.json";
 import { dataSource1, dataSource2 } from "@/api/request";
@@ -174,9 +174,11 @@ function decodingStr(str: any) {
 };
 
 //获取数据
+//开发环境用本地tempData数据
+//生产环境用vue代理dataSource1获取api数据
+//代理获取失败则使用jsonp获取api数据
 function getCOVID19Data() {
   isLoading.value = true;
-  //开发环境用tempData数据，生产环境用vue代理dataSource1
   if (process.env.NODE_ENV !== "development") {
     dataSource1()
       .then((res) => {
@@ -187,7 +189,7 @@ function getCOVID19Data() {
         isLoading.value = false;
       })
       .catch((err) => {
-        jsonpGetData();//代理获取失败则使用jsonp方式获取
+        jsonpGetData();
       });
   } else {
     console.log("使用tempData数据");
@@ -200,11 +202,8 @@ function getCOVID19Data() {
 //jsonp方式获取数据
 function jsonpGetData() {
   let jsonpUrl: any = process.env.VUE_APP_1;//获取环境变量中的url地址
-  jsonp(jsonpUrl)
-    .then((res) => {
-      // 此处不执行，调用下方挂载到window的jsoncallback
-    });
-  (window as any).jsoncallback = (res: any) => {
+  let callBackName = "jsoncallback";//回调名
+  jsonp(jsonpUrl, (res: any) => {
     if (res.status.msg = "success") {
       console.log("jsonp获取数据");
       allData.value = res.data; //记录所有数据
@@ -214,7 +213,7 @@ function jsonpGetData() {
     }
     structureData(allData.value); //构造数据  
     isLoading.value = false;
-  }
+  }, callBackName)
 };
 
 //构造球体数据

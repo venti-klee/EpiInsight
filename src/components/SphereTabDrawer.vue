@@ -44,7 +44,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import xlsxImg from "@/assets/img/xlsx.png";
-import { downloadXlsx } from "@/utils/xlsxUtils"
+import downloadXlsx from "@/utils/xlsxUtils"
 let props = defineProps({
     isSphere: {
         type: Boolean,
@@ -117,6 +117,7 @@ function clickXlsxBtn() {
 
         .top-left {
             display: flex;
+
             p {
                 font-weight: 900;
                 font-size: 25px;

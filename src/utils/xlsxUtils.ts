@@ -13,7 +13,7 @@ let eg = {
 }
 
 //导出数据表格
-export async function downloadXlsx(tabObj: any) {
+export default async function downloadXlsx(tabObj: any) {
     let aoaList: any = [];
     aoaList[0] = tabObj.tabHead; //赋值表头列表
     tabObj.tabData.forEach((tabItem: any, tabIndex: number) => {

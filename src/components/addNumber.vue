@@ -3,7 +3,7 @@
 </template>
 
 <script lang='ts' setup>
-import { defineEmits, ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 let props = defineProps({
     //动画时间
     time: {
