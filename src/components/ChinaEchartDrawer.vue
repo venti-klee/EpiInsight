@@ -46,6 +46,7 @@
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
 import { jsonp } from 'vue-jsonp'
+import { getIpMsg } from "@/api/request";
 import addNumber from "@/components/addNumber.vue";
 let props = defineProps({
   isEchart: {
@@ -180,12 +181,28 @@ watch(
 
 //获取位置信息
 function getLocationMsg() {
-  let jsonpUrl: any = process.env.VUE_APP_3;
-  jsonp(jsonpUrl).then(res => {
-    console.log(res)
-  }).catch(err => {
-    console.log(err)
-  })
+  // let jsonpUrl: any = process.env.VUE_APP_3;
+  // jsonp(jsonpUrl).then(res => {
+  //   console.log("jsonp:",res);
+  // }).catch(err => {
+  //   console.log(err)
+  // })
+
+  getIpMsg()
+    .then(res => {
+      let ipData = res.data;
+      let ipDataStr = ipData.slice(
+        ipData.indexOf('{"ip"'), //获取起始标记位
+        ipData.indexOf(");}") //获取结束标记位
+      ); //根据指定下标剪切
+      ipDataStr = JSON.parse(ipDataStr); //转换为对象
+      console.log("proxy:", ipDataStr);
+    })
+    .catch(err => {
+      console.log(err)
+    })
+
+
 };
 
 //柱状图数据

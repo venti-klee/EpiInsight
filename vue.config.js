@@ -8,6 +8,7 @@ let devProxy = {
       '/dataSource1': ''
     },
   },
+
   //获取疫情数据2
   '/dataSource2': {
     target: process.env.VUE_APP_2,
@@ -15,6 +16,16 @@ let devProxy = {
     changeOrigin: true,
     pathRewrite: {
       '/dataSource2': ''
+    },
+  },
+
+  //获取疫情数据2
+  '/getIpMsg': {
+    target: process.env.VUE_APP_3,
+    ws: true,
+    changeOrigin: true,
+    pathRewrite: {
+      '/getIpMsg': ''
     },
   },
 };
