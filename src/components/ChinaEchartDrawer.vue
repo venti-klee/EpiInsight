@@ -11,24 +11,28 @@
       </div>
       <!--图表盒子-->
       <div class="echartDiv">
-        <!--数字盒子-->
-        <div class="num-div">
-          <div class="addconDiv">
-            <p>国内确诊数</p>
-            <addNumber class="amNum" :value="addcon" :time="10" :thousandSign="true" />
-            <p class="add-p">今日{{daily.addcon_new}}</p>
-          </div>
-          <div class="addcureDiv">
-            <p>国内治愈数</p>
-            <addNumber class="amNum" :value="addcure" :time="10" :thousandSign="true" />
-            <p class="add-p">今日{{daily.addcure_new}}</p>
-          </div>
-          <div class="addDieDiv">
-            <p>国内死亡数</p>
-            <addNumber class="amNum" :value="addDie" :time="10" :thousandSign="true" />
-            <p class="add-p">今日{{daily.adddeath_new}}</p>
+        <div class="top-div">
+          <div class="china-map-div"></div>
+          <!--数字盒子-->
+          <div class="num-div">
+            <div class="addconDiv">
+              <p>国内确诊数</p>
+              <addNumber class="amNum" :value="addcon" :time="10" :thousandSign="true" />
+              <p class="add-p">今日{{daily.addcon_new}}</p>
+            </div>
+            <div class="addcureDiv">
+              <p>国内治愈数</p>
+              <addNumber class="amNum" :value="addcure" :time="10" :thousandSign="true" />
+              <p class="add-p">今日{{daily.addcure_new}}</p>
+            </div>
+            <div class="addDieDiv">
+              <p>国内死亡数</p>
+              <addNumber class="amNum" :value="addDie" :time="10" :thousandSign="true" />
+              <p class="add-p">今日{{daily.adddeath_new}}</p>
+            </div>
           </div>
         </div>
+
         <div id="historyLineDiv"></div>
         <div class="histogram-div">
           <div id="diagnosedChart"></div>
@@ -45,8 +49,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
-import jsonp from "@/utils/jsonpUtils";
-import { getIpMsg } from "@/api/request";
+import "echarts/map/js/china.js";
 import addNumber from "@/components/addNumber.vue";
 let props = defineProps({
   isEchart: {
@@ -81,6 +84,7 @@ let props = defineProps({
 }),
   isEchart = ref(false),
   historyLineChart: any = null,//历史折线图
+  chinaMapChart: any = null,//中国地图
   diagnosedChart: any = null,//确诊图
   dieChart: any = null,//死亡图
   dayAddChart: any = null,//当日新增图
@@ -171,36 +175,12 @@ watch(
   (val) => {
     if (val) {
       (isEchart.value = val);
-      getLocationMsg();
       setTimeout(() => {
         initChart();//初始化图表
       }, 500);
     }
   },
 )
-
-//获取位置信息
-function getLocationMsg() {
-  let jsonpUrl: any = process.env.VUE_APP_3;
-  jsonp(jsonpUrl, (res: any) => {
-    console.log(res);
-  })
-
-
-  // getIpMsg()
-  //   .then(res => {
-  //     let ipData = res.data;
-  //     let ipDataStr = ipData.slice(
-  //       ipData.indexOf('{"ip"'), //获取起始标记位
-  //       ipData.indexOf(");}") //获取结束标记位
-  //     ); //根据指定下标剪切
-  //     ipDataStr = JSON.parse(ipDataStr); //转换为对象
-  //     console.log("proxy:", ipDataStr);
-  //   })
-  //   .catch(err => {
-  //     console.log(err)
-  //   })
-};
 
 //柱状图数据
 function histogramOption(list: any, titName: string, color: string) {
@@ -317,6 +297,7 @@ function initChart() {
   addDie.value = Number(props.allData.deathtotal);
   historyLineChartFun(props.historylist);//绘制历史折线图
   initHistogram();//绘制柱状图
+  chinaMapInit();//初始化中国地图
 }
 
 //历史折线图
@@ -327,7 +308,7 @@ function historyLineChartFun(list: any) {
   (historyLineChart) && (historyLineChart.dispose());//销毁实例
   historyLineChart = echarts.init(chartDom);
   let option: any = {
-    backgroundColor: "",
+    // backgroundColor: "",
     grid: {
       // top: "15%",
       // left: "5%",
@@ -450,6 +431,117 @@ function historyLineChartFun(list: any) {
   option && historyLineChart.setOption(option);
 };
 
+//中国地图初始化
+function chinaMapInit() {
+  let list = JSON.parse(JSON.stringify(props.allData.list));//获取省份数据
+  let echartData: any = [];
+  list.forEach((l: any) => {
+    echartData.push({
+      name: l.name,
+      value: l.econNum,//现存数
+      allNum: l.value,//累计数
+      deathNum: l.deathNum,//死亡数
+      cureNum: l.cureNum,//治愈数
+      asymptomNum: l.asymptomNum,//较昨日新增
+      jwsrNum: l.jwsrNum//境外输入
+    })
+  })
+  echartData.push({
+    name: "南海诸岛"
+  })//添加南海诸岛，防止报错
+  let chartDom = document.getElementsByClassName("china-map-div")[0];
+  (chinaMapChart) && (chinaMapChart.dispose());//销毁实例
+  chinaMapChart = echarts.init(chartDom);
+  let option: any = {
+    title: {
+      text: '国内各省现存分布',
+      left: "center",
+      top: '1%',
+      textStyle: {
+        color: "#fff",
+      },
+    },
+    visualMap: {
+      min: 0,
+      max: 500,
+      left: '5%',
+      bottom: '5%',
+      text: ['高', '低'],
+      textStyle: {
+        color: '#fff',
+      },
+      calculable: true,
+      inRange: {
+        color: ['#fff', '#f00'],//颜色范围
+      },
+    },
+    tooltip: {
+      padding: 10,
+      enterable: true,
+      transitionDuration: 0,//动画时间
+      backgroundColor: "rgb(0,0,0,.8)",
+      borderRadius: 20,
+      textStyle: {
+        color: '#fff',
+      },
+      formatter: function (params: any) {
+        let tipString = "";
+        if (params.data.value) {
+          tipString =
+            "<div style='font-size:25px;font-weight:900;margin:10px 0px'>" + params.data.name + "</div>" +
+            "<div style='color:#f00;font-weight:900;'>现存：" + params.data.value + "</div>" +
+            "<div style='color:#888;font-weight:900;'>累计：" + params.data.allNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>死亡：" + params.data.deathNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>治愈：" + params.data.cureNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>较昨日新增：" + params.data.asymptomNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>境外输入：" + params.data.jwsrNum + "</div>"
+        }
+        return tipString;
+      }
+    },
+    series: [{
+      name: '接入医院数量',
+      type: 'map',
+      mapType: 'china',
+      zoom: 1.2,
+      roam: true,
+      scaleLimit: {
+        min: 1.2,
+        max: 2
+      },
+      itemStyle: {
+        normal: {
+          label: {
+            show: true
+          }
+        },
+        emphasis: {
+          show: true,
+          areaColor: '#6eb5ff',//鼠标滑过区域颜色
+          label: {
+            show: true
+          }
+        }
+      },
+      label: {
+        normal: { //静态的时候展示样式
+          show: true, //是否显示地图省份得名称
+          textStyle: {
+            color: "#000",
+            fontSize: 12
+          }
+        },
+        emphasis: { //动态展示的样式
+          color: '#fff',
+        },
+      },
+      data: []
+    }]
+  };
+  option.series[0].data = echartData;//设置数据
+  option && chinaMapChart.setOption(option);
+}
+
 </script>
 <style scoped lang='scss'>
 .chinaEchart-drawer {
@@ -485,59 +577,81 @@ function historyLineChartFun(list: any) {
     height: calc(100vh - 100px);
     overflow: auto;
 
-    .num-div {
-      width: 100%;
+    .top-div {
       display: flex;
-      margin: 10px 0px 0px 0px;
+      height: 600px;
+      width: 99%;
+      margin: 10px auto;
 
-      .addconDiv,
-      .addcureDiv,
-      .addDieDiv {
-        margin: 0px auto;
-        width: 32%;
+      .china-map-div {
+        border-radius: 50px;
         background-color: rgba(0, 0, 0, .8);
-        text-align: center;
-        padding: 2px 0px;
+        width: 62%;
+        height: 100%;
+        margin: 0px;
+      }
 
-        p {
-          margin: 5px;
-          font-weight: 900;
-          color: #ffd889;
+      .num-div {
+        display: flex;
+        flex-direction: column;
+        width: 37%;
+        margin: auto;
+        margin-right: 0px;
+        height: 100%;
+
+        .addconDiv,
+        .addcureDiv,
+        .addDieDiv {
+          border-radius: 50px;
+          margin: auto 0px;
+          width: 100%;
+          background-color: rgba(0, 0, 0, .8);
+          text-align: center;
+          padding: 35px 0px;
+
+          p {
+            margin: 5px;
+            font-weight: 900;
+            color: #ffd889;
+          }
+
+          .amNum {
+            color: #ffd889;
+            font-size: 50px;
+            font-weight: 900;
+          }
         }
 
-        .amNum {
-          color: #ffd889;
-          font-size: 40px;
-          font-weight: 900;
+        .addcureDiv {
+          p {
+            color: #48c56b;
+          }
+
+          .amNum {
+            font-size: 50px;
+            color: #48c56b;
+            font-weight: 900;
+          }
+        }
+
+        .addDieDiv {
+          p {
+            color: #ff6a6a;
+          }
+
+          .amNum {
+            font-size: 50px;
+            color: #ff6a6a;
+            font-weight: 900;
+          }
         }
       }
 
-      .addcureDiv {
-        p {
-          color: #48c56b;
-        }
-
-        .amNum {
-          font-size: 40px;
-          color: #48c56b;
-          font-weight: 900;
-        }
-      }
-
-      .addDieDiv {
-        p {
-          color: #ff6a6a;
-        }
-
-        .amNum {
-          font-size: 40px;
-          color: #ff6a6a;
-          font-weight: 900;
-        }
-      }
     }
 
+
     #historyLineDiv {
+      border-radius: 50px;
       background-color: rgba(0, 0, 0, .8);
       height: 300px;
       width: 99%;
@@ -545,12 +659,13 @@ function historyLineChartFun(list: any) {
     }
 
     .histogram-div {
+      border-radius: 50px;
       background-color: rgba(0, 0, 0, .8);
       display: flex;
       flex-wrap: wrap;
       width: 98%;
-      margin: 0px auto;
-      margin-top: 0px;
+      margin: 10px auto;
+      padding: 10px 0px;
 
       div {
         margin: 10px auto;

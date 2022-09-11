@@ -6,9 +6,9 @@
                 <div class="top-left">
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
-                            @keyup.enter="enterSearch(nameValue)" />
+                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 50px;"/>
                     </div>
-                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn">
+                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn" round>
                         <img :src=xlsxImg />
                         全球数据下载
                     </el-button>
@@ -133,7 +133,6 @@ function clickXlsxBtn() {
 
             .btn {
                 margin: auto;
-                border-radius: 0px;
                 border: none;
                 color: #fff;
                 padding: 0px 10px;

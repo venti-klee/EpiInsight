@@ -10,7 +10,7 @@
             <div class="tit-num">
                 <div class="h-ap">高风险地区{{currentDetails.province_high_num}}个</div>
                 <div class="m-ap">中风险地区{{currentDetails.province_middle_num}}个</div>
-                <el-button class="btn" color="#009f5d" @click="clickXlsxBtn">
+                <el-button class="btn" color="#009f5d" @click="clickXlsxBtn" round>
                     <img :src=xlsxImg />
                     {{currentDetails.province}}风险地下载
                 </el-button>
@@ -136,7 +136,6 @@ function clickXlsxBtn() {
 
         .btn {
             margin: auto 0px;
-            border-radius: 0px;
             border: none;
             color: #fff;
             padding: 0px 10px;

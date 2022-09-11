@@ -9,19 +9,19 @@
         <h4>(截止{{ allData.mtime }})</h4>
       </div>
       <div class="btn-div">
-        <el-button class="btn" color="#ff656599" @click="isSphere = true">
+        <el-button class="btn" color="#ff656599" @click="isSphere = true" round>
           <el-icon :size="20" style="margin-right: 10px;">
             <List />
           </el-icon>
           全球数据
         </el-button>
-        <el-button class="btn" color="#ff656599" @click="isChina = true">
+        <el-button class="btn" color="#ff656599" @click="isChina = true" round>
           <el-icon :size="20" style="margin-right:10px;">
             <List />
           </el-icon>
           国内数据
         </el-button>
-        <el-button class="btn" color="#ff656599" @click="isEchart = true;">
+        <el-button class="btn" color="#ff656599" @click="isEchart = true;" round>
           <el-icon :size="20" style="margin-right: 10px;">
             <TrendCharts />
           </el-icon>
@@ -133,6 +133,7 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
+  getLocationMsg();//获取用户ip信息
 })
 
 //设置切换
@@ -605,6 +606,14 @@ function histogramChartFun(list: any) {
   option && histogramChart.setOption(option);
 }
 
+//获取位置信息
+function getLocationMsg() {
+  let jsonpUrl: any = process.env.VUE_APP_3;
+  jsonp(jsonpUrl, (res: any) => {
+    console.log("userMsg:", res);
+  })
+};
+
 </script>
 <style scoped lang='scss'>
 .container {
@@ -634,7 +643,6 @@ function histogramChartFun(list: any) {
       margin: 10px;
 
       .btn {
-        border-radius: 0px;
         border: none;
         color: #fff
       }
@@ -713,6 +721,7 @@ function histogramChartFun(list: any) {
     }
 
     .addconDiv {
+      background-color: rgb(255, 216, 137, .2);
 
       .tit,
       .day-tit,
@@ -722,6 +731,7 @@ function histogramChartFun(list: any) {
     }
 
     .addDieDiv {
+      background-color: rgb(255, 106, 106, .2);
 
       .tit,
       .day-tit,
@@ -731,6 +741,7 @@ function histogramChartFun(list: any) {
     }
 
     .addcureDiv {
+      background-color: rgb(102, 246, 143, .2);
 
       .tit,
       .day-tit,

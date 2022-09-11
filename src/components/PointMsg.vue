@@ -38,6 +38,7 @@ let props = defineProps({
   background-color: rgba(0, 0, 0, .8);
   color: #fff;
   position: absolute;
+  border-radius: 20px;
 
   div {
     margin: 5px 0px;

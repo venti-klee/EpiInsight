@@ -6,9 +6,9 @@
                 <div class="top-left">
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
-                            @keyup.enter="enterSearch(nameValue)" />
+                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 50px;"/>
                     </div>
-                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn('province','','')">
+                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn('province','','')" round>
                         <img :src=xlsxImg />
                         国内数据下载
                     </el-button>
@@ -33,7 +33,7 @@
                     <template #default="props">
                         <div class="tab-head-div">
                             <el-button class="btn" color="#009f5d"
-                                @click="clickXlsxBtn('city',props.row.name,props.row.city)">
+                                @click="clickXlsxBtn('city',props.row.name,props.row.city)" round>
                                 <img :src=xlsxImg />
                                 {{props.row.name}}数据下载
                             </el-button>
@@ -69,7 +69,7 @@
                             style="color: #ff7272;display: flex;justify-content: space-between;">
                             {{props.row.highAndMiddle.province_total}}个
                             <el-button class="btn" color="#ff7272" @click="clickMore(props.row.highAndMiddle)"
-                                style="color:#fff;padding: 0px 10px;border-radius: 0px;margin: 0px 20px 0px 0px;">
+                                style="color:#fff;padding: 0px 20px;margin: 0px 20px 0px 0px;" round>
                                 详情
                             </el-button>
                         </span>
@@ -238,7 +238,6 @@ function clickMore(moreData: any) {
 
             .btn {
                 margin: auto;
-                border-radius: 0px;
                 border: none;
                 color: #fff;
                 padding: 0px 10px;
@@ -268,7 +267,6 @@ function clickMore(moreData: any) {
             .btn {
                 margin: 10px;
                 margin-bottom: 0px;
-                border-radius: 0px;
                 border: none;
                 color: #fff;
                 padding: 0px 10px;
