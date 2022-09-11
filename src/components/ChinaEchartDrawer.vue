@@ -163,8 +163,7 @@ let props = defineProps({
     tempList = sortFun(tempList);
     return tempList.slice(0, sliceNum);
   }),
-  emits = defineEmits(["close"]),
-  iframeSrc = process.env.VUE_APP_3;
+  emits = defineEmits(["close"]);
 
 //watch可监听指定属性watchEffect不能
 watch(
