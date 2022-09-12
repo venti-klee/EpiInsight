@@ -624,7 +624,7 @@ function getProvinceData() {
   //开发环境用临时数据
   if (process.env.NODE_ENV !== "development") {
     //遍历获取到英文名
-    console.log(allData);
+    console.log(allData.value.list);
     allData.value.list.forEach((l: any) => {
       if (pro.search(l.name) >= 0) {
         ePro = l.ename;
