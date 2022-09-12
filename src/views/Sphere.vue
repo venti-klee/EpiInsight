@@ -155,7 +155,7 @@ onMounted(() => {
 watch(
   () => allData.value,
   (val) => {
-    if (val.value.times) {
+    if (val.times) {
       getLocationMsg();//获取用户ip信息
     }
   }
