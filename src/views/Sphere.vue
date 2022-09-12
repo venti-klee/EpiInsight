@@ -103,8 +103,7 @@ import starImg from "@/assets/img/star.jpg";
 import earthImg from "@/assets/img/earth.jpg";
 import earthNightImg from "@/assets/img/earthNight.jpg";
 import normalImg from "@/assets/img/earthNormal.jpg";
-import earthCloudsImg from "@/assets/img/earthClouds.jpg";
-import virusImg from "@/assets/img/virus.png";
+import virusImg from "@/assets/img/virus3.png";
 import PointMsg from "@/components/PointMsg.vue";
 import ChinaEchartDrawer from "@/components/ChinaEchartDrawer.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
@@ -398,26 +397,6 @@ function createSphere(data: any) {
   let earthMesh = new THREE.Mesh(earthGeometry, earthMaterial); //地球网格
   earthMesh.name = "地球";
   earthGroup.add(earthMesh); //将地球网格添加到地球组中
-  //地球云层几何体
-  let earthCloudsGeometry = new THREE.SphereGeometry(
-    earthSize + 10,
-    100,
-    100
-  );
-  //地球云层材质
-  let earthCloudsMaterial = new THREE.MeshLambertMaterial({
-    color: new THREE.Color(0xffffff),
-    transparent: true,
-    opacity: 0.2,
-    map: new THREE.TextureLoader().load(earthCloudsImg),
-    side: THREE.DoubleSide,
-  });
-  //地球云层网格
-  let earthCloudsMesh = new THREE.Mesh(
-    earthCloudsGeometry,
-    earthCloudsMaterial
-  );
-  //   earthGroup.add(earthCloudsMesh); //将地球云层网格添加到地球组中
   earthGroup.name = "地球组";
   scene.add(earthGroup);
   createVirus(data, earthSize); //创建球面病毒
