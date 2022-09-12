@@ -608,11 +608,13 @@ function getLocationMsg() {
     let jsonpUrl: any = process.env.VUE_APP_3;
     jsonp(jsonpUrl, (res: any) => {
       userMsg.value = res;
+      getProvinceData();//获取当前省份数据
     })
   } else {
     userMsg.value = tempIpData;
+    getProvinceData();//获取当前省份数据
   };
-  getProvinceData();//获取当前省份数据
+
 };
 
 //获取当前省数据
