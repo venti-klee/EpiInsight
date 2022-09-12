@@ -27,7 +27,7 @@
           </el-icon>
           国内分析
         </el-button>
-        <el-button class="btn" color="#ff656599" @click="getProvinceData" round>
+        <el-button class="btn" color="#ff656599" @click="provinceAnalyze" round>
           <el-icon :size="20" style="margin-right: 10px;">
             <TrendCharts />
           </el-icon>
@@ -37,7 +37,7 @@
           <el-icon :size="20" style="margin-right: 10px;">
             <Download />
           </el-icon>
-          下载本地疫情报告
+          下载当地疫情报告
         </el-button>
       </div>
     </div>
@@ -611,7 +611,8 @@ function getLocationMsg() {
     })
   } else {
     userMsg.value = tempIpData;
-  }
+  };
+  getProvinceData();//获取当前省份数据
 };
 
 //获取当前省数据
@@ -638,19 +639,18 @@ function getProvinceData() {
   } else {
     currentProvinceData.value = tempProvinceData.data;
   }
-  console.log("currentProvinceData：", currentProvinceData);//待开发...
+}
+
+//点击省内分析
+function provinceAnalyze() {
+  console.log("provinceAnalyze：", currentProvinceData);//待开发...
+  alert("“省内分析”开发中...");
 }
 
 //下载本地疫情报告
 function downloadReport() {
-  console.log("userMsg：", userMsg);//待开发...
-  // alert(
-  //   "当前信息" +
-  //   "\nIP：" + userMsg.value.ip +
-  //   "\n省份：" + userMsg.value.pro +
-  //   "\n城市：" + userMsg.value.city +
-  //   "\n正在开发中,请等待..."
-  // );
+  console.log("downloadReport：", currentProvinceData);//待开发...
+  alert("“下载当地疫情报告”开发中...");
 }
 
 </script>
