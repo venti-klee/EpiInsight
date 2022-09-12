@@ -100,7 +100,7 @@ import { dataSource1, dataSource2 } from "@/api/request";
 import tempData from "@/assets/json/tempData.json";
 import universeImg from "@/assets/img/universe.jpg";
 import starImg from "@/assets/img/star.jpg";
-import earthImg from "@/assets/img/earth.jpg";
+import earthImg from "@/assets/img/earth1.jpg";
 import earthNightImg from "@/assets/img/earthNight.jpg";
 import normalImg from "@/assets/img/earthNormal.jpg";
 import virusImg from "@/assets/img/virus3.png";

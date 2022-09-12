@@ -32,6 +32,8 @@ vue3、TypeScript、Three.js、Echarts、elementPlus。
 ![img](./md_img/2.jpg)
 全球数据可下载
 ![img](./md_img/3.jpg)
+国内详情数
+![img](./md_img/7.jpg)
 国内数据可下载
 ![img](./md_img/4.jpg)
 国内图表分析
