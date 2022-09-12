@@ -27,6 +27,12 @@
           </el-icon>
           国内分析
         </el-button>
+        <el-button class="btn" color="#ff656599" @click="getProvinceData" round>
+          <el-icon :size="20" style="margin-right: 10px;">
+            <TrendCharts />
+          </el-icon>
+          省内分析
+        </el-button>
         <el-button class="btn" color="#ff656599" @click="downloadReport" round>
           <el-icon :size="20" style="margin-right: 10px;">
             <Download />
@@ -94,10 +100,13 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
 import jsonp from "@/utils/jsonpUtils";
+import jsonp1 from "@/utils/jsonpUtils1";
 import addNumber from "@/components/addNumber.vue";
 import countryPosition from "@/assets/json/countryPosition.json";
 import { dataSource1, dataSource2 } from "@/api/request";
-import tempData from "@/assets/json/tempData.json";
+import tempData from "@/assets/json/tempWorldData.json";
+import tempProvinceData from "@/assets/json/tempProvinceData.json";
+import tempIpData from "@/assets/json/tempIpData.json";
 import universeImg from "@/assets/img/universe.jpg";
 import starImg from "@/assets/img/star.jpg";
 import earthImg from "@/assets/img/earth.jpg";
@@ -135,7 +144,8 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   certain = ref(0),//全球现存确诊
   addcure = ref(0),//全球治愈数
   addDie = ref(0),//全球死亡数
-  userMsg: any = ref({});//使用者信息
+  userMsg: any = ref({}),//使用者信息
+  currentProvinceData: any = ref({});//当前省数据
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
@@ -594,21 +604,53 @@ function histogramChartFun(list: any) {
 
 //获取位置信息
 function getLocationMsg() {
-  let jsonpUrl: any = process.env.VUE_APP_3;
-  jsonp(jsonpUrl, (res: any) => {
-    userMsg.value = res;
-  })
+  if (process.env.NODE_ENV !== "development") {
+    let jsonpUrl: any = process.env.VUE_APP_3;
+    jsonp(jsonpUrl, (res: any) => {
+      userMsg.value = res;
+    })
+  } else {
+    userMsg.value = tempIpData;
+  }
 };
+
+//获取当前省数据
+function getProvinceData() {
+  let pro = userMsg.value.pro;//当前省
+  let ePro = "";//英文省名
+  //开发环境用临时数据
+  if (process.env.NODE_ENV !== "development") {
+    //遍历获取到英文名
+    allData.value.list.forEach((l: any) => {
+      if (pro.search(l.name) >= 0) {
+        ePro = l.ename;
+      }
+    })
+    //jsonp获取到当前省数据
+    jsonp1(
+      process.env.VUE_APP_5,
+      (res: any) => {
+        currentProvinceData.value = res.data;//获取到当前省数据
+      },
+      "val1",
+      "mod=province&province=" + ePro
+    );
+  } else {
+    currentProvinceData.value = tempProvinceData.data;
+  }
+  console.log("currentProvinceData：", currentProvinceData);//待开发...
+}
 
 //下载本地疫情报告
 function downloadReport() {
-  alert(
-    "当前信息" +
-    "\nIP：" + userMsg.value.ip +
-    "\n省份：" + userMsg.value.pro +
-    "\n城市：" + userMsg.value.city +
-    "\n正在开发中,请等待..."
-  );
+  console.log("userMsg：", userMsg);//待开发...
+  // alert(
+  //   "当前信息" +
+  //   "\nIP：" + userMsg.value.ip +
+  //   "\n省份：" + userMsg.value.pro +
+  //   "\n城市：" + userMsg.value.city +
+  //   "\n正在开发中,请等待..."
+  // );
 }
 
 </script>
