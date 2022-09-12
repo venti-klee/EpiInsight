@@ -149,8 +149,17 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
-  getLocationMsg();//获取用户ip信息
 })
+
+//当allData数据获取完成后开始获取用户ip信息
+watch(
+  () => allData.value,
+  (val) => {
+    if (val.value.times) {
+      getLocationMsg();//获取用户ip信息
+    }
+  }
+)
 
 //设置切换
 function changeSetData(type: string, setData: any) {
@@ -624,7 +633,6 @@ function getProvinceData() {
   //开发环境用临时数据
   if (process.env.NODE_ENV !== "development") {
     //遍历获取到英文名
-    console.log(allData.list);
     allData.value.list.forEach((l: any) => {
       if (pro.search(l.name) >= 0) {
         ePro = l.ename;
