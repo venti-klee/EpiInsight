@@ -602,7 +602,7 @@ function histogramChartFun(list: any) {
   option && histogramChart.setOption(option);
 }
 
-//获取位置信息
+//获取用户ip信息
 function getLocationMsg() {
   if (process.env.NODE_ENV !== "development") {
     let jsonpUrl: any = process.env.VUE_APP_3;
@@ -624,6 +624,7 @@ function getProvinceData() {
   //开发环境用临时数据
   if (process.env.NODE_ENV !== "development") {
     //遍历获取到英文名
+    console.log(allData);
     allData.value.list.forEach((l: any) => {
       if (pro.search(l.name) >= 0) {
         ePro = l.ename;
