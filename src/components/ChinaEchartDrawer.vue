@@ -504,9 +504,9 @@ function chinaMapInit() {
       type: 'map',
       mapType: 'china',
       zoom: 1.2,
-      roam: true,
+      roam: true,//缩放
       scaleLimit: {
-        min: 1.2,
+        min: 1.2,//缩放限制
         max: 2
       },
       itemStyle: {

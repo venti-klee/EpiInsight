@@ -1,5 +1,5 @@
 <template>
-    <span :data-time="time" class="number-grow" :data-value="value">{{addNum}}</span>
+    <span :data-time="time" :data-value="value">{{addNum}}</span>
 </template>
 
 <script lang='ts' setup>

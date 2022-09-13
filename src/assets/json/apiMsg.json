@@ -1,0 +1,67 @@
+{
+    "add_daily(国内今日数据)": {
+        "addcon(今日确诊新增数)": "",
+        "addcure(今日治愈新增)": "",
+        "adddeath(今日死亡新增)": "",
+        "addjwsr(今日境外输入新增)": "",
+        "addlocIncrNum(今日本土新增)"
+    },
+    "cachetime(数据缓存时间)": "",
+    "curetotal(国内治愈总数)": "",
+    "deathtotal(国内死亡总数)": "",
+    "gntotal(国内确诊总数)": "",
+    "highAndMiddle(中高风险地列表)": [
+        {
+            "allname(全名)": "",
+            "list(城市列表)": "",
+            "province(省名)": "",
+            "province_high_areas(高风险区域)": "",
+            "province_middle_areas(中风险区域)": "",
+            "province_high_num(高风险区域数)": "",
+            "province_middle_num(中风险区域数)": "",
+            "province_total(风险地总数)": ""
+        }
+    ],
+    "historylist(国内疫情历史数据)": [
+        {
+            "cn_conNum(确诊总数)": "",
+            "cn_cureNum(治愈总数)": "",
+            "cn_deathNum(死亡数)": "",
+            "cn_jwsrNum(境外输入)": "",
+            "ymd(当前时间)": ""
+        }
+    ],
+    "jwsrTop(境外数据前10列表)": [],
+    "list(全国各省疫情数据列表)": [
+        {
+            "asymptomNum(较昨日新增数)": "",
+            "city(城市列表)": [],
+            "cureNum(治愈数)": "",
+            "deathNum(死亡数)": "",
+            "econNum(现存确诊数)": "",
+            "ename(英文省名)": "",
+            "jwsrNum(境外输入数)": "",
+            "name(省名)": "",
+            "value(累计数)": ""
+        }
+    ],
+    "locIncrProTop(本土新增前十列表)": [],
+    "othertotal(其他总数)": {
+        "certain(全球现存确诊)": "",
+        "certain_inc(今日确诊新增数)": "",
+        "die(全球死亡数)": "",
+        "die_inc(死亡新增数)": "",
+        "ecertain(全球治愈数)": "",
+        "ecertain_inc(治愈新增数)": ""
+    },
+    "times(数据截止时间)": "",
+    "worldlist(世界各国疫情列表)": [
+        {
+            "name(国名)": "",
+            "value(累计数)": "",
+            "econNum(确诊数)": "",
+            "deathNum(死亡数)": "",
+            "cureNum(治愈数)": ""
+        }
+    ]
+}

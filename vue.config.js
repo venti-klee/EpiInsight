@@ -19,7 +19,7 @@ let devProxy = {
     },
   },
 
-  //获取疫情数据2
+  //获取ip信息
   '/getIpMsg': {
     target: process.env.VUE_APP_3,
     ws: true,
