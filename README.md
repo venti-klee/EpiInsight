@@ -1,6 +1,7 @@
 # 疫情可视化
 
 浏览链接：https://xi1213.gitee.io/covid19-visualization/#/
+CSDN文章：https://blog.csdn.net/xi1213/article/details/126824752
 
 # 项目简介
 1、以3D形式查看全球疫情分布。
