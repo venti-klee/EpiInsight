@@ -1,5 +1,5 @@
 <template>
-    <span :data-time="time" :data-value="value">{{addNum}}</span>
+    <span class="num-span" :data-time="time" :data-value="value">{{addNum}}</span>
 </template>
 
 <script lang='ts' setup>
@@ -60,3 +60,9 @@ onMounted(() => {
     startAnimation();
 })
 </script>
+<style scoped>
+.num-span {
+    /*开启gpu加速*/
+    transform: translateZ(0);
+}
+</style>
