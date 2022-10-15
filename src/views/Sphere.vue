@@ -91,6 +91,9 @@
       <!--国内图表分析-->
       <ChinaEchartDrawer :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop"
         :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist" :allData="allData" />
+      <!--省内图表分析-->
+      <ProvinceEchartDrawer :isProvinceEchartDrawer="isProvinceEchartDrawer" @close="isProvinceEchartDrawer = false"
+        :currentProvinceData="currentProvinceData" />
     </div>
   </div>
 </template>
@@ -118,6 +121,7 @@ import ChinaEchartDrawer from "@/components/ChinaEchartDrawer.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
 import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
+import ProvinceEchartDrawer from "@/components/ProvinceEchartDrawer.vue";
 let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
@@ -145,7 +149,8 @@ let scene: any = null, //场景(频繁变更的对象放置在vue的data中会�
   addcure = ref(0),//全球治愈数
   addDie = ref(0),//全球死亡数
   userMsg: any = ref({}),//使用者信息
-  currentProvinceData: any = ref({});//当前省数据
+  currentProvinceData: any = ref({}),//当前省数据
+  isProvinceEchartDrawer = ref(false);//省内图表对话框
 
 onMounted(() => {
   getCOVID19Data(); //获取疫情数据
@@ -654,8 +659,7 @@ function getProvinceData() {
 
 //点击省内分析
 function provinceAnalyze() {
-  console.log("provinceAnalyze：", currentProvinceData);//待开发...
-  alert("“省内分析”开发中...");
+  isProvinceEchartDrawer.value = true;
 }
 
 //下载本地疫情报告

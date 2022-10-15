@@ -12,7 +12,6 @@
       <!--图表盒子-->
       <div class="echartDiv">
         <div class="top-div">
-          <div class="china-map-div"></div>
           <!--数字盒子-->
           <div class="num-div">
             <div class="addconDiv">
@@ -31,6 +30,7 @@
               <p class="add-p">今日{{daily.adddeath_new}}</p>
             </div>
           </div>
+          <div class="china-map-div"></div>
         </div>
 
         <div id="historyLineDiv"></div>
@@ -175,9 +175,7 @@ watch(
   (val) => {
     if (val) {
       (isEchart.value = val);
-      setTimeout(() => {
-        initChart();//初始化图表
-      }, 500);
+      initChart();//初始化图表
     }
   },
 )
@@ -249,25 +247,25 @@ function histogramOption(list: any, titName: string, color: string) {
 }
 
 //初始化柱状图
-function initHistogram() {
-  (diagnosedChart) && (diagnosedChart.dispose());//销毁实例
-  diagnosedChart = echarts.init(document.getElementById("diagnosedChart"));//确诊图
-  diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", "#ffaa00"));
-  (dieChart) && (dieChart.dispose());//销毁实例
-  dieChart = echarts.init(document.getElementById("dieChart"));//死亡图
-  dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#ff6a6a"));
-  (dayAddChart) && (dayAddChart.dispose());//销毁实例
-  dayAddChart = echarts.init(document.getElementById("dayAddChart"));//当日新增图
-  dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", "#ba4c03"));
-  (cureChart) && (cureChart.dispose());//销毁实例
-  cureChart = echarts.init(document.getElementById("cureChart"));//治愈图
-  cureChart.setOption(histogramOption(cureList.value, "治愈数前", "#48c56b"));
-  (locIncrProTopChart) && (locIncrProTopChart.dispose());//销毁实例
-  locIncrProTopChart = echarts.init(document.getElementById("locIncrProTopChart"));//本地新增图
-  locIncrProTopChart.setOption(histogramOption(locIncrProTop.value, "本地新增前", "#ff5900"));
-  (jwsrTopChart) && (jwsrTopChart.dispose());//销毁实例
-  jwsrTopChart = echarts.init(document.getElementById("jwsrTopChart"));//境外输入图
-  jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", "#8903ba"));
+async function initHistogram() {
+  await (diagnosedChart) && (diagnosedChart.dispose());//销毁实例
+  await (diagnosedChart = echarts.init(document.getElementById("diagnosedChart")));//确诊图
+  await diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", "#ffaa00"));
+  await (dieChart) && (dieChart.dispose());//销毁实例
+  await (dieChart = echarts.init(document.getElementById("dieChart")));//死亡图
+  await dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#ff6a6a"));
+  await (dayAddChart) && (dayAddChart.dispose());//销毁实例
+  await (dayAddChart = echarts.init(document.getElementById("dayAddChart")));//当日新增图
+  await dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", "#ba4c03"));
+  await (cureChart) && (cureChart.dispose());//销毁实例
+  await (cureChart = echarts.init(document.getElementById("cureChart")));//治愈图
+  await cureChart.setOption(histogramOption(cureList.value, "治愈数前", "#48c56b"));
+  await (locIncrProTopChart) && (locIncrProTopChart.dispose());//销毁实例
+  await (locIncrProTopChart = echarts.init(document.getElementById("locIncrProTopChart")));//本地新增图
+  await locIncrProTopChart.setOption(histogramOption(locIncrProTop.value, "本地新增前", "#ff5900"));
+  await (jwsrTopChart) && (jwsrTopChart.dispose());//销毁实例
+  await (jwsrTopChart = echarts.init(document.getElementById("jwsrTopChart")));//境外输入图
+  await jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", "#8903ba"));
 }
 
 //排序(冒泡法)
@@ -301,17 +299,16 @@ function initChart() {
 }
 
 //历史折线图
-function historyLineChartFun(list: any) {
+async function historyLineChartFun(list: any) {
   let lineData = JSON.parse(JSON.stringify(list));
-  lineData.reverse();
-  let chartDom = document.getElementById("historyLineDiv");
-  (historyLineChart) && (historyLineChart.dispose());//销毁实例
-  historyLineChart = echarts.init(chartDom);
+  await lineData.reverse();
+  await (historyLineChart) && (historyLineChart.dispose());//销毁实例
+  await (historyLineChart = echarts.init(document.getElementById("historyLineDiv")));
   let option: any = {
     // backgroundColor: "",
     grid: {
       // top: "15%",
-      // left: "5%",
+      left: "8%",
       // right: "5%",
       // bottom: "10%",
     },
@@ -348,11 +345,17 @@ function historyLineChartFun(list: any) {
       data: lineData.map(function (item: any) {
         return item.ymd;
       }),
+      axisLabel: {
+        color: "#fff",
+      },
       textStyle: {
         color: "#fff"
       }
     },
     yAxis: {
+      axisLabel: {
+        color: "#fff",
+      },
       textStyle: {
         color: "#fff",
       },
@@ -428,14 +431,14 @@ function historyLineChartFun(list: any) {
       }
     ]
   };
-  option && historyLineChart.setOption(option);
+  await (option && historyLineChart.setOption(option));
 };
 
 //中国地图初始化
-function chinaMapInit() {
+async function chinaMapInit() {
   let list = JSON.parse(JSON.stringify(props.allData.list));//获取省份数据
   let echartData: any = [];
-  list.forEach((l: any) => {
+  await list.forEach((l: any) => {
     echartData.push({
       name: l.name,
       value: l.econNum,//现存数
@@ -446,12 +449,11 @@ function chinaMapInit() {
       jwsrNum: l.jwsrNum//境外输入
     })
   })
-  echartData.push({
+  await echartData.push({
     name: "南海诸岛"
   })//添加南海诸岛，防止报错
-  let chartDom = document.getElementsByClassName("china-map-div")[0];
-  (chinaMapChart) && (chinaMapChart.dispose());//销毁实例
-  chinaMapChart = echarts.init(chartDom);
+  await (chinaMapChart) && (chinaMapChart.dispose());//销毁实例
+  await (chinaMapChart = echarts.init(document.getElementsByClassName("china-map-div")[0]));
   let option: any = {
     title: {
       text: '国内各省现存分布',
@@ -538,8 +540,8 @@ function chinaMapInit() {
       data: []
     }]
   };
-  option.series[0].data = echartData;//设置数据
-  option && chinaMapChart.setOption(option);
+  await (option.series[0].data = echartData);//设置数据
+  await (option && chinaMapChart.setOption(option));
 }
 
 </script>
@@ -579,7 +581,7 @@ function chinaMapInit() {
 
     .top-div {
       display: flex;
-      height: 600px;
+      height: 500px;
       width: 99%;
       margin: 10px auto;
 
@@ -596,7 +598,6 @@ function chinaMapInit() {
         flex-direction: column;
         width: 37%;
         margin: auto;
-        margin-right: 0px;
         height: 100%;
 
         .addconDiv,
@@ -607,7 +608,7 @@ function chinaMapInit() {
           width: 100%;
           background-color: rgba(0, 0, 0, .8);
           text-align: center;
-          padding: 35px 0px;
+          padding: 15px 0px;
 
           p {
             margin: 5px;
@@ -675,5 +676,11 @@ function chinaMapInit() {
     }
 
   }
+}
+</style>
+<style scoped>
+::-webkit-scrollbar-thumb {
+  /*滑块*/
+  background-color: rgba(255, 0, 0, .5) !important;
 }
 </style>
