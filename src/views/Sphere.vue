@@ -5,7 +5,7 @@
     <!--顶部标题-->
     <div class="top-div">
       <div class="name-div">
-        <h2>疫情可视化</h2>
+        <h2>疫情可视化</h2>v{{version}}
         <h4>(截止{{ allData.mtime }})</h4>
       </div>
       <div class="btn-div">
@@ -102,6 +102,7 @@ import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue'
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
+import PK from "@/../package.json";
 import jsonp from "@/utils/jsonpUtils";
 import jsonp1 from "@/utils/jsonpUtils1";
 import addNumber from "@/components/addNumber.vue";
@@ -122,7 +123,8 @@ import SetDrawer from "@/components/SetDrawer.vue";
 import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
 import ProvinceEchartDrawer from "@/components/ProvinceEchartDrawer.vue";
-let scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
+let version: any = ref(PK.version),//系统版本号
+  scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
   renderer: any = null, //渲染器

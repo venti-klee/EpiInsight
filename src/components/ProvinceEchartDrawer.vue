@@ -32,9 +32,9 @@
                             <h3>较昨日新增：
                                 <addNumber :value="provinceBaseData.asymptomtotal" :time="10" :thousandSign="true" />
                             </h3>
-                            <h3>本土新增：
+                            <!-- <h3>本土新增：
                                 <addNumber :value="provinceBaseData.locIncrNum" :time="10" :thousandSign="true" />
-                            </h3>
+                            </h3> -->
                             <h3 class="death-num">死亡：
                                 <addNumber :value="provinceBaseData.deathtotal" :time="10" :thousandSign="true" />
                             </h3>
@@ -511,6 +511,7 @@ function historyEchartFun(echatrData: any) {
                     margin: auto 0px;
 
                     h3 {
+                        font-size: 20px;
                         color: #794ebd;
                     }
 
