@@ -72,8 +72,8 @@ let props = defineProps({
     isProvinceEchartDrawer = ref(false),//对话框状态
     provinceBaseData: any = ref({}),//省份基础数据
     provinceData: any = ref({}),//省份面积堆叠图数据
-    areaEchart: any = null,//面积堆叠图表
-    historylist: any = ref([]),//省份历史数据
+    proHisEchart: any = null,//柱状图表
+    historyList: any = ref([]),//省份历史数据
     historyEchart: any = null,//历史图表
     emits = defineEmits(["close"]);
 
@@ -103,7 +103,7 @@ watch(
                 t.cureNum = Number(t.cureNum);//治愈数
                 t.asymptomNum = Number(t.asymptomNum);//较昨日新增
             });
-            await (historylist.value = props.currentProvinceData.historylist);//获取到省份的历史数据
+            await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
             await initEchart();//初始化图表
         }
     },
@@ -117,18 +117,18 @@ function handleClose() {
 
 //初始化图表
 async function initEchart() {
-    let areaEchartData: any = { cityName: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
+    let proHisEchartData: any = { cityName: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
     await provinceData.value.forEach((p: any) => {
-        areaEchartData.cityName.push(p.name);
-        areaEchartData.conNum.push(p.conNum);
-        areaEchartData.econNum.push(p.econNum);
-        areaEchartData.deathNum.push(p.deathNum);
-        areaEchartData.cureNum.push(p.cureNum);
-        areaEchartData.asymptomNum.push(p.asymptomNum);
+        proHisEchartData.cityName.push(p.name);
+        proHisEchartData.conNum.push(p.conNum);
+        proHisEchartData.econNum.push(p.econNum);
+        proHisEchartData.deathNum.push(p.deathNum);
+        proHisEchartData.cureNum.push(p.cureNum);
+        proHisEchartData.asymptomNum.push(p.asymptomNum);
     })
-    areaEchartFun(areaEchartData);
+    proHisEchartFun(proHisEchartData);
     let historyEchartData: any = { time: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
-    let histData = JSON.parse(JSON.stringify(historylist.value));
+    let histData = JSON.parse(JSON.stringify(historyList.value));
     await histData.reverse();
     await histData.forEach((h: any) => {
         historyEchartData.time.push(h.ymd);
@@ -142,7 +142,7 @@ async function initEchart() {
 };
 
 //柱状图
-function areaEchartFun(echatrData: any) {
+function proHisEchartFun(echatrData: any) {
     let option = {
         title: {
             text: provinceBaseData.value.province + "各地数据",
@@ -158,8 +158,30 @@ function areaEchartFun(echatrData: any) {
                 type: 'shadow'
             }
         },
+        dataZoom: [
+        // {
+        //   show: true,
+        //   start: 94,
+        //   end: 100
+        // },
+        {
+          type: 'inside',
+          // start: 94,
+          // end: 100
+        },
+        {
+          show: true,
+          yAxisIndex: 0,
+          filterMode: 'empty',
+          width: 20,
+          height: '80%',
+          showDataShadow: false,
+          left: '3%',
+          top:"center"
+        }
+      ],
         legend: {
-            data: ['死亡数', '确诊数', '较昨日新增', '治愈数', '累计数'],
+            data: ['累计数', '治愈数', '确诊数', '较昨日新增', '死亡数'],
             orient: "vertical",
             top: "15%",
             right: "2%",
@@ -190,28 +212,42 @@ function areaEchartFun(echatrData: any) {
         },
         series: [
             {
-                name: '死亡数',
+                name: '累计数',
                 type: 'bar',
-                stack: 'total',
-                label: {
-                    show: true
-                },
+                // stack: 'total',
+                // label: {
+                //     show: true
+                // },
                 emphasis: {
                     focus: 'series'
                 },
                 itemStyle: {
-                    color: '#ff6a6a'
+                    color: '#f59158'
                 },
-                data: echatrData.deathNum
+                data: echatrData.conNum
             },
-
+            {
+                name: '治愈数',
+                type: 'bar',
+                // stack: 'total',
+                // label: {
+                //     show: true
+                // },
+                emphasis: {
+                    focus: 'series'
+                },
+                itemStyle: {
+                    color: '#48c56b'
+                },
+                data: echatrData.cureNum
+            },
             {
                 name: '确诊数',
                 type: 'bar',
                 stack: 'total',
-                label: {
-                    show: true
-                },
+                // label: {
+                //     show: true
+                // },
                 emphasis: {
                     focus: 'series'
                 },
@@ -224,9 +260,9 @@ function areaEchartFun(echatrData: any) {
                 name: '较昨日新增',
                 type: 'bar',
                 stack: 'total',
-                label: {
-                    show: true
-                },
+                // label: {
+                //     show: true
+                // },
                 emphasis: {
                     focus: 'series'
                 },
@@ -236,40 +272,25 @@ function areaEchartFun(echatrData: any) {
                 data: echatrData.asymptomNum
             },
             {
-                name: '治愈数',
+                name: '死亡数',
                 type: 'bar',
                 stack: 'total',
-                label: {
-                    show: true
-                },
+                // label: {
+                //     show: true
+                // },
                 emphasis: {
                     focus: 'series'
                 },
                 itemStyle: {
-                    color: '#48c56b'
+                    color: '#ff6a6a'
                 },
-                data: echatrData.cureNum
-            },
-            {
-                name: '累计数',
-                type: 'bar',
-                stack: 'total',
-                label: {
-                    show: true
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                itemStyle: {
-                    color: '#f59158'
-                },
-                data: echatrData.conNum
+                data: echatrData.deathNum
             },
         ]
     };
-    (areaEchart) && (areaEchart.dispose());//销毁实例
-    areaEchart = echarts.init(document.getElementsByClassName("rightEchart-div")[0]);
-    option && areaEchart.setOption(option);
+    (proHisEchart) && (proHisEchart.dispose());//销毁实例
+    proHisEchart = echarts.init(document.getElementsByClassName("rightEchart-div")[0]);
+    option && proHisEchart.setOption(option);
 };
 
 //历史图表
@@ -487,7 +508,7 @@ function historyEchartFun(echatrData: any) {
         overflow: auto;
 
         .top-div {
-            height: 55%;
+            height: 340px;
             width: 100%;
             margin: 10px 0px;
             display: flex;
@@ -539,13 +560,11 @@ function historyEchartFun(echatrData: any) {
                 width: 62%;
                 border-radius: 50px;
                 background-color: rgba(0, 0, 0, .8);
-
-                .my-tab {}
             }
         }
 
         .historyEchart-div {
-            height: 40%;
+            height: 250px;
             width: 99%;
             margin: auto;
             border-radius: 50px;
