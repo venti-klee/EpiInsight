@@ -32,8 +32,6 @@
           </div>
           <div class="china-map-div"></div>
         </div>
-
-        <div id="historyLineDiv"></div>
         <div class="histogram-div">
           <div id="diagnosedChart"></div>
           <div id="cureChart"></div>
@@ -42,6 +40,7 @@
           <div id="locIncrProTopChart"></div>
           <div id="jwsrTopChart"></div>
         </div>
+        <div id="historyLineDiv"></div>
       </div>
     </el-drawer>
   </div>

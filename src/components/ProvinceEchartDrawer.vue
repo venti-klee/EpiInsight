@@ -41,7 +41,42 @@
                         </div>
                     </div>
                     <!--右侧图表-->
-                    <div class="rightEchart-div">
+                    <div class="rightEchart-div" v-show="isProHisEchart">
+                    </div>
+                    <div class="rightTab-div" v-show="!isProHisEchart">
+                        <h3 style="height:20px;margin-top: 10px;">{{provinceBaseData.province}}各地数据</h3>
+                        <el-table class="my-tab" :data="provinceData" style="width: 100%;
+                        height:calc(100% - 90px);
+            --el-table-bg-color:rgba(0,0,0,.8);
+            --el-table-tr-bg-color:transparent;
+            --el-table-header-bg-color:#333;
+            --el-table-header-text-color:#fff;
+            --el-table-text-color:#fff;
+            --el-table-row-hover-bg-color:#333;
+            --el-table-border-color:#333;
+            --el-text-color-regular:#fff">
+                            <el-table-column type="index" label="序号" width="100" />
+                            <el-table-column prop="name" label="市/区" />
+                            <el-table-column prop="conNum" label="累计数" sortable />
+                            <el-table-column prop="econNum" label="确诊数" sortable />
+                            <el-table-column prop="deathNum" label="死亡数" sortable />
+                            <el-table-column prop="cureNum" label="治愈数" sortable />
+                            <el-table-column prop="asymptomNum" label="较昨日新增" sortable />
+                        </el-table>
+                    </div>
+                    <div class="rightEchart-btn">
+                        <el-button class="btn" round color="#ff656599" @click="clickEchartBtn">
+                            <el-icon>
+                                <Histogram />
+                            </el-icon>
+                            图表
+                        </el-button>
+                        <el-button class="btn" round color="#ff656599" @click="isProHisEchart = false">
+                            <el-icon>
+                                <List />
+                            </el-icon>
+                            表格
+                        </el-button>
                     </div>
                 </div>
                 <!--历史数据图表-->
@@ -75,6 +110,7 @@ let props = defineProps({
     proHisEchart: any = null,//柱状图表
     historyList: any = ref([]),//省份历史数据
     historyEchart: any = null,//历史图表
+    isProHisEchart = ref(true),//显示柱状图状态
     emits = defineEmits(["close"]);
 
 watch(
@@ -104,7 +140,7 @@ watch(
                 t.asymptomNum = Number(t.asymptomNum);//较昨日新增
             });
             await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
-            await initEchart();//初始化图表
+            initEchart();//初始化图表
         }
     },
 );
@@ -115,34 +151,30 @@ function handleClose() {
     emits("close");
 };
 
+//点击图表按钮
+function clickEchartBtn() {
+    isProHisEchart.value = true;
+    proHisEchartFun();
+}
+
 //初始化图表
-async function initEchart() {
-    let proHisEchartData: any = { cityName: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
-    await provinceData.value.forEach((p: any) => {
-        proHisEchartData.cityName.push(p.name);
-        proHisEchartData.conNum.push(p.conNum);
-        proHisEchartData.econNum.push(p.econNum);
-        proHisEchartData.deathNum.push(p.deathNum);
-        proHisEchartData.cureNum.push(p.cureNum);
-        proHisEchartData.asymptomNum.push(p.asymptomNum);
-    })
-    proHisEchartFun(proHisEchartData);
-    let historyEchartData: any = { time: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
-    let histData = JSON.parse(JSON.stringify(historyList.value));
-    await histData.reverse();
-    await histData.forEach((h: any) => {
-        historyEchartData.time.push(h.ymd);
-        historyEchartData.conNum.push(h.conNum);
-        historyEchartData.econNum.push(h.econNum);
-        historyEchartData.deathNum.push(h.deathNum);
-        historyEchartData.cureNum.push(h.cureNum);
-        historyEchartData.asymptomNum.push(h.asymptomNum);
-    })
-    historyEchartFun(historyEchartData);
+function initEchart() {
+    isProHisEchart.value = true;
+    proHisEchartFun();
+    historyEchartFun();
 };
 
 //柱状图
-function proHisEchartFun(echatrData: any) {
+async function proHisEchartFun() {
+    let echartData: any = { cityName: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
+    await provinceData.value.forEach((p: any) => {
+        echartData.cityName.push(p.name);
+        echartData.conNum.push(p.conNum);
+        echartData.econNum.push(p.econNum);
+        echartData.deathNum.push(p.deathNum);
+        echartData.cureNum.push(p.cureNum);
+        echartData.asymptomNum.push(p.asymptomNum);
+    })
     let option = {
         title: {
             text: provinceBaseData.value.province + "各地数据",
@@ -159,27 +191,20 @@ function proHisEchartFun(echatrData: any) {
             }
         },
         dataZoom: [
-        // {
-        //   show: true,
-        //   start: 94,
-        //   end: 100
-        // },
-        {
-          type: 'inside',
-          // start: 94,
-          // end: 100
-        },
-        {
-          show: true,
-          yAxisIndex: 0,
-          filterMode: 'empty',
-          width: 20,
-          height: '80%',
-          showDataShadow: false,
-          left: '3%',
-          top:"center"
-        }
-      ],
+            {
+                type: 'inside',
+            },
+            {
+                show: true,
+                yAxisIndex: 0,
+                filterMode: 'empty',
+                width: 25,
+                height: '70%',
+                showDataShadow: false,
+                left: '3%',
+                top: "center"
+            }
+        ],
         legend: {
             data: ['累计数', '治愈数', '确诊数', '较昨日新增', '死亡数'],
             orient: "vertical",
@@ -197,7 +222,7 @@ function proHisEchartFun(echatrData: any) {
         },
         xAxis: {
             type: 'category',
-            data: echatrData.cityName,
+            data: echartData.cityName,
             axisLabel: {
                 interval: 0,
                 rotate: 50,
@@ -224,7 +249,7 @@ function proHisEchartFun(echatrData: any) {
                 itemStyle: {
                     color: '#f59158'
                 },
-                data: echatrData.conNum
+                data: echartData.conNum
             },
             {
                 name: '治愈数',
@@ -239,7 +264,7 @@ function proHisEchartFun(echatrData: any) {
                 itemStyle: {
                     color: '#48c56b'
                 },
-                data: echatrData.cureNum
+                data: echartData.cureNum
             },
             {
                 name: '确诊数',
@@ -254,7 +279,7 @@ function proHisEchartFun(echatrData: any) {
                 itemStyle: {
                     color: '#ffd889'
                 },
-                data: echatrData.econNum
+                data: echartData.econNum
             },
             {
                 name: '较昨日新增',
@@ -269,7 +294,7 @@ function proHisEchartFun(echatrData: any) {
                 itemStyle: {
                     color: '#794ebd'
                 },
-                data: echatrData.asymptomNum
+                data: echartData.asymptomNum
             },
             {
                 name: '死亡数',
@@ -284,7 +309,7 @@ function proHisEchartFun(echatrData: any) {
                 itemStyle: {
                     color: '#ff6a6a'
                 },
-                data: echatrData.deathNum
+                data: echartData.deathNum
             },
         ]
     };
@@ -294,7 +319,18 @@ function proHisEchartFun(echatrData: any) {
 };
 
 //历史图表
-function historyEchartFun(echatrData: any) {
+async function historyEchartFun() {
+    let echatrData: any = { time: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
+    let histData = JSON.parse(JSON.stringify(historyList.value));
+    await histData.reverse();
+    await histData.forEach((h: any) => {
+        echatrData.time.push(h.ymd);
+        echatrData.conNum.push(h.conNum);
+        echatrData.econNum.push(h.econNum);
+        echatrData.deathNum.push(h.deathNum);
+        echatrData.cureNum.push(h.cureNum);
+        echatrData.asymptomNum.push(h.asymptomNum);
+    })
     let option = {
         title: {
             text: provinceBaseData.value.province + "历史数据",
@@ -554,12 +590,27 @@ function historyEchartFun(echatrData: any) {
                 }
             }
 
-            .rightEchart-div {
+            .rightEchart-div,
+            .rightTab-div {
+                text-align: center;
                 margin: auto;
                 height: 100%;
                 width: 62%;
                 border-radius: 50px;
                 background-color: rgba(0, 0, 0, .8);
+            }
+
+            .rightEchart-btn {
+                position: absolute;
+                right: 0;
+                z-index: 1000;
+                margin: 10px 5% 0px 0px;
+
+                .btn {
+                    padding: 10px 20px;
+                    border: none;
+                    color: #fff
+                }
             }
         }
 
