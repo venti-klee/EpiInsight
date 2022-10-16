@@ -75,3 +75,10 @@ CSDN文章：https://blog.csdn.net/xi1213/article/details/126824752
 
 ![img](./md_img/6.jpg)
 
+8、省内分析包括该省数据概览、各地详情柱状图数据与表格数据、该省历史数据。
+
+![img](./md_img/8.jpg)
+
+9、可自动获取当前位置，下载当地疫情报告。
+
+![img](./md_img/9.jpg)
