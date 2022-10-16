@@ -33,10 +33,8 @@
           </el-icon>
           省内分析
         </el-button>
-        <el-button class="btn" color="#ff656599" @click="downloadReport" round>
-          <el-icon :size="20" style="margin-right: 10px;">
-            <Download />
-          </el-icon>
+        <el-button class="btn" color="#3f7495" @click="downloadReport" round>
+          <img :src="wordImg">
           下载当地疫情报告
         </el-button>
       </div>
@@ -124,6 +122,7 @@ import SetDrawer from "@/components/SetDrawer.vue";
 import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
 import ProvinceEchartDrawer from "@/components/ProvinceEchartDrawer.vue";
+import wordImg from "@/assets/img/word.png";
 let version: any = ref(PK.version),//系统版本号
   scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
@@ -727,7 +726,10 @@ async function downloadReport() {
 
       .btn {
         border: none;
-        color: #fff
+        color: #fff;
+        img {
+          height: 25px;
+        }
       }
     }
 
