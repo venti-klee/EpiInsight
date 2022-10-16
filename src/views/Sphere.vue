@@ -666,14 +666,35 @@ function provinceAnalyze() {
 }
 
 //下载本地疫情报告
-function downloadReport() {
-  let wordData = {
-    title: "dfvfd",//标题
-    num: "35345",
+async function downloadReport() {
+  let tempData = currentProvinceData.value;//当前省的临时数据
+  let currentDate: any = new Date();//当前时间
+  currentDate = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getDate();
+  let wordData: any = {
+    wordName: "",//文件名
+    currentDate: currentDate,//文件生成时间
+    currentCityData: {},//当前城市数据
+    overviewData: {
+      name: tempData.province,
+      contotal: tempData.contotal,//累计数
+      econNum: tempData.econNum,//现存数
+      curetotal: tempData.curetotal,//治愈数
+      deathtotal: tempData.deathtotal,//死亡数
+      conadd: tempData.conadd,//新增数
+    },
+    tabData: [],//表格数据
     sourceUrl: window.location.href//来源url
   };
-  let cityName = currentProvinceData.value.province;//省名
-  exportWord("docx/input.docx", wordData, cityName + "疫情报告.docx");
+  await tempData.city.forEach((c: any, index: any) => {
+    c.index = index + 1;//添加序号
+    wordData.tabData.push(c);//添加表格数据
+    if (userMsg.value.city.search(c.name) !== -1) {
+      wordData.currentCityData = c;//获取当前数据城市
+      wordData.wordName = c.name;//获取文件名
+    }
+  })
+  // console.log(wordData);
+  exportWord("docx/word.docx", wordData, wordData.wordName + "疫情报告.docx");
 }
 
 </script>
