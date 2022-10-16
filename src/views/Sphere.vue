@@ -105,6 +105,7 @@ import * as echarts from "echarts";
 import PK from "@/../package.json";
 import jsonp from "@/utils/jsonpUtils";
 import jsonp1 from "@/utils/jsonpUtils1";
+import { exportWord } from "@/utils/downloadDoc.js";
 import addNumber from "@/components/addNumber.vue";
 import countryPosition from "@/assets/json/countryPosition.json";
 import { dataSource1, dataSource2 } from "@/api/request";
@@ -666,8 +667,13 @@ function provinceAnalyze() {
 
 //下载本地疫情报告
 function downloadReport() {
-  console.log("downloadReport：", currentProvinceData);//待开发...
-  alert("“下载当地疫情报告”开发中...");
+  let wordData = {
+    title: "dfvfd",//标题
+    num: "35345",
+    sourceUrl: window.location.href//来源url
+  };
+  let cityName = currentProvinceData.value.province;//省名
+  exportWord("docx/input.docx", wordData, cityName + "疫情报告.docx");
 }
 
 </script>
