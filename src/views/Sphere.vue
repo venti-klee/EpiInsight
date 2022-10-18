@@ -666,9 +666,10 @@ function provinceAnalyze() {
 
 //下载本地疫情报告
 async function downloadReport() {
-  let tempData = currentProvinceData.value;//当前省的临时数据
-  let currentDate: any = new Date();//当前时间
-  currentDate = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getDate();
+  isLoading.value = true;
+  let tempData: any = {};//当前省的临时数据
+  await (tempData = JSON.parse(JSON.stringify(currentProvinceData.value)));
+  let currentDate: any = currentProvinceData.value.cachetime.split(" ")[0];//当前时间
   let wordData: any = {
     wordName: "",//文件名
     currentDate: currentDate,//文件生成时间
@@ -692,8 +693,9 @@ async function downloadReport() {
       wordData.wordName = c.name;//获取文件名
     }
   })
+  isLoading.value = false;
   // console.log(wordData);
-  exportWord("docx/word.docx", wordData, wordData.wordName + "疫情报告.docx");
+  await exportWord("docx/word.docx", wordData, wordData.wordName + "疫情报告.docx");
 }
 
 </script>
@@ -727,6 +729,7 @@ async function downloadReport() {
       .btn {
         border: none;
         color: #fff;
+
         img {
           height: 25px;
         }
