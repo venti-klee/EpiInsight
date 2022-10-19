@@ -710,6 +710,7 @@ async function downloadReport() {
   let currentDate: any = currentProvinceData.value.cachetime.split(" ")[0];//当前时间
   let wordData: any = {
     wordName: "",//文件名
+    hasCityData: true,//是否有当前城市
     currentDate: currentDate,//文件生成时间
     version: version.value,//系统版本
     currentCityData: {},//当前城市数据
@@ -728,6 +729,7 @@ async function downloadReport() {
     c.index = index + 1;//添加序号
     wordData.tabData.push(c);//添加表格数据
     if (userMsg.value.city.search(c.name) !== -1) {
+      wordData.hasCityData = true;
       wordData.currentCityData = c;//获取当前数据城市
       wordData.wordName = c.name;//获取文件名
     }
@@ -735,6 +737,7 @@ async function downloadReport() {
   isLoading.value = false;
   //城市名未找到时将省名添加到文件名中
   if (!wordData.wordName) {
+    wordData.hasCityData = false;
     wordData.wordName = wordData.overviewData.name;
   }
   // console.log(wordData);
