@@ -177,7 +177,7 @@ watch(
 function judgeDevice() {
   let isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
   if (isMobile) {
-    ElMessageBox.alert('当前项目暂时未适配手机端！', {
+    ElMessageBox.alert('当前项目暂未适配移动端！', {
       confirmButtonText: 'OK',
     })
   } else {
@@ -712,6 +712,10 @@ async function downloadReport() {
     }
   })
   isLoading.value = false;
+  //城市名未找到时将省名添加到文件名中
+  if (!wordData.wordName) {
+    wordData.wordName = wordData.overviewData.name;
+  }
   // console.log(wordData);
   await exportWord("docx/word.docx", wordData, wordData.wordName + "疫情报告.docx");
 }
