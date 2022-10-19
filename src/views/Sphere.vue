@@ -36,7 +36,7 @@
           </el-icon>
           省内分析
         </el-button>
-        <el-button class="btn" color="#3f7495" @click="downloadReport" round>
+        <el-button class="btn" color="#3f7495" @click="sureDownloadReport" round>
           <img :src="wordImg">
           下载当地疫情报告
         </el-button>
@@ -126,7 +126,7 @@ import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
 import ProvinceEchartDrawer from "@/components/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 let version: any = ref(PK.version),//系统版本号
   mobileDiv: any = ref(true),//手机端遮罩
   scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
@@ -178,7 +178,7 @@ function judgeDevice() {
   let isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
   if (isMobile) {
     ElMessageBox.alert('当前项目暂未适配移动端！', {
-      confirmButtonText: 'OK',
+      confirmButtonText: '确定',
     })
   } else {
     mobileDiv.value = false;//关闭手机端遮罩
@@ -682,6 +682,26 @@ function provinceAnalyze() {
   isProvinceEchartDrawer.value = true;
 }
 
+//确认下载报告
+function sureDownloadReport() {
+  ElMessageBox.confirm(
+    '确认下载当地疫情报告？',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    }
+  )
+    .then(() => {
+      downloadReport();//下载报告
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '已取消下载！',
+      })
+    })
+};
+
 //下载本地疫情报告
 async function downloadReport() {
   isLoading.value = true;
@@ -691,6 +711,7 @@ async function downloadReport() {
   let wordData: any = {
     wordName: "",//文件名
     currentDate: currentDate,//文件生成时间
+    version: version.value,//系统版本
     currentCityData: {},//当前城市数据
     overviewData: {
       name: tempData.province,
@@ -718,6 +739,10 @@ async function downloadReport() {
   }
   // console.log(wordData);
   await exportWord("docx/word.docx", wordData, wordData.wordName + "疫情报告.docx");
+  ElMessage({
+    type: 'success',
+    message: '报告下载成功！',
+  })
 }
 
 </script>
