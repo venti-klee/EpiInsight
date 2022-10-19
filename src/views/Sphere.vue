@@ -2,6 +2,9 @@
 <template>
   <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.8)"
     element-loading-text="数据加载中...">
+    <div class="isMobile-div" v-if="mobileDiv">
+      <!--手机端遮罩-->
+    </div>
     <!--顶部标题-->
     <div class="top-div">
       <div class="name-div">
@@ -123,7 +126,9 @@ import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
 import ProvinceEchartDrawer from "@/components/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
+import { ElMessageBox } from 'element-plus'
 let version: any = ref(PK.version),//系统版本号
+  mobileDiv: any = ref(true),//手机端遮罩
   scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
   camera: any = null, //相机
   dom: any = null, //需要使用canvas的dom
@@ -155,7 +160,7 @@ let version: any = ref(PK.version),//系统版本号
   isProvinceEchartDrawer = ref(false);//省内图表对话框
 
 onMounted(() => {
-  getCOVID19Data(); //获取疫情数据
+  judgeDevice();//判断设备
 })
 
 //当allData数据获取完成后开始获取用户ip信息
@@ -167,6 +172,19 @@ watch(
     }
   }
 )
+
+//判断设备
+function judgeDevice() {
+  let isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+  if (isMobile) {
+    ElMessageBox.alert('当前项目暂时未适配手机端！', {
+      confirmButtonText: 'OK',
+    })
+  } else {
+    mobileDiv.value = false;//关闭手机端遮罩
+    getCOVID19Data(); //获取疫情数据
+  }
+};
 
 //设置切换
 function changeSetData(type: string, setData: any) {
@@ -704,6 +722,16 @@ async function downloadReport() {
   user-select: none;
   height: 100%;
   width: 100%;
+
+  .isMobile-div {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    top: 0px;
+    right: 0px;
+    z-index: 1000;
+    background-color: #000;
+  }
 
   .top-div {
     width: 100%;
