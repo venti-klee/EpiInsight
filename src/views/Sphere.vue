@@ -177,9 +177,7 @@ watch(
 function judgeDevice() {
   let isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
   if (isMobile) {
-    ElMessageBox.alert('当前项目暂未适配移动端！', {
-      confirmButtonText: '确定',
-    })
+    alert("当前项目暂未适配移动端，请在pc端打开！");
   } else {
     mobileDiv.value = false;//关闭手机端遮罩
     getCOVID19Data(); //获取疫情数据
