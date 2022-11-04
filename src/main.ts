@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import ElementPlus from 'element-plus'
+import dataV from '@jiaminghi/data-view'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'//添加elementplus图标
 
@@ -10,6 +11,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)//每一个组件都添加图标
 }
 app.use(ElementPlus)
+app.use(dataV)
 app.use(router)
 app.mount('#app')
 

@@ -7,6 +7,7 @@ declare module '*.vue' {
 declare module 'three'//防止import导入报错
 declare module 'three/examples/jsm/controls/OrbitControls'
 declare module 'echarts'
+declare module '@jiaminghi/data-view'
 declare module 'file-saver'
 declare module "*.png"
 declare module "*.jpg"

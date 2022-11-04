@@ -2,13 +2,14 @@
 <template>
   <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.8)"
     element-loading-text="数据加载中...">
-    <div class="isMobile-div" v-if="mobileDiv">
+    <div class="isMobile-div" v-if="mobileDiv">D
       <!--手机端遮罩-->
     </div>
     <!--顶部标题-->
+    <!-- <dv-border-box-11 title="dv-border-box-11">dv-border-box-11</dv-border-box-11> -->
     <div class="top-div">
       <div class="name-div">
-        <h2>疫情可视化</h2>v{{version}}
+        <h2>疫情可视化</h2>v{{ version }}
         <h4>(截止{{ allData.mtime }})</h4>
       </div>
       <div class="btn-div">
@@ -55,7 +56,7 @@
 
     <!--全球柱状图-->
     <div class="sphereDataDiv">
-      <p>累计确诊前{{sliceNum}}国家</p>
+      <p>累计确诊前{{ sliceNum }}国家</p>
       <div class="histogramDivDiv">
         <div id="histogramDiv"></div>
       </div>
@@ -66,17 +67,17 @@
       <div class="addconDiv">
         <div class="tit">全球现存确诊</div>
         <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
-        <div class="day-tit">今日{{othertotal.certain_inc}}</div>
+        <div class="day-tit">今日{{ othertotal.certain_inc }}</div>
       </div>
       <div class="addcureDiv">
         <div class="tit">全球累计治愈</div>
         <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
-        <div class="day-tit">今日{{othertotal.recure_inc}}</div>
+        <div class="day-tit">今日{{ othertotal.recure_inc }}</div>
       </div>
       <div class="addDieDiv">
         <div class="tit">全球累计死亡</div>
         <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
-        <div class="day-tit">今日{{othertotal.die_inc}}</div>
+        <div class="day-tit">今日{{ othertotal.die_inc }}</div>
       </div>
     </div>
 
