@@ -823,9 +823,9 @@ async function downloadReport() {
     pointer-events: none;
     position: absolute;
     z-index: 5;
-    height: 86vh;
+    height: 74vh;
     width: 300px;
-    margin: 7vh 0px 0px 20px;
+    margin: 13vh 0px 0px 20px;
 
     p {
       font-size: 20px;
@@ -852,7 +852,8 @@ async function downloadReport() {
     bottom: 0px;
     z-index: 5;
     margin: 0px 0px 15px 20px;
-    i{
+
+    i {
       color: #fff;
     }
 
@@ -868,22 +869,20 @@ async function downloadReport() {
     right: 20px;
     z-index: 5;
     width: auto;
-    height: auto;
-    margin: 12vh 0px 0px 0px;
+    height: 74vh;
+    margin: 13vh 0px 0px 0px;
     display: flex;
-    flex-direction: column;
     padding-left: 20px;
 
     .addconDiv,
     .addcureDiv,
     .addDieDiv {
-      align-items: center;
+      height: 31%;
       margin: auto 0px;
       text-align: center;
       color: #fff;
       font-weight: 900;
-      padding: 6vh 20px;
-      background-color: rgb(197, 178, 255,.2);
+      background-color: rgb(197, 178, 255, .2);
 
       .tit {
         font-size: 20px;
@@ -902,9 +901,14 @@ async function downloadReport() {
 
     .addconDiv {
       border-top-left-radius: 30px;
+      display: flex;
+      flex-direction: column;
+      padding-top: 5vh;
+
       .tit,
       .day-tit,
       .certain-div {
+        margin: 5px 20px;
         padding-right: 10px;
         color: #ffd889;
       }
@@ -912,18 +916,25 @@ async function downloadReport() {
 
     .addDieDiv {
       border-bottom-left-radius: 30px;
+      display: flex;
+      flex-direction: column;
+
       .tit,
       .day-tit,
       .addDie-div {
+        margin: 5px 20px;
         padding-right: 10px;
         color: #ff6a6a;
       }
     }
 
     .addcureDiv {
+      display: flex;
+      flex-direction: column;
       .tit,
       .day-tit,
       .addcure-div {
+        margin: 5px 20px;
         padding-right: 10px;
         color: #66f68f;
       }
