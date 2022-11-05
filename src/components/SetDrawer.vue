@@ -2,7 +2,7 @@
 <template>
     <div class="set-drawer">
         <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='300px'>
-            <div class="drawer-div" style="--el-text-color-regular:#fff">
+            <dv-border-box-6 :color="dvColor" class="drawer-div" style="--el-text-color-regular:#fff">
                 <h2>球体设置</h2>
                 <el-form>
                     <el-form-item label="昼夜切换：">
@@ -42,7 +42,7 @@
                         重置
                     </el-button>
                 </div>
-            </div>
+            </dv-border-box-6>
         </el-drawer>
     </div>
 
@@ -53,16 +53,17 @@ import { ref, computed, watch, onMounted } from 'vue';
 let props = defineProps({
     isDrawer: Boolean,//抽屉状态
 }),
-setData = ref({
-    isDay: false,//是否白天
-    isDrag: true,//拖拽
-    isZoom: true,//缩放
-    isTag: true,//标签
-    autoRotate: true,//自动旋转
-    rotateSpeed: 50,//旋转速度
-}),
-isDrawer = ref(false),
-emits = defineEmits(["close", "changeSetData"]);
+    setData = ref({
+        isDay: false,//是否白天
+        isDrag: true,//拖拽
+        isZoom: true,//缩放
+        isTag: true,//标签
+        autoRotate: true,//自动旋转
+        rotateSpeed: 50,//旋转速度
+    }),
+    isDrawer = ref(false),
+    emits = defineEmits(["close", "changeSetData"]),
+    dvColor: any = ["#ff4f4f", "#ffc3c3"];
 
 //监听props值变化改变isDrawer
 watch(
@@ -87,10 +88,16 @@ function refreshPage() {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-drawer__body {
+    padding: 0px;
+}
+
 .set-drawer {
     --el-bg-color: rgba(0, 0, 0, .8);
+    padding: 0px;
 
     .drawer-div {
+        padding: 20px 40px;
         color: #fff;
         font-size: 15px;
         font-weight: 900;
