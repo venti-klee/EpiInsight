@@ -1,51 +1,35 @@
 <!--疫情球体-->
 <template>
-  <div class="container" v-loading="isLoading" element-loading-background="rgba(255, 255, 255, 0.8)"
-    element-loading-text="数据加载中...">
-    <div class="isMobile-div" v-if="mobileDiv">D
+  <dv-border-box-1 class="container" :color="dvColor" v-loading="isLoading"
+    element-loading-background="rgba(255, 255, 255, 0.8)" element-loading-text="数据加载中...">
+    <div class="isMobile-div" v-if="mobileDiv">
       <!--手机端遮罩-->
     </div>
+
     <!--顶部标题-->
-    <!-- <dv-border-box-11 title="dv-border-box-11">dv-border-box-11</dv-border-box-11> -->
-    <div class="top-div">
+    <div :color="dvColor" class="top-div">
       <div class="name-div">
-        <h2>疫情可视化</h2>v{{ version }}
-        <h4>(截止{{ allData.mtime }})</h4>
+        <dv-decoration-3 class="name-dv" :color="dvColor" />
+        <dv-decoration-11 class="sys-name" :color="dvColor">
+          疫情可视化
+        </dv-decoration-11>
+        <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
       </div>
-      <div class="btn-div">
-        <el-button class="btn" color="#ff656599" @click="isSphere = true" round>
-          <el-icon :size="20" style="margin-right: 10px;">
-            <List />
-          </el-icon>
-          全球数据
-        </el-button>
-        <el-button class="btn" color="#ff656599" @click="isChina = true" round>
-          <el-icon :size="20" style="margin-right:10px;">
-            <List />
-          </el-icon>
-          国内数据
-        </el-button>
-        <el-button class="btn" color="#ff656599" @click="isEchart = true;" round>
-          <el-icon :size="20" style="margin-right: 10px;">
-            <TrendCharts />
-          </el-icon>
-          国内分析
-        </el-button>
-        <el-button class="btn" color="#ff656599" @click="provinceAnalyze" round>
-          <el-icon :size="20" style="margin-right: 10px;">
-            <TrendCharts />
-          </el-icon>
-          省内分析
-        </el-button>
-        <el-button class="btn" color="#3f7495" @click="sureDownloadReport" round>
-          <img :src="wordImg">
-          下载当地疫情报告
-        </el-button>
-      </div>
+      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:40px;margin-top: -10px;" />
+      <dv-decoration-7 class="sys-msg" :color="dvColor">v{{ version }}(截止{{ allData.mtime }})</dv-decoration-7>
     </div>
 
     <!--球体盒子-->
     <div id="sphereDiv"></div>
+
+    <!--全球柱状图-->
+    <dv-border-box-4 :reverse="true" :color="dvColor" class="sphereDataDiv">
+      <p>累计确诊前{{ sliceNum }}国家</p>
+      <dv-decoration-6 :color="dvColor" style="width:80%;height:20px;margin: -20px 0px 0px 10%" />
+      <div class="histogramDivDiv">
+        <div id="histogramDiv"></div>
+      </div>
+    </dv-border-box-4>
 
     <!--设置按钮-->
     <div class="set-div">
@@ -54,32 +38,57 @@
       </el-icon>
     </div>
 
-    <!--全球柱状图-->
-    <div class="sphereDataDiv">
-      <p>累计确诊前{{ sliceNum }}国家</p>
-      <div class="histogramDivDiv">
-        <div id="histogramDiv"></div>
-      </div>
-    </div>
-
     <!--数字盒子-->
-    <div class="numDiv">
-      <div class="addconDiv">
+    <dv-border-box-4 :color="dvColor" class="numDiv">
+      <div class="addconDiv" :color="dvColor">
         <div class="tit">全球现存确诊</div>
         <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.certain_inc }}</div>
       </div>
-      <div class="addcureDiv">
+      <div class="addcureDiv" :color="dvColor">
         <div class="tit">全球累计治愈</div>
         <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.recure_inc }}</div>
       </div>
-      <div class="addDieDiv">
+      <div class="addDieDiv" :color="dvColor">
         <div class="tit">全球累计死亡</div>
         <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.die_inc }}</div>
       </div>
-    </div>
+    </dv-border-box-4>
+
+    <dv-decoration-1 class="btn-dv1" :reverse="true" :color="dvColor" />
+    <dv-border-box-7 :color="dvColor" class="btn-div">
+      <el-button class="btn" color="#ff656599" @click="isSphere = true" round>
+        <el-icon :size="20" style="margin-right: 10px;">
+          <List />
+        </el-icon>
+        全球数据
+      </el-button>
+      <el-button class="btn" color="#ff656599" @click="isChina = true" round>
+        <el-icon :size="20" style="margin-right:10px;">
+          <List />
+        </el-icon>
+        国内数据
+      </el-button>
+      <el-button class="btn" color="#ff656599" @click="isEchart = true;" round>
+        <el-icon :size="20" style="margin-right: 10px;">
+          <TrendCharts />
+        </el-icon>
+        国内分析
+      </el-button>
+      <el-button class="btn" color="#ff656599" @click="provinceAnalyze" round>
+        <el-icon :size="20" style="margin-right: 10px;">
+          <TrendCharts />
+        </el-icon>
+        省内分析
+      </el-button>
+      <el-button class="btn" color="#3f7495" @click="sureDownloadReport" round>
+        <img :src="wordImg">
+        下载当地疫情报告
+      </el-button>
+    </dv-border-box-7>
+    <dv-decoration-1 class="btn-dv2" :color="dvColor" />
 
     <div class="components">
       <!--点的标签-->
@@ -97,7 +106,7 @@
       <ProvinceEchartDrawer :isProvinceEchartDrawer="isProvinceEchartDrawer" @close="isProvinceEchartDrawer = false"
         :currentProvinceData="currentProvinceData" />
     </div>
-  </div>
+  </dv-border-box-1>
 </template>
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue';
@@ -158,7 +167,8 @@ let version: any = ref(PK.version),//系统版本号
   addDie = ref(0),//全球死亡数
   userMsg: any = ref({}),//使用者信息
   currentProvinceData: any = ref({}),//当前省数据
-  isProvinceEchartDrawer = ref(false);//省内图表对话框
+  isProvinceEchartDrawer = ref(false),//省内图表对话框
+  dvColor: any = ["#ff4f4f", "#ffc3c3"];
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -684,7 +694,7 @@ function provinceAnalyze() {
 //确认下载报告
 function sureDownloadReport() {
   ElMessageBox.confirm(
-    '确认下载当地疫情报告？',
+    '确认生成下载当地疫情报告？',
     {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -750,9 +760,12 @@ async function downloadReport() {
 </script>
 <style scoped lang='scss'>
 .container {
-  user-select: none;
   height: 100%;
   width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
 
   .isMobile-div {
     position: absolute;
@@ -760,65 +773,69 @@ async function downloadReport() {
     width: 100vw;
     top: 0px;
     right: 0px;
-    z-index: 1000;
+    z-index: 30;
     background-color: #000;
   }
 
   .top-div {
+    pointer-events: none;
     width: 100%;
-    height: 50px;
     position: absolute;
-    background-color: rgba(255, 255, 255, .2);
-    display: flex;
-    justify-content: space-between;
+    right: 0;
+    z-index: 5;
 
     .name-div {
-      margin-left: 10px;
+      display: flex;
+      justify-content: center;
 
-      h2,
-      h4 {
-        display: inline-block;
-        margin: 10px 5px;
+      .name-dv {
+        width: 20vw;
+        height: 40px;
+      }
+
+      .sys-name {
+        height: 60px;
+        width: 250px;
+        font-size: 25px;
+        font-weight: 900;
+        margin: 0px 15vh;
       }
     }
 
-    .btn-div {
-      margin: 10px;
-
-      .btn {
-        border: none;
-        color: #fff;
-
-        img {
-          height: 25px;
-        }
-      }
+    .sys-msg {
+      height: 100%;
+      font-weight: 900;
+      margin: 0px auto;
     }
-
   }
 
   #sphereDiv {
-    height: 100%;
-    width: 100%;
+    position: absolute;
+    top: 15px;
+    margin: 0px 1%;
+    height: calc(100% - 25px);
+    width: 98%;
     cursor: move;
   }
 
   .sphereDataDiv {
+    text-align: center;
     pointer-events: none;
     position: absolute;
-    top: 50px;
-    left: 0px;
-    height: calc(100vh - 150px);
+    z-index: 5;
+    height: 86vh;
     width: 300px;
-    text-align: center;
+    margin: 7vh 0px 0px 20px;
 
     p {
       font-size: 20px;
       font-weight: 900;
+      margin-top: 10px;
+      margin-bottom: 30px;
     }
 
     .histogramDivDiv {
-      height: calc(100% - 50px);
+      height: calc(100% - 100px);
       width: 100%;
       overflow: auto;
       pointer-events: auto;
@@ -828,29 +845,43 @@ async function downloadReport() {
         width: 100%;
       }
     }
+  }
 
+  .set-div {
+    position: absolute;
+    bottom: 0px;
+    z-index: 5;
+    margin: 0px 0px 15px 20px;
+
+    i:hover {
+      cursor: pointer;
+      color: #fff;
+    }
   }
 
   .numDiv {
-    position: absolute;
-    top: 50px;
-    right: 0px;
     pointer-events: none;
-    height: calc(100% - 50px);
+    position: absolute;
+    right: 20px;
+    z-index: 5;
+    width: auto;
+    height: 80vh;
+    margin: 10vh 0px 0px 0px;
     display: flex;
     flex-direction: column;
+    padding-left: 20px;
 
     .addconDiv,
     .addcureDiv,
     .addDieDiv {
-      background-color: rgba(255, 255, 255, .1);
+      align-items: center;
+      height: 28%;
       margin: auto 0px;
       text-align: right;
       color: #fff;
       font-weight: 900;
-      padding: 10px 30px;
-      border-bottom-left-radius: 100px;
-      border-top-left-radius: 100px;
+      padding: 15px 20px;
+      background-color: rgba(255, 196, 196, 0.2);
 
       .tit {
         font-size: 20px;
@@ -859,7 +890,7 @@ async function downloadReport() {
       .certain-div,
       .addDie-div,
       .addcure-div {
-        font-size: 45px;
+        font-size: 30px;
       }
 
       .day-tit {
@@ -868,44 +899,72 @@ async function downloadReport() {
     }
 
     .addconDiv {
-      background-color: rgb(255, 216, 137, .2);
-
       .tit,
       .day-tit,
       .certain-div {
+        border-right: 10px solid #ffd889;
+        padding-right: 10px;
         color: #ffd889;
       }
     }
 
     .addDieDiv {
-      background-color: rgb(255, 106, 106, .2);
-
       .tit,
       .day-tit,
       .addDie-div {
+        border-right: 10px solid #ff6a6a;
+        padding-right: 10px;
         color: #ff6a6a;
       }
     }
 
     .addcureDiv {
-      background-color: rgb(102, 246, 143, .2);
-
       .tit,
       .day-tit,
       .addcure-div {
+        border-right: 10px solid #66f68f;
+        padding-right: 10px;
         color: #66f68f;
       }
     }
   }
 
-  .set-div {
+  .btn-dv1 {
+    pointer-events: none;
+    width: 15vw;
+    height: 30px;
     position: absolute;
-    bottom: 0px;
-    margin: 0px 0px 20px 20px;
+    bottom: 10px;
+    left: 10vw;
+  }
 
-    i:hover {
-      cursor: pointer;
+  .btn-dv2 {
+    pointer-events: none;
+    width: 15vw;
+    height: 30px;
+    position: absolute;
+    bottom: 10px;
+    right: 10vw;
+  }
+
+  .btn-div {
+    position: absolute;
+    bottom: 10px;
+    z-index: 5;
+    width: 50%;
+    height: auto;
+    display: flex;
+    text-align: center;
+    margin: 0px 25%;
+
+    .btn {
       color: #fff;
+      margin: 10px;
+
+      img {
+        height: 30px;
+        width: 30px;
+      }
     }
   }
 
