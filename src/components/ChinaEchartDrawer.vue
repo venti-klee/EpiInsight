@@ -17,17 +17,17 @@
             <div class="addconDiv">
               <p>国内确诊数</p>
               <addNumber class="amNum" :value="addcon" :time="10" :thousandSign="true" />
-              <p class="add-p">今日{{daily.addcon_new}}</p>
+              <p class="add-p">今日{{ daily.addcon_new }}</p>
             </div>
             <div class="addcureDiv">
               <p>国内治愈数</p>
               <addNumber class="amNum" :value="addcure" :time="10" :thousandSign="true" />
-              <p class="add-p">今日{{daily.addcure_new}}</p>
+              <p class="add-p">今日{{ daily.addcure_new }}</p>
             </div>
             <div class="addDieDiv">
               <p>国内死亡数</p>
               <addNumber class="amNum" :value="addDie" :time="10" :thousandSign="true" />
-              <p class="add-p">今日{{daily.adddeath_new}}</p>
+              <p class="add-p">今日{{ daily.adddeath_new }}</p>
             </div>
           </div>
           <div class="china-map-div"></div>
@@ -175,6 +175,10 @@ watch(
     if (val) {
       (isEchart.value = val);
       initChart();//初始化图表
+    } else {
+      addcon.value = 0;
+      addDie.value = 0;
+      addcure.value = 0;
     }
   },
 )

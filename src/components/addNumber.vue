@@ -1,5 +1,5 @@
 <template>
-    <span class="num-span" :data-time="time" :data-value="value">{{addNum}}</span>
+    <span class="num-span" :data-time="time" :data-value="value">{{ addNum }}</span>
 </template>
 
 <script lang='ts' setup>
@@ -27,6 +27,8 @@ let props = defineProps({
 watch(
     () => props.value,
     () => {
+        oldValue.value = 0;
+        addNum.value = 0;//响应式的数值
         startAnimation();//值改变时开始动画
     })
 

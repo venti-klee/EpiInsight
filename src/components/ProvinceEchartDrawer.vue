@@ -141,6 +141,12 @@ watch(
             });
             await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
             initEchart();//初始化图表
+        }else{
+            provinceBaseData.value.contotal = 0;
+            provinceBaseData.value.econNum = 0;
+            provinceBaseData.value.curetotal = 0;
+            provinceBaseData.value.asymptomtotal = 0;
+            provinceBaseData.value.deathtotal = 0;
         }
     },
 );
