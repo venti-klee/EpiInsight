@@ -1,7 +1,7 @@
 <!--设置抽屉-->
 <template>
     <div class="set-drawer">
-        <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='300px'>
+        <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='400px'>
             <dv-border-box-6 :color="dvColor" class="drawer-div" style="--el-text-color-regular:#fff">
                 <h2>球体设置</h2>
                 <el-form>
@@ -63,7 +63,7 @@ let props = defineProps({
     }),
     isDrawer = ref(false),
     emits = defineEmits(["close", "changeSetData"]),
-    dvColor: any = ["#ff4f4f", "#ffc3c3"];
+    dvColor: any = ["#7b52f7", "#c5b2ff"];
 
 //监听props值变化改变isDrawer
 watch(

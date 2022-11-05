@@ -40,17 +40,17 @@
 
     <!--数字盒子-->
     <dv-border-box-4 :color="dvColor" class="numDiv">
-      <div class="addconDiv" :color="dvColor">
+      <div class="addconDiv">
         <div class="tit">全球现存确诊</div>
         <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.certain_inc }}</div>
       </div>
-      <div class="addcureDiv" :color="dvColor">
+      <div class="addcureDiv">
         <div class="tit">全球累计治愈</div>
         <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.recure_inc }}</div>
       </div>
-      <div class="addDieDiv" :color="dvColor">
+      <div class="addDieDiv">
         <div class="tit">全球累计死亡</div>
         <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.die_inc }}</div>
@@ -59,31 +59,31 @@
 
     <dv-decoration-1 class="btn-dv1" :reverse="true" :color="dvColor" />
     <dv-border-box-7 :color="dvColor" class="btn-div">
-      <el-button class="btn" color="#ff656599" @click="isSphere = true" round>
+      <el-button class="btn" color="#7b52f799" @click="isSphere = true" round>
         <el-icon :size="20" style="margin-right: 10px;">
           <List />
         </el-icon>
         全球数据
       </el-button>
-      <el-button class="btn" color="#ff656599" @click="isChina = true" round>
+      <el-button class="btn" color="#7b52f799" @click="isChina = true" round>
         <el-icon :size="20" style="margin-right:10px;">
           <List />
         </el-icon>
         国内数据
       </el-button>
-      <el-button class="btn" color="#ff656599" @click="isEchart = true;" round>
+      <el-button class="btn" color="#7b52f799" @click="isEchart = true;" round>
         <el-icon :size="20" style="margin-right: 10px;">
           <TrendCharts />
         </el-icon>
         国内分析
       </el-button>
-      <el-button class="btn" color="#ff656599" @click="provinceAnalyze" round>
+      <el-button class="btn" color="#7b52f799" @click="provinceAnalyze" round>
         <el-icon :size="20" style="margin-right: 10px;">
           <TrendCharts />
         </el-icon>
         省内分析
       </el-button>
-      <el-button class="btn" color="#3f7495" @click="sureDownloadReport" round>
+      <el-button class="btn" color="#409eff99" @click="sureDownloadReport" round>
         <img :src="wordImg">
         下载当地疫情报告
       </el-button>
@@ -168,7 +168,7 @@ let version: any = ref(PK.version),//系统版本号
   userMsg: any = ref({}),//使用者信息
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
-  dvColor: any = ["#ff4f4f", "#ffc3c3"];
+  dvColor: any = ["#7b52f7", "#c5b2ff"];
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -621,10 +621,10 @@ function histogramChartFun(list: any) {
         type: "bar",
         showBackground: true,
         backgroundStyle: {
-          color: "rgba(255, 185, 185,.1)",
+          color: "rgb(197, 178, 255,.2)",
         },
         itemStyle: {
-          color: "#ff6a6a",
+          color: "#7b52f7",
         },
         label: {
           color: "#fff",
@@ -798,7 +798,7 @@ async function downloadReport() {
         width: 250px;
         font-size: 25px;
         font-weight: 900;
-        margin: 0px 15vh;
+        margin: 0px 10vw;
       }
     }
 
@@ -852,10 +852,13 @@ async function downloadReport() {
     bottom: 0px;
     z-index: 5;
     margin: 0px 0px 15px 20px;
+    i{
+      color: #fff;
+    }
 
     i:hover {
       cursor: pointer;
-      color: #fff;
+      color: #7b52f7;
     }
   }
 
@@ -865,8 +868,8 @@ async function downloadReport() {
     right: 20px;
     z-index: 5;
     width: auto;
-    height: 80vh;
-    margin: 10vh 0px 0px 0px;
+    height: auto;
+    margin: 12vh 0px 0px 0px;
     display: flex;
     flex-direction: column;
     padding-left: 20px;
@@ -875,13 +878,12 @@ async function downloadReport() {
     .addcureDiv,
     .addDieDiv {
       align-items: center;
-      height: 28%;
       margin: auto 0px;
-      text-align: right;
+      text-align: center;
       color: #fff;
       font-weight: 900;
-      padding: 15px 20px;
-      background-color: rgba(255, 196, 196, 0.2);
+      padding: 6vh 20px;
+      background-color: rgb(197, 178, 255,.2);
 
       .tit {
         font-size: 20px;
@@ -899,20 +901,20 @@ async function downloadReport() {
     }
 
     .addconDiv {
+      border-top-left-radius: 30px;
       .tit,
       .day-tit,
       .certain-div {
-        border-right: 10px solid #ffd889;
         padding-right: 10px;
         color: #ffd889;
       }
     }
 
     .addDieDiv {
+      border-bottom-left-radius: 30px;
       .tit,
       .day-tit,
       .addDie-div {
-        border-right: 10px solid #ff6a6a;
         padding-right: 10px;
         color: #ff6a6a;
       }
@@ -922,7 +924,6 @@ async function downloadReport() {
       .tit,
       .day-tit,
       .addcure-div {
-        border-right: 10px solid #66f68f;
         padding-right: 10px;
         color: #66f68f;
       }
