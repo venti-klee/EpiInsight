@@ -6,7 +6,7 @@
                 <div class="top-left">
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
-                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 50px;"/>
+                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 0px;"/>
                     </div>
                     <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn('province','','')">
                         <img :src=xlsxImg />

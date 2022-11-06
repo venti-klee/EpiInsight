@@ -213,7 +213,7 @@ function changeSetData(type: string, setData: any) {
   (type == "isZoom") && (orbitControls.enableZoom = setData.value.isZoom);//鼠标缩放
   (type == "isTag") && (isTag = setData.value.isTag);//标签显示
   (type == "autoRotate") && (orbitControls.autoRotate = setData.value.autoRotate);//自转切换
-  (type == "rotateSpeed") && (orbitControls.autoRotateSpeed = setData.value.rotateSpeed / 50)//自转速度
+  (type == "rotateSpeed") && (orbitControls.autoRotateSpeed = setData.value.rotateSpeed / 10)//自转速度
 };
 
 //销毁场景
