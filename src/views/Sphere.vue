@@ -58,6 +58,7 @@
       </div>
     </dv-border-box-4>
 
+    <!--底部按钮-->
     <dv-decoration-1 class="btn-dv1" :reverse="true" :color="dvColor" />
     <dv-border-box-10 :color="dvColor" class="btn-div">
       <el-button class="btn" :color=dvColor[0] @click="isSphere = true">
@@ -86,7 +87,7 @@
       </el-button>
       <el-button class="btn" :color=dvColor[0] @click="sureDownloadReport">
         <img :src="wordImg">
-        下载当地疫情报告
+        生成报告
       </el-button>
     </dv-border-box-10>
     <dv-decoration-1 class="btn-dv2" :color="dvColor" />
@@ -217,6 +218,7 @@ function changeSetData(type: string, setData: any) {
 
 //销毁场景
 function destroyScene() {
+  earthGroup.translateY(8);//还原球体组的平移
   clearGroup(earthGroup);//清除组
   cancelAnimationFrame(anId.value); //根据动画id停止动画渲染
   renderer.forceContextLoss(); //强制失去上下文
@@ -355,7 +357,7 @@ function init(data: any) {
   let height = dom.clientHeight;
   scene = new THREE.Scene(); //场景场景
   camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000); //创建透视相机(视场、长宽比、近面、远面)
-  camera.position.set(0, 150, 320); //设置相机位置
+  camera.position.set(0, 0, 325); //设置相机位置
   camera.lookAt(0, 0, 0);
   //创建渲染器
   renderer = new THREE.WebGLRenderer({
@@ -460,32 +462,33 @@ function createLight() {
 };
 
 //创建球体
-function createSphere(data: any) {
-  //判断需要创建的球体类型
-  if (isDay == "spot") {
-    createSpotSphere();//创建斑点球体
-  } else {
-    let earthGeometry = new THREE.SphereGeometry(earthSize, 100, 100); //地球几何体
-    let nightColor = new THREE.Color(0x999999);
-    let dayColor = new THREE.Color(0x444444);
-    //地球材质
-    let earthMaterial = new THREE.MeshPhongMaterial({
-      map: new THREE.TextureLoader().load(
-        isDay == "white" ? earthImg : earthNightImg //区分昼夜纹理
-      ),
-      color: isDay == "white" ? dayColor : nightColor,
-      // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
-      // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
-      normalScale: new THREE.Vector2(0, 5), //凹凸深度
-      normalMap: new THREE.TextureLoader().load(normalImg), //法线贴图
-    });
-    let earthMesh = new THREE.Mesh(earthGeometry, earthMaterial); //地球网格
-    earthMesh.name = "地球";
-    earthGroup.add(earthMesh); //将地球网格添加到地球组中
-    earthGroup.name = "地球组";
-    scene.add(earthGroup);
-  }
+async function createSphere(data: any) {
+  isDay == "spot" ? createSpotSphere() : createWBSphere();//判断需要创建的球体类型
+  earthGroup.name = "地球组";
   createVirus(data, earthSize); //创建球面病毒
+  scene.add(earthGroup);//将球体组添加到场景中
+  await earthGroup.translateY(-8);//平移球体组位置
+};
+
+//创建白昼黑夜球体
+async function createWBSphere() {
+  let earthGeometry = new THREE.SphereGeometry(earthSize, 100, 100); //地球几何体
+  let nightColor = new THREE.Color(0x999999);
+  let dayColor = new THREE.Color(0x444444);
+  //地球材质
+  let earthMaterial = new THREE.MeshPhongMaterial({
+    map: new THREE.TextureLoader().load(
+      isDay == "white" ? earthImg : earthNightImg //区分昼夜纹理
+    ),
+    color: isDay == "white" ? dayColor : nightColor,
+    // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
+    // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
+    normalScale: new THREE.Vector2(0, 5), //凹凸深度
+    normalMap: new THREE.TextureLoader().load(normalImg), //法线贴图
+  });
+  let earthMesh = new THREE.Mesh(earthGeometry, earthMaterial); //地球网格
+  earthMesh.name = "地球";
+  await earthGroup.add(earthMesh); //将地球网格添加到地球组中
 };
 
 //创建斑点球体
@@ -506,7 +509,6 @@ async function createSpotSphere() {
   );
   earthGroup.add(globeInnerMesh); //将网格放入地球组
   createSpot();//创建球面斑点
-  await scene.add(earthGroup);//将球体添加到场景中
 };
 
 //创建球面斑点
@@ -584,7 +586,6 @@ function createVirus(data: any, earthSize: any) {
     new THREE.Color(0xff0000),
   ]; //病毒颜色列表
   let virSize = 4; //病毒大小
-  let pointsGroup = new THREE.Group(); //点的组
   let list = JSON.parse(JSON.stringify(data));
   list.forEach((e: { value: number; color: any; position: any[]; }) => {
     e.value >= 10000000 && (e.color = colors[2]); //根据病毒数赋予不同颜色
@@ -604,11 +605,9 @@ function createVirus(data: any, earthSize: any) {
       Sprite.position.set(s.x, s.y, s.z); //设置点的位置
       Sprite.dotData = e; //将点的数据添加到dotData属性中
       Sprite.name = "病毒";
-      pointsGroup.add(Sprite); //添加进点的组中
+      earthGroup.add(Sprite); //将病毒添加进球体组中
     }
   });
-  pointsGroup.name = "病毒组";
-  scene.add(pointsGroup); //点的组添加到旋转组中
 };
 
 //创建鼠标控件
@@ -1086,7 +1085,6 @@ async function downloadReport() {
     z-index: 5;
     width: 50%;
     height: auto;
-    display: flex;
     text-align: center;
     margin: 0px 25%;
 
