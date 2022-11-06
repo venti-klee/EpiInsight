@@ -5,49 +5,53 @@
             :before-close="handleClose" size='100%'>
             <div class="my-header">
                 <span>省内分析</span>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
-                    <CircleClose />
+                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                    <Close />
                 </el-icon>
             </div>
             <div class="provinceEchartDiv">
                 <div class="top-div">
                     <!--省份基本信息-->
-                    <div class="baseMsg-div">
-                        <div class="provinceName">
-                            <h1>{{provinceBaseData.province}}</h1>
-                        </div>
-                        <div class="provinceNum">
-                            <h3 class="all-num">累计：
-                                <addNumber :value="provinceBaseData.contotal" :time="10" :thousandSign="true" />
-                                (今日{{provinceBaseData.conadd}})
-                            </h3>
-                            <h3 class="now-num">现存：
-                                <addNumber :value="provinceBaseData.econNum" :time="10" :thousandSign="true" />
-                                (今日{{provinceBaseData.econadd}})
-                            </h3>
-                            <h3 class="ok-num">治愈：
-                                <addNumber :value="provinceBaseData.curetotal" :time="10" :thousandSign="true" />
-                                (今日{{provinceBaseData.cureadd}})
-                            </h3>
-                            <h3>较昨日新增：
-                                <addNumber :value="provinceBaseData.asymptomtotal" :time="10" :thousandSign="true" />
-                            </h3>
-                            <!-- <h3>本土新增：
+                    <dv-border-box-13 class="baseMsg-dv" :color="dvColor">
+                        <div class="baseMsg-div">
+                            <div class="provinceName">
+                                <h1>{{ provinceBaseData.province }}</h1>
+                            </div>
+                            <div class="provinceNum">
+                                <h3 class="all-num">累计：
+                                    <addNumber :value="provinceBaseData.contotal" :time="10" :thousandSign="true" />
+                                    (今日{{ provinceBaseData.conadd }})
+                                </h3>
+                                <h3 class="now-num">现存：
+                                    <addNumber :value="provinceBaseData.econNum" :time="10" :thousandSign="true" />
+                                    (今日{{ provinceBaseData.econadd }})
+                                </h3>
+                                <h3 class="ok-num">治愈：
+                                    <addNumber :value="provinceBaseData.curetotal" :time="10" :thousandSign="true" />
+                                    (今日{{ provinceBaseData.cureadd }})
+                                </h3>
+                                <h3>较昨日新增：
+                                    <addNumber :value="provinceBaseData.asymptomtotal" :time="10"
+                                        :thousandSign="true" />
+                                </h3>
+                                <!-- <h3>本土新增：
                                 <addNumber :value="provinceBaseData.locIncrNum" :time="10" :thousandSign="true" />
                             </h3> -->
-                            <h3 class="death-num">死亡：
-                                <addNumber :value="provinceBaseData.deathtotal" :time="10" :thousandSign="true" />
-                            </h3>
+                                <h3 class="death-num">死亡：
+                                    <addNumber :value="provinceBaseData.deathtotal" :time="10" :thousandSign="true" />
+                                </h3>
+                            </div>
                         </div>
-                    </div>
+                    </dv-border-box-13>
                     <!--右侧图表-->
-                    <div class="rightEchart-div" v-show="isProHisEchart">
-                    </div>
-                    <div class="rightTab-div" v-show="!isProHisEchart">
-                        <h3 style="height:20px;margin-top: 10px;">{{provinceBaseData.province}}各地数据</h3>
-                        <el-table class="my-tab" :data="provinceData" style="width: 100%;
+                    <dv-border-box-1 class="rightEchartTab-dv" :color="dvColor">
+                        <div class="rightEchart-div" v-show="isProHisEchart">
+                        </div>
+                        <div class="rightTab-div" v-show="!isProHisEchart">
+                            <h3 style="height:20px;margin-top: 10px;">{{ provinceBaseData.province }}各地数据</h3>
+                            <el-table class="my-tab" :data="provinceData" style="width: 100%;
                         height:calc(100% - 90px);
-            --el-table-bg-color:rgba(0,0,0,.8);
+            --el-table-bg-color:rgba(0,0,0,0);
             --el-table-tr-bg-color:transparent;
             --el-table-header-bg-color:#333;
             --el-table-header-text-color:#fff;
@@ -55,32 +59,36 @@
             --el-table-row-hover-bg-color:#333;
             --el-table-border-color:#333;
             --el-text-color-regular:#fff">
-                            <el-table-column type="index" label="序号" width="100" />
-                            <el-table-column prop="name" label="市/区" />
-                            <el-table-column prop="conNum" label="累计数" sortable />
-                            <el-table-column prop="econNum" label="确诊数" sortable />
-                            <el-table-column prop="deathNum" label="死亡数" sortable />
-                            <el-table-column prop="cureNum" label="治愈数" sortable />
-                            <el-table-column prop="asymptomNum" label="较昨日新增" sortable />
-                        </el-table>
-                    </div>
-                    <div class="rightEchart-btn">
-                        <el-button class="btn" round color="#ff656599" @click="clickEchartBtn">
-                            <el-icon style="margin-right: 10px;">
-                                <Histogram />
-                            </el-icon>
-                            图表
-                        </el-button>
-                        <el-button class="btn" round color="#ff656599" @click="isProHisEchart = false">
-                            <el-icon  style="margin-right: 10px;">
-                                <List />
-                            </el-icon>
-                            表格
-                        </el-button>
-                    </div>
+                                <el-table-column type="index" label="序号" width="100" />
+                                <el-table-column prop="name" label="市/区" />
+                                <el-table-column prop="conNum" label="累计数" sortable />
+                                <el-table-column prop="econNum" label="确诊数" sortable />
+                                <el-table-column prop="deathNum" label="死亡数" sortable />
+                                <el-table-column prop="cureNum" label="治愈数" sortable />
+                                <el-table-column prop="asymptomNum" label="较昨日新增" sortable />
+                            </el-table>
+                        </div>
+                        <div class="rightEchart-btn">
+                            <el-button class="btn" color="#7b52f7" @click="clickEchartBtn">
+                                <el-icon style="margin-right: 10px;">
+                                    <Histogram />
+                                </el-icon>
+                                图表
+                            </el-button>
+                            <el-button class="btn" color="#7b52f7" @click="isProHisEchart = false">
+                                <el-icon style="margin-right: 10px;">
+                                    <List />
+                                </el-icon>
+                                表格
+                            </el-button>
+                        </div>
+                    </dv-border-box-1>
+
                 </div>
                 <!--历史数据图表-->
-                <div class="historyEchart-div"></div>
+                <dv-border-box-6 class="historyEchart-dv" :color="dvColor">
+                    <div class="historyEchart-div"></div>
+                </dv-border-box-6>
             </div>
         </el-drawer>
     </div>
@@ -111,7 +119,8 @@ let props = defineProps({
     historyList: any = ref([]),//省份历史数据
     historyEchart: any = null,//历史图表
     isProHisEchart = ref(true),//显示柱状图状态
-    emits = defineEmits(["close"]);
+    emits = defineEmits(["close"]),
+    dvColor = ["#7b52f7", "#c5b2ff"];
 
 watch(
     () => props.isProvinceEchartDrawer,
@@ -141,7 +150,7 @@ watch(
             });
             await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
             initEchart();//初始化图表
-        }else{
+        } else {
             provinceBaseData.value.contotal = 0;
             provinceBaseData.value.econNum = 0;
             provinceBaseData.value.curetotal = 0;
@@ -537,14 +546,14 @@ async function historyEchartFun() {
             margin: auto 0px;
 
             &:hover {
-                color: #fff;
+                color: #7b52f7;
                 cursor: pointer;
             }
         }
     }
 
     .provinceEchartDiv {
-        background-color: rgba(255, 255, 255, .7);
+        background-color: rgba(0, 0, 0, .8);
         color: #fff;
         height: calc(100vh - 100px);
         overflow: auto;
@@ -555,78 +564,90 @@ async function historyEchartFun() {
             margin: 10px 0px;
             display: flex;
 
-            .baseMsg-div {
+            .baseMsg-dv {
                 margin: auto;
                 height: 100%;
                 width: 35%;
-                border-radius: 50px;
-                background-color: rgba(0, 0, 0, .8);
-                display: flex;
 
-                .provinceName {
-                    margin: auto 30px;
-                    margin-left: 10%;
-                    font-size: 30px;
-                    max-width: 35%;
-                }
+                .baseMsg-div {
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
 
-                .provinceNum {
-                    margin: auto 0px;
-
-                    h3 {
-                        font-size: 20px;
-                        color: #794ebd;
+                    .provinceName {
+                        margin: auto 30px;
+                        margin-left: 10%;
+                        font-size: 30px;
+                        max-width: 35%;
                     }
 
-                    .all-num {
-                        color: #f59158;
-                    }
+                    .provinceNum {
+                        margin: auto 0px;
 
-                    .now-num {
-                        color: #ffd889;
-                    }
+                        h3 {
+                            font-size: 20px;
+                            color: #794ebd;
+                        }
 
-                    .ok-num {
-                        color: #48c56b;
-                    }
+                        .all-num {
+                            color: #f59158;
+                        }
 
-                    .death-num {
-                        color: #ff6a6a;
+                        .now-num {
+                            color: #ffd889;
+                        }
+
+                        .ok-num {
+                            color: #48c56b;
+                        }
+
+                        .death-num {
+                            color: #ff6a6a;
+                        }
                     }
                 }
             }
 
-            .rightEchart-div,
-            .rightTab-div {
+            .rightEchartTab-dv {
                 text-align: center;
                 margin: auto;
                 height: 100%;
                 width: 62%;
-                border-radius: 50px;
-                background-color: rgba(0, 0, 0, .8);
-            }
 
-            .rightEchart-btn {
-                position: absolute;
-                right: 0;
-                z-index: 1000;
-                margin: 10px 5% 0px 0px;
+                .rightEchart-div,
+                .rightTab-div {
+                    height: 100%;
+                    width: 96%;
+                    margin: 0px 2%;
+                }
 
-                .btn {
-                    padding: 10px 20px;
-                    border: none;
-                    color: #fff
+                .rightEchart-btn {
+                    position: absolute;
+                    top: 0;
+                    right: 20%;
+                    z-index: 10;
+
+                    .btn {
+                        padding: 10px 20px;
+                        border: none;
+                        color: #fff;
+                        border-radius: 0px;
+                    }
                 }
             }
         }
 
-        .historyEchart-div {
+        .historyEchart-dv {
             height: 250px;
             width: 99%;
             margin: auto;
-            border-radius: 50px;
-            background-color: rgba(0, 0, 0, .8);
+
+            .historyEchart-div {
+                height: 100%;
+                width: 100%;
+            }
         }
+
     }
 }
 </style>

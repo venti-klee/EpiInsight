@@ -5,8 +5,8 @@
       :before-close="handleClose" size='100%'>
       <div class="my-header">
         <span>国内分析</span>
-        <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
-          <CircleClose />
+        <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+          <Close />
         </el-icon>
       </div>
       <!--图表盒子-->
@@ -14,33 +14,49 @@
         <div class="top-div">
           <!--数字盒子-->
           <div class="num-div">
-            <div class="addconDiv">
+            <dv-border-box-9 :color="dvColor" class="addconDiv">
               <p>国内确诊数</p>
               <addNumber class="amNum" :value="addcon" :time="10" :thousandSign="true" />
               <p class="add-p">今日{{ daily.addcon_new }}</p>
-            </div>
-            <div class="addcureDiv">
+            </dv-border-box-9>
+            <dv-border-box-9 :color='dvColor' class="addcureDiv">
               <p>国内治愈数</p>
               <addNumber class="amNum" :value="addcure" :time="10" :thousandSign="true" />
               <p class="add-p">今日{{ daily.addcure_new }}</p>
-            </div>
-            <div class="addDieDiv">
+            </dv-border-box-9>
+            <dv-border-box-9 :color='dvColor' class="addDieDiv">
               <p>国内死亡数</p>
               <addNumber class="amNum" :value="addDie" :time="10" :thousandSign="true" />
               <p class="add-p">今日{{ daily.adddeath_new }}</p>
-            </div>
+            </dv-border-box-9>
           </div>
-          <div class="china-map-div"></div>
+          <dv-border-box-1 class="china-map-div" :color='dvColor'>
+            <div class="china-map"></div>
+          </dv-border-box-1>
         </div>
         <div class="histogram-div">
-          <div id="diagnosedChart"></div>
-          <div id="cureChart"></div>
-          <div id="dieChart"></div>
-          <div id="dayAddChart"></div>
-          <div id="locIncrProTopChart"></div>
-          <div id="jwsrTopChart"></div>
+          <dv-border-box-13 :color='dvColor' class="histogram-dv">
+            <div id="diagnosedChart"></div>
+          </dv-border-box-13>
+          <dv-border-box-13 :color='dvColor' class="histogram-dv">
+            <div id="cureChart"></div>
+          </dv-border-box-13>
+          <dv-border-box-13 :color='dvColor' class="histogram-dv">
+            <div id="dieChart"></div>
+          </dv-border-box-13>
+          <dv-border-box-13 :color='dvColor' class="histogram-dv">
+            <div id="dayAddChart"></div>
+          </dv-border-box-13>
+          <dv-border-box-13 :color='dvColor' class="histogram-dv">
+            <div id="locIncrProTopChart"></div>
+          </dv-border-box-13>
+          <dv-border-box-13 :color='dvColor' class="histogram-dv">
+            <div id="jwsrTopChart"></div>
+          </dv-border-box-13>
         </div>
-        <div id="historyLineDiv"></div>
+        <dv-border-box-1 :color='dvColor' class="historyLineDiv-dv">
+          <div id="historyLineDiv"></div>
+        </dv-border-box-1>
       </div>
     </el-drawer>
   </div>
@@ -166,7 +182,8 @@ let props = defineProps({
     tempList = sortFun(tempList);
     return tempList.slice(0, sliceNum);
   }),
-  emits = defineEmits(["close"]);
+  emits = defineEmits(["close"]),
+  dvColor = ["#7b52f7", "#c5b2ff"];
 
 //watch可监听指定属性watchEffect不能
 watch(
@@ -253,22 +270,22 @@ function histogramOption(list: any, titName: string, color: string) {
 async function initHistogram() {
   await (diagnosedChart) && (diagnosedChart.dispose());//销毁实例
   await (diagnosedChart = echarts.init(document.getElementById("diagnosedChart")));//确诊图
-  await diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", "#ffaa00"));
+  await diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", "#7b52f7"));
   await (dieChart) && (dieChart.dispose());//销毁实例
   await (dieChart = echarts.init(document.getElementById("dieChart")));//死亡图
-  await dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#ff6a6a"));
+  await dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#7b52f7"));
   await (dayAddChart) && (dayAddChart.dispose());//销毁实例
   await (dayAddChart = echarts.init(document.getElementById("dayAddChart")));//当日新增图
-  await dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", "#ba4c03"));
+  await dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", "#7b52f7"));
   await (cureChart) && (cureChart.dispose());//销毁实例
   await (cureChart = echarts.init(document.getElementById("cureChart")));//治愈图
-  await cureChart.setOption(histogramOption(cureList.value, "治愈数前", "#48c56b"));
+  await cureChart.setOption(histogramOption(cureList.value, "治愈数前", "#7b52f7"));
   await (locIncrProTopChart) && (locIncrProTopChart.dispose());//销毁实例
   await (locIncrProTopChart = echarts.init(document.getElementById("locIncrProTopChart")));//本地新增图
-  await locIncrProTopChart.setOption(histogramOption(locIncrProTop.value, "本地新增前", "#ff5900"));
+  await locIncrProTopChart.setOption(histogramOption(locIncrProTop.value, "本地新增前", "#7b52f7"));
   await (jwsrTopChart) && (jwsrTopChart.dispose());//销毁实例
   await (jwsrTopChart = echarts.init(document.getElementById("jwsrTopChart")));//境外输入图
-  await jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", "#8903ba"));
+  await jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", "#7b52f7"));
 }
 
 //排序(冒泡法)
@@ -456,7 +473,7 @@ async function chinaMapInit() {
     name: "南海诸岛"
   })//添加南海诸岛，防止报错
   await (chinaMapChart) && (chinaMapChart.dispose());//销毁实例
-  await (chinaMapChart = echarts.init(document.getElementsByClassName("china-map-div")[0]));
+  await (chinaMapChart = echarts.init(document.getElementsByClassName("china-map")[0]));
   let option: any = {
     title: {
       text: '国内各省现存分布',
@@ -485,7 +502,7 @@ async function chinaMapInit() {
       enterable: true,
       transitionDuration: 0,//动画时间
       backgroundColor: "rgb(0,0,0,.8)",
-      borderRadius: 20,
+      borderRadius: 0,
       textStyle: {
         color: '#fff',
       },
@@ -570,14 +587,14 @@ async function chinaMapInit() {
       margin: auto 0px;
 
       &:hover {
-        color: #fff;
+        color: #7b52f7;
         cursor: pointer;
       }
     }
   }
 
   .echartDiv {
-    background-color: rgba(255, 255, 255, .7);
+    background-color: rgba(0, 0, 0, .8);
     color: #fff;
     height: calc(100vh - 100px);
     overflow: auto;
@@ -589,11 +606,14 @@ async function chinaMapInit() {
       margin: 10px auto;
 
       .china-map-div {
-        border-radius: 50px;
-        background-color: rgba(0, 0, 0, .8);
-        width: 62%;
-        height: 100%;
-        margin: 0px;
+        width: 60%;
+        height: 96%;
+        margin: auto;
+
+        .china-map {
+          height: 100%;
+          width: 100%;
+        }
       }
 
       .num-div {
@@ -601,15 +621,14 @@ async function chinaMapInit() {
         flex-direction: column;
         width: 37%;
         margin: auto;
-        height: 100%;
+        height: 96%;
 
         .addconDiv,
         .addcureDiv,
         .addDieDiv {
-          border-radius: 50px;
           margin: auto 0px;
           width: 100%;
-          background-color: rgba(0, 0, 0, .8);
+          height: 23%;
           text-align: center;
           padding: 15px 0px;
 
@@ -653,37 +672,40 @@ async function chinaMapInit() {
 
     }
 
-
-    #historyLineDiv {
-      border-radius: 50px;
-      background-color: rgba(0, 0, 0, .8);
+    .historyLineDiv-dv {
       height: 300px;
       width: 99%;
       margin: 10px auto;
+
+      #historyLineDiv {
+        height: 100%;
+        width: 100%;
+      }
     }
+
+
 
     .histogram-div {
       border-radius: 50px;
-      background-color: rgba(0, 0, 0, .8);
       display: flex;
       flex-wrap: wrap;
       width: 98%;
       margin: 10px auto;
       padding: 10px 0px;
 
-      div {
+      .histogram-dv {
         margin: 10px auto;
         height: 200px;
         width: 32%;
+
+        div {
+          height: 100%;
+          width: 98%;
+          margin: 0px 0px 0px 2%;
+        }
       }
     }
 
   }
-}
-</style>
-<style scoped>
-::-webkit-scrollbar-thumb {
-  /*滑块*/
-  background-color: rgba(255, 0, 0, .5) !important;
 }
 </style>

@@ -52,6 +52,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 let props = defineProps({
     isDrawer: Boolean,//抽屉状态
+    dvColor: Array
 }),
     setData = ref({
         isDay: "粒子",//球体切换
@@ -63,8 +64,7 @@ let props = defineProps({
     }),
     isDrawer = ref(false),
     isDayList = ["粒子", "黑夜", "白昼"],//球体列表
-    emits = defineEmits(["close", "changeSetData"]),
-    dvColor: any = ["#7b52f7", "#c5b2ff"];
+    emits = defineEmits(["close", "changeSetData"]);
 
 //监听props值变化改变isDrawer
 watch(

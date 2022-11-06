@@ -94,9 +94,9 @@
 
     <div class="components">
       <!--点的标签-->
-      <PointMsg :position="position" :currentPointData="currentPointData" />
+      <PointMsg :dvColor="dvColor" :position="position" :currentPointData="currentPointData" />
       <!--设置抽屉-->
-      <SetDrawer :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
+      <SetDrawer :dvColor="dvColor" :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
       <!--全球数据表格-->
       <SphereTabDrawer :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
       <!--国内数据表格-->

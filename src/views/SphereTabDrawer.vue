@@ -6,15 +6,16 @@
                 <div class="top-left">
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
-                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 50px;"/>
+                            @keyup.enter="enterSearch(nameValue)"
+                            style="--el-input-border-radius: 0px;" />
                     </div>
-                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn" round>
+                    <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn">
                         <img :src=xlsxImg />
                         全球数据下载
                     </el-button>
                 </div>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
-                    <CircleClose />
+                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                    <Close />
                 </el-icon>
             </div>
             <!--表格-->
@@ -136,6 +137,7 @@ function clickXlsxBtn() {
                 border: none;
                 color: #fff;
                 padding: 0px 10px;
+                border-radius: 0px;
 
                 img {
                     height: 20px;
@@ -148,7 +150,7 @@ function clickXlsxBtn() {
             margin: auto 0px;
 
             &:hover {
-                color: #fff;
+                color: #7b52f7;
                 cursor: pointer;
             }
         }

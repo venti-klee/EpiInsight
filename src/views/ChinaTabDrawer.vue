@@ -8,13 +8,13 @@
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
                             @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 50px;"/>
                     </div>
-                    <el-button class="btn" color="#009f5d" @click="clickXlsxBtn('province','','')" round>
+                    <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn('province','','')">
                         <img :src=xlsxImg />
                         国内数据下载
                     </el-button>
                 </div>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#ffffff88">
-                    <CircleClose />
+                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                    <Close />
                 </el-icon>
             </div>
             <!--表格-->
@@ -32,8 +32,8 @@
                 <el-table-column type="expand">
                     <template #default="props">
                         <div class="tab-head-div">
-                            <el-button class="btn" color="#009f5d"
-                                @click="clickXlsxBtn('city',props.row.name,props.row.city)" round>
+                            <el-button class="btn" color="#7b52f7"
+                                @click="clickXlsxBtn('city',props.row.name,props.row.city)">
                                 <img :src=xlsxImg />
                                 {{props.row.name}}数据下载
                             </el-button>
@@ -68,8 +68,8 @@
                         <span v-if="props.row.isHM"
                             style="color: #ff7272;display: flex;justify-content: space-between;">
                             {{props.row.highAndMiddle.province_total}}个
-                            <el-button class="btn" color="#ff7272" @click="clickMore(props.row.highAndMiddle)"
-                                style="color:#fff;padding: 0px 20px;margin: 0px 20px 0px 0px;" round>
+                            <el-button class="btn" color="#7b52f7" @click="clickMore(props.row.highAndMiddle)"
+                                style="color:#fff;padding: 0px 20px;margin: 0px 20px 0px 0px;border-radius: 0px;">
                                 详情
                             </el-button>
                         </span>
@@ -241,6 +241,7 @@ function clickMore(moreData: any) {
                 border: none;
                 color: #fff;
                 padding: 0px 10px;
+                border-radius: 0px;
 
                 img {
                     height: 20px;
@@ -253,7 +254,7 @@ function clickMore(moreData: any) {
             margin: auto 0px;
 
             &:hover {
-                color: #fff;
+                color: #7b52f7;
                 cursor: pointer;
             }
         }
@@ -271,6 +272,7 @@ function clickMore(moreData: any) {
                 border: none;
                 color: #fff;
                 padding: 0px 10px;
+                border-radius: 0px;
 
                 img {
                     height: 20px;

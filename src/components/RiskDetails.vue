@@ -3,16 +3,16 @@
     <div class="RiskDetails-div">
         <el-drawer v-model="isRiskDetails" :with-header="false" direction="rtl" :before-close="handleClose" size='40%'>
             <!--省名-->
-            <div class="province-name">
-                {{currentDetails.province}}({{currentDetails.province_total}}个)
-            </div>
+            <dv-decoration-7 class="province-name" :color="dvColor">
+                {{ currentDetails.province }}({{ currentDetails.province_total }}个)
+            </dv-decoration-7>
             <!--风险数量-->
             <div class="tit-num">
-                <div class="h-ap">高风险地区{{currentDetails.province_high_num}}个</div>
-                <div class="m-ap">中风险地区{{currentDetails.province_middle_num}}个</div>
-                <el-button class="btn" color="#009f5d" @click="clickXlsxBtn" round>
+                <div class="h-ap">高风险地区{{ currentDetails.province_high_num }}个</div>
+                <div class="m-ap">中风险地区{{ currentDetails.province_middle_num }}个</div>
+                <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn">
                     <img :src=xlsxImg />
-                    {{currentDetails.province}}风险地下载
+                    {{ currentDetails.province }}风险地下载
                 </el-button>
             </div>
             <el-table class="city-tab" :data="currentDetails.list" :show-overflow-tooltip="true" style="width:100%;height:calc(100vh - 150px);
@@ -35,7 +35,7 @@
                                 <el-tooltip class="box-item" v-for="item in props.row.high_areas" :key="item"
                                     :content="item" placement="top-start">
                                     <el-tag class="tag-tex" effect="dark" round type="danger">
-                                        {{item}}
+                                        {{ item }}
                                     </el-tag>
                                 </el-tooltip>
 
@@ -45,7 +45,7 @@
                                 <el-tooltip class="box-item" v-for="item in props.row.middle_areas" :key="item"
                                     :content="item" placement="top-start">
                                     <el-tag class="tag-tex" effect="dark" round type="warning">
-                                        {{item}}
+                                        {{ item }}
                                     </el-tag>
                                 </el-tooltip>
                             </div>
@@ -75,7 +75,8 @@ let props = defineProps({
     }
 }),
     isRiskDetails = ref(false),//抽屉状态
-    emits = defineEmits(["close"]);
+    emits = defineEmits(["close"]),
+    dvColor: any = ["#7b52f7", "#c5b2ff"];
 
 watch(
     () => props.isRiskDetails,//监听抽屉状态
@@ -113,6 +114,8 @@ function clickXlsxBtn() {
     --el-bg-color: #545454;
 
     .province-name {
+        height: auto;
+        width: auto;
         text-align: center;
         font-size: 30px;
         font-weight: 900;
@@ -139,6 +142,7 @@ function clickXlsxBtn() {
             border: none;
             color: #fff;
             padding: 0px 10px;
+            border-radius: 0px;
 
             img {
                 height: 20px;
