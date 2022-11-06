@@ -6,8 +6,7 @@
                 <div class="top-left">
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
-                            @keyup.enter="enterSearch(nameValue)"
-                            style="--el-input-border-radius: 0px;" />
+                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 0px;" />
                     </div>
                     <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn">
                         <img :src=xlsxImg />
@@ -93,13 +92,15 @@ function enterSearch(matchStr: string) {
 
 //导出数据表格
 function clickXlsxBtn() {
-    let tabObj = {
-        fileName: "各国疫情数据",
-        tabHead: ["国家", "累计数", "死亡数", "治愈数", "地区代码", "坐标"],
-        keyList: ["name", "value", "deathNum", "cureNum", "citycode", "position"],
-        tabData: tabData.value
-    };
-    downloadXlsx(tabObj);
+    if (confirm("确认下载全球疫情数据？")) {
+        let tabObj = {
+            fileName: "各国疫情数据",
+            tabHead: ["国家", "累计数", "死亡数", "治愈数", "地区代码", "坐标"],
+            keyList: ["name", "value", "deathNum", "cureNum", "citycode", "position"],
+            tabData: tabData.value
+        };
+        downloadXlsx(tabObj);
+    }
 };
 
 </script>

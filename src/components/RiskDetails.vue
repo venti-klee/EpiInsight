@@ -102,7 +102,9 @@ function clickXlsxBtn() {
         keyList: ["city", "high_num", "middle_num", "city_total", "high_areas", "middle_areas"],
         tabData: props.currentDetails.list
     };
-    downloadXlsx(tabObj);
+    if (confirm("确认下载" + props.currentDetails.province + "风险地数据？")) {
+        downloadXlsx(tabObj);
+    }
 }
 </script>
 

@@ -139,7 +139,7 @@ import SphereTabDrawer from "@/views/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/views/ChinaTabDrawer.vue";
 import ProvinceEchartDrawer from "@/views/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 let version: any = ref(PK.version),//系统版本号
   mobileDiv: any = ref(true),//手机端遮罩
   scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
@@ -811,22 +811,9 @@ function provinceAnalyze() {
 
 //确认下载报告
 function sureDownloadReport() {
-  ElMessageBox.confirm(
-    '确认生成下载当地疫情报告？',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-    }
-  )
-    .then(() => {
-      downloadReport();//下载报告
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '已取消下载！',
-      })
-    })
+  if (confirm("确认生成并下载当地疫情报告？")) {
+    downloadReport();//下载报告
+  }
 };
 
 //下载本地疫情报告

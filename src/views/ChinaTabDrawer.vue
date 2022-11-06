@@ -6,9 +6,9 @@
                 <div class="top-left">
                     <div class="name-Inp">
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
-                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 0px;"/>
+                            @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 0px;" />
                     </div>
-                    <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn('province','','')">
+                    <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn('province', '', '')">
                         <img :src=xlsxImg />
                         国内数据下载
                     </el-button>
@@ -33,9 +33,9 @@
                     <template #default="props">
                         <div class="tab-head-div">
                             <el-button class="btn" color="#7b52f7"
-                                @click="clickXlsxBtn('city',props.row.name,props.row.city)">
+                                @click="clickXlsxBtn('city', props.row.name, props.row.city)">
                                 <img :src=xlsxImg />
-                                {{props.row.name}}数据下载
+                                {{ props.row.name }}数据下载
                             </el-button>
                         </div>
                         <el-table :data="props.row.city" style="width: 100%;height: 55vh;
@@ -67,7 +67,7 @@
                     <template #default="props">
                         <span v-if="props.row.isHM"
                             style="color: #ff7272;display: flex;justify-content: space-between;">
-                            {{props.row.highAndMiddle.province_total}}个
+                            {{ props.row.highAndMiddle.province_total }}个
                             <el-button class="btn" color="#7b52f7" @click="clickMore(props.row.highAndMiddle)"
                                 style="color:#fff;padding: 0px 20px;margin: 0px 20px 0px 0px;border-radius: 0px;">
                                 详情
@@ -198,8 +198,9 @@ function clickXlsxBtn(type: string, name: string, data: any) {
             tabData: data
         };
     }
-
-    downloadXlsx(tabObj);
+    if (confirm("确认下载疫情表格？")) {
+        downloadXlsx(tabObj);
+    }
 };
 
 //显示详情
