@@ -91,7 +91,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import xlsxImg from "@/assets/img/xlsx.png";
 import downloadXlsx from "@/utils/xlsxUtils";
-import RiskDetails from "./RiskDetails.vue"
+import RiskDetails from "../components/RiskDetails.vue"
 let props = defineProps({
     isChina: {
         type: Boolean,

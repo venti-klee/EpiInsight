@@ -7,9 +7,7 @@
                 <el-form>
                     <el-form-item label="球体切换：">
                         <el-radio-group v-model="setData.isDay" @change="changeSetData('isDay')">
-                            <el-radio-button label="spot" />
-                            <el-radio-button label="black" />
-                            <el-radio-button label="white" />
+                            <el-radio-button v-for="item in isDayList" :label="item" :key="item" />
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="允许拖拽：">
@@ -56,7 +54,7 @@ let props = defineProps({
     isDrawer: Boolean,//抽屉状态
 }),
     setData = ref({
-        isDay: "spot",//球体切换
+        isDay: "粒子",//球体切换
         isDrag: true,//拖拽
         isZoom: true,//缩放
         isTag: true,//标签
@@ -64,6 +62,7 @@ let props = defineProps({
         rotateSpeed: 50,//旋转速度
     }),
     isDrawer = ref(false),
+    isDayList = ["粒子", "黑夜", "白昼"],//球体列表
     emits = defineEmits(["close", "changeSetData"]),
     dvColor: any = ["#7b52f7", "#c5b2ff"];
 

@@ -1,3 +1,4 @@
+<!--数值增加动画组件-->
 <template>
     <span class="num-span" :data-time="time" :data-value="value">{{ addNum }}</span>
 </template>

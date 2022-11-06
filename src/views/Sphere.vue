@@ -133,11 +133,11 @@ import normalImg from "@/assets/img/earthNormal.jpg";
 import virusImg from "@/assets/img/virus3.png";
 import earthGrayscale from "@/assets/img/map_inverted.png";
 import PointMsg from "@/components/PointMsg.vue";
-import ChinaEchartDrawer from "@/components/ChinaEchartDrawer.vue";
+import ChinaEchartDrawer from "@/views/ChinaEchartDrawer.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
-import SphereTabDrawer from "@/components/SphereTabDrawer.vue";
-import ChinaTabDrawer from "@/components/ChinaTabDrawer.vue";
-import ProvinceEchartDrawer from "@/components/ProvinceEchartDrawer.vue";
+import SphereTabDrawer from "@/views/SphereTabDrawer.vue";
+import ChinaTabDrawer from "@/views/ChinaTabDrawer.vue";
+import ProvinceEchartDrawer from "@/views/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
 import { ElMessage, ElMessageBox } from 'element-plus'
 let version: any = ref(PK.version),//系统版本号
@@ -152,7 +152,7 @@ let version: any = ref(PK.version),//系统版本号
   earthGroup: any = new THREE.Group(),//球体组
   earthSize: any = 100, //地球尺寸
   positionData = countryPosition, //国家位置数据
-  isDay = "spot",//球体切换
+  isDay = "粒子",//球体切换
   isTag = true,//标签显示
   isSphere = ref(false),//全球数据对话框状态
   isChina = ref(false),//国内数据对话框状态
@@ -347,7 +347,7 @@ function structureData(COVID19Data: any) {
   init(sphereData.value); //初始化
   setTimeout(() => {
     initEchart();//初始化图表
-  }, 1000);
+  }, 500);
 };
 
 //初始化球体
@@ -373,6 +373,15 @@ function init(data: any) {
   createSphere(data); //创建球体
   createOrbitControls();
   render();
+  window.addEventListener('resize', onWindowResize, false);
+};
+
+//窗口尺寸改变重设渲染器
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;//修改相机宽高比
+  camera.updateProjectionMatrix();// 更新投影的变换矩阵
+  renderer.setSize(window.innerWidth, window.innerHeight);//设置渲染器尺寸
+  initEchart();//初始化图表
 };
 
 //创建宇宙(球形宇宙)
@@ -463,7 +472,7 @@ function createLight() {
 
 //创建球体
 async function createSphere(data: any) {
-  isDay == "spot" ? createSpotSphere() : createWBSphere();//判断需要创建的球体类型
+  isDay == "粒子" ? createSpotSphere() : createWBSphere();//判断需要创建的球体类型
   earthGroup.name = "地球组";
   createVirus(data, earthSize); //创建球面病毒
   scene.add(earthGroup);//将球体组添加到场景中
@@ -478,9 +487,9 @@ async function createWBSphere() {
   //地球材质
   let earthMaterial = new THREE.MeshPhongMaterial({
     map: new THREE.TextureLoader().load(
-      isDay == "white" ? earthImg : earthNightImg //区分昼夜纹理
+      isDay == "白昼" ? earthImg : earthNightImg //区分昼夜纹理
     ),
-    color: isDay == "white" ? dayColor : nightColor,
+    color: isDay == "白昼" ? dayColor : nightColor,
     // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
     // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
     normalScale: new THREE.Vector2(0, 5), //凹凸深度
@@ -617,8 +626,8 @@ function createOrbitControls() {
   orbitControls.enableZoom = true; //鼠标缩放
   orbitControls.enableDamping = true; //滑动阻尼
   orbitControls.dampingFactor = 0.05; //(默认.25)
-  orbitControls.minDistance = 200; //相机距离目标最小距离
-  orbitControls.maxDistance = 500; //相机距离目标最大距离
+  orbitControls.minDistance = 250; //相机距离目标最小距离
+  orbitControls.maxDistance = 400; //相机距离目标最大距离
   orbitControls.autoRotate = true; //自转(相机)
   orbitControls.autoRotateSpeed = 1; //自转速度
   orbitControls.enableRotate = true;//鼠标左键控制旋转
@@ -631,7 +640,6 @@ function render() {
     document
       .getElementById("sphereDiv")!
       .addEventListener("mousemove", onMousemove, false);
-  window.addEventListener('resize', onWindowResize, false);
   orbitControls.update(); //鼠标控件实时更新
   renderer.render(scene, camera);
 };
@@ -657,13 +665,6 @@ function onMousemove(e: any) {
     currentPointData.value = {}; //置空标签数据
     dom!.style.cursor = "move"; //光标样式
   }
-};
-
-//窗口尺寸改变重设渲染器
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;//修改相机宽高比
-  camera.updateProjectionMatrix();// 更新投影的变换矩阵
-  renderer.setSize(window.innerWidth, window.innerHeight);//设置渲染器尺寸
 };
 
 //初始化图表
@@ -692,7 +693,7 @@ function sortFun(arr: any) {
 //国家排名柱状图
 function histogramChartFun(list: any) {
   let chartDom = document.getElementById("histogramDiv");
-  (histogramChart) && (histogramChart.dispose());//销毁实例
+  (histogramChart) && (histogramChart.dispose());//之前有则销毁实例
   histogramChart = echarts.init(chartDom);
   let option: any = {
     backgroundColor: "",
@@ -944,7 +945,8 @@ async function downloadReport() {
     position: absolute;
     z-index: 5;
     height: 74vh;
-    width: 300px;
+    min-width: 250px;
+    width: 25vw;
     margin: 15vh 0px 0px 5px;
 
     p {
@@ -988,7 +990,8 @@ async function downloadReport() {
     position: absolute;
     right: 10px;
     z-index: 5;
-    width: auto;
+    min-width: 300px;
+    width: 20vw;
     height: 74vh;
     margin: 15vh 0px 0px 0px;
     display: flex;
