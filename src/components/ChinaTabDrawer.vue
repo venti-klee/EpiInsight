@@ -243,7 +243,7 @@ function clickMore(moreData: any) {
                 padding: 0px 10px;
 
                 img {
-                    height: 25px;
+                    height: 20px;
                 }
             }
         }
@@ -272,7 +272,7 @@ function clickMore(moreData: any) {
                 padding: 0px 10px;
 
                 img {
-                    height: 25px;
+                    height: 20px;
                 }
             }
         }

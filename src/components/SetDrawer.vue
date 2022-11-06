@@ -88,7 +88,7 @@ function refreshPage() {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .el-drawer__body {
+:deep(.el-drawer__body) {
     padding: 0px;
 }
 
