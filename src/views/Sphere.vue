@@ -17,7 +17,7 @@
       </div>
       <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">v{{ version
       }}(截止{{ allData.mtime }})</dv-decoration-7>
-      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:50px;margin-top: -25px;" />
+      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:60px;margin-top: -30px;" />
     </div>
 
     <!--球体盒子-->
@@ -130,6 +130,7 @@ import earthImg from "@/assets/img/earth.jpg";
 import earthNightImg from "@/assets/img/earthNight.jpg";
 import normalImg from "@/assets/img/earthNormal.jpg";
 import virusImg from "@/assets/img/virus3.png";
+import earthGrayscale from "@/assets/img/map_inverted.png";
 import PointMsg from "@/components/PointMsg.vue";
 import ChinaEchartDrawer from "@/components/ChinaEchartDrawer.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
@@ -147,8 +148,10 @@ let version: any = ref(PK.version),//系统版本号
   orbitControls: any = null, //鼠标控件
   mouse = new THREE.Vector2(), //鼠标的二维平面
   raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
+  earthGroup: any = new THREE.Group(),//球体组
+  earthSize: any = 100, //地球尺寸
   positionData = countryPosition, //国家位置数据
-  isDay = false,//昼夜切换
+  isDay = "spot",//球体切换
   isTag = true,//标签显示
   isSphere = ref(false),//全球数据对话框状态
   isChina = ref(false),//国内数据对话框状态
@@ -169,8 +172,8 @@ let version: any = ref(PK.version),//系统版本号
   userMsg: any = ref({}),//使用者信息
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
-  dvColor: any = ["#7b52f7", "#c5b2ff"],//dataV主题色
-  sysBackgroundColor: any = 'rgb(197, 178, 255, .1)';//数值面板背景色
+  dvColor: any = ["#7b52f7", "#c5b2ff"],//系统线框主题色
+  sysBackgroundColor: any = 'rgb(197, 178, 255, .1)';//系统背景主题色
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -214,6 +217,7 @@ function changeSetData(type: string, setData: any) {
 
 //销毁场景
 function destroyScene() {
+  clearGroup(earthGroup);//清除组
   cancelAnimationFrame(anId.value); //根据动画id停止动画渲染
   renderer.forceContextLoss(); //强制失去上下文
   renderer.dispose();
@@ -223,6 +227,30 @@ function destroyScene() {
   orbitControls = null;
   dom.innerHTML = null;
   renderer = null;
+};
+
+//销毁组数据
+function clearGroup(group: any) {
+  //清除缓存
+  const clearCache = (item: any) => {
+    item.geometry.dispose();//必须对组中的material与geometry进行dispose，清除占用的缓存
+    item.material.dispose();
+  };
+  //移除模型
+  const removeObj = (obj: any) => {
+    let arr = obj.children.filter((x: any) => x);
+    arr.forEach((item: any) => {
+      if (item.children.length) {
+        removeObj(item);
+      } else {
+        clearCache(item);
+        item.clear();
+      }
+    });
+    obj.clear();
+    arr = null;
+  };
+  removeObj(group);
 };
 
 //解码返回的unicode
@@ -327,7 +355,7 @@ function init(data: any) {
   let height = dom.clientHeight;
   scene = new THREE.Scene(); //场景场景
   camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000); //创建透视相机(视场、长宽比、近面、远面)
-  camera.position.set(0, 0, 270); //设置相机位置
+  camera.position.set(0, 150, 320); //设置相机位置
   camera.lookAt(0, 0, 0);
   //创建渲染器
   renderer = new THREE.WebGLRenderer({
@@ -433,28 +461,109 @@ function createLight() {
 
 //创建球体
 function createSphere(data: any) {
-  let earthSize = 100; //地球尺寸
-  let earthGroup = new THREE.Group(); //地球的组
-  let earthGeometry = new THREE.SphereGeometry(earthSize, 100, 100); //地球几何体
-  let nightColor = new THREE.Color(0x999999);
-  let dayColor = new THREE.Color(0x444444);
-  //地球材质
-  let earthMaterial = new THREE.MeshPhongMaterial({
-    map: new THREE.TextureLoader().load(
-      isDay ? earthImg : earthNightImg //区分昼夜纹理
-    ),
-    color: isDay ? dayColor : nightColor,
-    // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
-    // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
-    normalScale: new THREE.Vector2(0, 5), //凹凸深度
-    normalMap: new THREE.TextureLoader().load(normalImg), //法线贴图
-  });
-  let earthMesh = new THREE.Mesh(earthGeometry, earthMaterial); //地球网格
-  earthMesh.name = "地球";
-  earthGroup.add(earthMesh); //将地球网格添加到地球组中
-  earthGroup.name = "地球组";
-  scene.add(earthGroup);
+  //判断需要创建的球体类型
+  if (isDay == "spot") {
+    createSpotSphere();//创建斑点球体
+  } else {
+    let earthGeometry = new THREE.SphereGeometry(earthSize, 100, 100); //地球几何体
+    let nightColor = new THREE.Color(0x999999);
+    let dayColor = new THREE.Color(0x444444);
+    //地球材质
+    let earthMaterial = new THREE.MeshPhongMaterial({
+      map: new THREE.TextureLoader().load(
+        isDay == "white" ? earthImg : earthNightImg //区分昼夜纹理
+      ),
+      color: isDay == "white" ? dayColor : nightColor,
+      // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
+      // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
+      normalScale: new THREE.Vector2(0, 5), //凹凸深度
+      normalMap: new THREE.TextureLoader().load(normalImg), //法线贴图
+    });
+    let earthMesh = new THREE.Mesh(earthGeometry, earthMaterial); //地球网格
+    earthMesh.name = "地球";
+    earthGroup.add(earthMesh); //将地球网格添加到地球组中
+    earthGroup.name = "地球组";
+    scene.add(earthGroup);
+  }
   createVirus(data, earthSize); //创建球面病毒
+};
+
+//创建斑点球体
+async function createSpotSphere() {
+  let globeBufferGeometry = new THREE.SphereGeometry(earthSize - 1, 50, 50);//球体几何体
+  let globeInnerMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(dvColor[0]),//颜色
+    // blending: THREE.AdditiveBlending,//纹理融合的叠加方式
+    // side: THREE.FrontSide,//前面显示
+    transparent: true,//透明
+    // depthWrite: false,//深度写入
+    // depthTest: false,//黑洞效果
+    opacity: .3,//不透明度
+  });
+  let globeInnerMesh = new THREE.Mesh(
+    globeBufferGeometry,
+    globeInnerMaterial
+  );
+  earthGroup.add(globeInnerMesh); //将网格放入地球组
+  createSpot();//创建球面斑点
+  await scene.add(earthGroup);//将球体添加到场景中
+};
+
+//创建球面斑点
+function createSpot() {
+  let img = new Image();
+  img.src = earthGrayscale; //黑白地图
+  //图片加载后绘制斑点至球面
+  img.onload = () => {
+    let canvas = document.createElement("canvas");
+    canvas.width = img.width; //使得canvas尺寸与图片尺寸相同
+    canvas.height = img.height;
+    (canvas.getContext("2d") as any).drawImage(img, 0, 0, img.width, img.height);//canvas绘制图片
+    let canData = (canvas.getContext("2d") as any).getImageData(0, 0, canvas.width, canvas.height);//获取画布像素数据
+    let globeCloudBufferGeometry = new THREE.BufferGeometry(); //设置缓冲几何体
+    let globeCloudVerticesArray = []; //地球云缓冲几何体顶点
+    let o = null; //数组处理时的计数
+    for (o = 0; o < canData.data.length; o += 4) {
+      let r = (o / 4) % canvas.width,
+        i = (o / 4 - r) / canvas.width;
+      if ((o / 4) % 2 == 1 && i % 2 == 1)
+        if (0 === canData.data[o]) {
+          let n = r,
+            longitude = (i / (canvas.height / 180) - 90) / -1, //经度
+            latitude = n / (canvas.width / 360) - 180; //维度
+          let s = latLongToVector3(longitude, latitude, earthSize, .1); //经纬度变换
+          globeCloudVerticesArray.push(s); //将变换后的顶点放入数组
+        }
+    }
+    let l = new Float32Array(3 * globeCloudVerticesArray.length); //创建顶点数组长度
+    for (o = 0; o < globeCloudVerticesArray.length; o++) {
+      l[3 * o] = globeCloudVerticesArray[o].x;//设置顶点数组数据
+      l[3 * o + 1] = globeCloudVerticesArray[o].y;
+      l[3 * o + 2] = globeCloudVerticesArray[o].z;
+    }
+    let positionVal = new THREE.BufferAttribute(l, 3); //设置缓冲区属性值
+    globeCloudBufferGeometry.setAttribute("position", positionVal); //给缓冲几何体添加位置属性
+    let globeCloudMaterial = new THREE.PointsMaterial({
+      color: new THREE.Color(dvColor[1]),//颜色
+      fog: true,
+      size: 1,
+    });//球面斑点材质
+    let d = new Float32Array(3 * globeCloudVerticesArray.length), c = [];
+    for (o = 0; o < globeCloudVerticesArray.length; o++) {
+      c[o] = new THREE.Color(dvColor[1]);//球面斑点颜色
+      d[3 * o] = c[o].r;//设置地球云数组rgb颜色
+      d[3 * o + 1] = c[o].g;
+      d[3 * o + 2] = c[o].b;
+    }
+    let color_val = new THREE.BufferAttribute(d, 3);
+    globeCloudBufferGeometry.setAttribute("color", color_val);//给缓冲几何体添加颜色属性,修改颜色直接修改globeCloudBufferGeometry的setAttribute
+    let globeCloud = new THREE.Points(//球面的象素点
+      globeCloudBufferGeometry,
+      globeCloudMaterial
+    );
+    globeCloud.name = "globeCloud";
+    earthGroup.add(globeCloud); //将地球云添加到地球对象中
+  };
 };
 
 //经纬度坐标变换（传入e:纬度、a经度、t球半径、o球额外距离）
@@ -509,7 +618,7 @@ function createOrbitControls() {
   orbitControls.enableZoom = true; //鼠标缩放
   orbitControls.enableDamping = true; //滑动阻尼
   orbitControls.dampingFactor = 0.05; //(默认.25)
-  orbitControls.minDistance = 150; //相机距离目标最小距离
+  orbitControls.minDistance = 200; //相机距离目标最小距离
   orbitControls.maxDistance = 500; //相机距离目标最大距离
   orbitControls.autoRotate = true; //自转(相机)
   orbitControls.autoRotateSpeed = 1; //自转速度
@@ -788,7 +897,8 @@ async function downloadReport() {
 
   .top-div {
     pointer-events: none;
-    width: 100%;
+    width: 98%;
+    margin: 0px 1%;
     position: absolute;
     right: 0;
     z-index: 5;

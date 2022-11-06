@@ -2,13 +2,15 @@
 <template>
     <div class="set-drawer">
         <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='400px'>
-            <dv-border-box-6 :color="dvColor" class="drawer-div" style="--el-text-color-regular:#fff">
+            <dv-border-box-6 :color="dvColor" class="drawer-div">
                 <h2>球体设置</h2>
                 <el-form>
-                    <el-form-item label="昼夜切换：">
-                        <el-switch v-model="setData.isDay" @change="changeSetData('isDay')"
-                            style=" --el-switch-off-color: #ff6a6a">
-                        </el-switch>
+                    <el-form-item label="球体切换：">
+                        <el-radio-group v-model="setData.isDay" @change="changeSetData('isDay')">
+                            <el-radio-button label="spot" />
+                            <el-radio-button label="black" />
+                            <el-radio-button label="white" />
+                        </el-radio-group>
                     </el-form-item>
                     <el-form-item label="允许拖拽：">
                         <el-switch v-model="setData.isDrag" @change="changeSetData('isDrag')"
@@ -54,7 +56,7 @@ let props = defineProps({
     isDrawer: Boolean,//抽屉状态
 }),
     setData = ref({
-        isDay: false,//是否白天
+        isDay: "spot",//球体切换
         isDrag: true,//拖拽
         isZoom: true,//缩放
         isTag: true,//标签
@@ -88,7 +90,7 @@ function refreshPage() {
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-drawer__body) {
+:：deep(.el-drawer__body) {
     padding: 0px;
 }
 
