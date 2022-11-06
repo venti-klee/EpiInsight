@@ -244,6 +244,7 @@ function clickMore(moreData: any) {
 
                 img {
                     height: 20px;
+                    margin-right: 10px;
                 }
             }
         }
@@ -273,6 +274,7 @@ function clickMore(moreData: any) {
 
                 img {
                     height: 20px;
+                    margin-right: 10px;
                 }
             }
         }

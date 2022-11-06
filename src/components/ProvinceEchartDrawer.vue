@@ -66,13 +66,13 @@
                     </div>
                     <div class="rightEchart-btn">
                         <el-button class="btn" round color="#ff656599" @click="clickEchartBtn">
-                            <el-icon>
+                            <el-icon style="margin-right: 10px;">
                                 <Histogram />
                             </el-icon>
                             图表
                         </el-button>
                         <el-button class="btn" round color="#ff656599" @click="isProHisEchart = false">
-                            <el-icon>
+                            <el-icon  style="margin-right: 10px;">
                                 <List />
                             </el-icon>
                             表格

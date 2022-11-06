@@ -139,6 +139,7 @@ function clickXlsxBtn() {
 
                 img {
                     height: 20px;
+                    margin-right: 10px;
                 }
             }
         }

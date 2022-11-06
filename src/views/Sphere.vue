@@ -8,14 +8,15 @@
 
     <!--顶部标题-->
     <div :color="dvColor" class="top-div">
-      <div class="name-div">
+      <div class="name-div" :style="{ backgroundColor: sysBackgroundColor }">
         <dv-decoration-3 class="name-dv" :color="dvColor" />
         <dv-decoration-11 class="sys-name" :color="dvColor">
           疫情可视化
         </dv-decoration-11>
         <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
       </div>
-      <dv-decoration-7 class="sys-msg" :color="dvColor">v{{ version }}(截止{{ allData.mtime }})</dv-decoration-7>
+      <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">v{{ version
+      }}(截止{{ allData.mtime }})</dv-decoration-7>
       <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:50px;margin-top: -25px;" />
     </div>
 
@@ -40,17 +41,17 @@
 
     <!--数字盒子-->
     <dv-border-box-4 :color="dvColor" class="numDiv">
-      <div class="addconDiv" :style="{ backgroundColor: NumBackgroundColor }">
+      <div class="addconDiv" :style="{ backgroundColor: sysBackgroundColor }">
         <div class="tit">全球现存确诊</div>
         <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.certain_inc }}</div>
       </div>
-      <div class="addcureDiv" :style="{ backgroundColor: NumBackgroundColor }">
+      <div class="addcureDiv" :style="{ backgroundColor: sysBackgroundColor }">
         <div class="tit">全球累计治愈</div>
         <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.recure_inc }}</div>
       </div>
-      <div class="addDieDiv" :style="{ backgroundColor: NumBackgroundColor }">
+      <div class="addDieDiv" :style="{ backgroundColor: sysBackgroundColor }">
         <div class="tit">全球累计死亡</div>
         <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.die_inc }}</div>
@@ -58,36 +59,36 @@
     </dv-border-box-4>
 
     <dv-decoration-1 class="btn-dv1" :reverse="true" :color="dvColor" />
-    <dv-border-box-7 :color="dvColor" class="btn-div">
-      <el-button class="btn" :color=dvColor[0] @click="isSphere = true" round>
+    <dv-border-box-10 :color="dvColor" class="btn-div">
+      <el-button class="btn" :color=dvColor[0] @click="isSphere = true">
         <el-icon :size="20" style="margin-right: 10px;">
           <List />
         </el-icon>
         全球数据
       </el-button>
-      <el-button class="btn" :color=dvColor[0] @click="isChina = true" round>
+      <el-button class="btn" :color=dvColor[0] @click="isChina = true">
         <el-icon :size="20" style="margin-right:10px;">
           <List />
         </el-icon>
         国内数据
       </el-button>
-      <el-button class="btn" :color=dvColor[0] @click="isEchart = true;" round>
+      <el-button class="btn" :color=dvColor[0] @click="isEchart = true;">
         <el-icon :size="20" style="margin-right: 10px;">
           <TrendCharts />
         </el-icon>
         国内分析
       </el-button>
-      <el-button class="btn" :color=dvColor[0] @click="provinceAnalyze" round>
+      <el-button class="btn" :color=dvColor[0] @click="provinceAnalyze">
         <el-icon :size="20" style="margin-right: 10px;">
           <TrendCharts />
         </el-icon>
         省内分析
       </el-button>
-      <el-button class="btn" :color=dvColor[0] @click="sureDownloadReport" round>
+      <el-button class="btn" :color=dvColor[0] @click="sureDownloadReport">
         <img :src="wordImg">
         下载当地疫情报告
       </el-button>
-    </dv-border-box-7>
+    </dv-border-box-10>
     <dv-decoration-1 class="btn-dv2" :color="dvColor" />
 
     <div class="components">
@@ -169,7 +170,7 @@ let version: any = ref(PK.version),//系统版本号
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
   dvColor: any = ["#7b52f7", "#c5b2ff"],//dataV主题色
-  NumBackgroundColor: any = 'rgb(197, 178, 255, .2)';//数值面板背景色
+  sysBackgroundColor: any = 'rgb(197, 178, 255, .1)';//数值面板背景色
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -793,6 +794,7 @@ async function downloadReport() {
     z-index: 5;
 
     .name-div {
+      margin: 15px 0px 0px 0px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -834,7 +836,7 @@ async function downloadReport() {
     z-index: 5;
     height: 74vh;
     width: 300px;
-    margin: 13vh 0px 0px 5px;
+    margin: 15vh 0px 0px 5px;
 
     p {
       font-size: 20px;
@@ -879,7 +881,7 @@ async function downloadReport() {
     z-index: 5;
     width: auto;
     height: 74vh;
-    margin: 13vh 0px 0px 0px;
+    margin: 15vh 0px 0px 0px;
     display: flex;
     padding-left: 20px;
 
@@ -981,9 +983,11 @@ async function downloadReport() {
     .btn {
       color: #fff;
       margin: 10px;
+      border-radius: 0px;
 
       img {
         height: 20px;
+        margin-right: 10px;
       }
     }
   }
