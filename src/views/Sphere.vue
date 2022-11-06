@@ -15,8 +15,8 @@
         </dv-decoration-11>
         <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
       </div>
-      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:40px;margin-top: -10px;" />
       <dv-decoration-7 class="sys-msg" :color="dvColor">v{{ version }}(截止{{ allData.mtime }})</dv-decoration-7>
+      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:50px;margin-top: -25px;" />
     </div>
 
     <!--球体盒子-->
@@ -40,17 +40,17 @@
 
     <!--数字盒子-->
     <dv-border-box-4 :color="dvColor" class="numDiv">
-      <div class="addconDiv">
+      <div class="addconDiv" :style="{ backgroundColor: NumBackgroundColor }">
         <div class="tit">全球现存确诊</div>
         <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.certain_inc }}</div>
       </div>
-      <div class="addcureDiv">
+      <div class="addcureDiv" :style="{ backgroundColor: NumBackgroundColor }">
         <div class="tit">全球累计治愈</div>
         <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.recure_inc }}</div>
       </div>
-      <div class="addDieDiv">
+      <div class="addDieDiv" :style="{ backgroundColor: NumBackgroundColor }">
         <div class="tit">全球累计死亡</div>
         <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
         <div class="day-tit">今日{{ othertotal.die_inc }}</div>
@@ -59,31 +59,31 @@
 
     <dv-decoration-1 class="btn-dv1" :reverse="true" :color="dvColor" />
     <dv-border-box-7 :color="dvColor" class="btn-div">
-      <el-button class="btn" color="#7b52f799" @click="isSphere = true" round>
+      <el-button class="btn" :color=dvColor[0] @click="isSphere = true" round>
         <el-icon :size="20" style="margin-right: 10px;">
           <List />
         </el-icon>
         全球数据
       </el-button>
-      <el-button class="btn" color="#7b52f799" @click="isChina = true" round>
+      <el-button class="btn" :color=dvColor[0] @click="isChina = true" round>
         <el-icon :size="20" style="margin-right:10px;">
           <List />
         </el-icon>
         国内数据
       </el-button>
-      <el-button class="btn" color="#7b52f799" @click="isEchart = true;" round>
+      <el-button class="btn" :color=dvColor[0] @click="isEchart = true;" round>
         <el-icon :size="20" style="margin-right: 10px;">
           <TrendCharts />
         </el-icon>
         国内分析
       </el-button>
-      <el-button class="btn" color="#7b52f799" @click="provinceAnalyze" round>
+      <el-button class="btn" :color=dvColor[0] @click="provinceAnalyze" round>
         <el-icon :size="20" style="margin-right: 10px;">
           <TrendCharts />
         </el-icon>
         省内分析
       </el-button>
-      <el-button class="btn" color="#409eff99" @click="sureDownloadReport" round>
+      <el-button class="btn" :color=dvColor[0] @click="sureDownloadReport" round>
         <img :src="wordImg">
         下载当地疫情报告
       </el-button>
@@ -168,7 +168,8 @@ let version: any = ref(PK.version),//系统版本号
   userMsg: any = ref({}),//使用者信息
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
-  dvColor: any = ["#7b52f7", "#c5b2ff"];
+  dvColor: any = ["#7b52f7", "#c5b2ff"],//dataV主题色
+  NumBackgroundColor: any = 'rgb(197, 178, 255, .2)';//数值面板背景色
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -521,7 +522,7 @@ function render() {
     document
       .getElementById("sphereDiv")!
       .addEventListener("mousemove", onMousemove, false);
-
+  window.addEventListener('resize', onWindowResize, false);
   orbitControls.update(); //鼠标控件实时更新
   renderer.render(scene, camera);
 };
@@ -547,6 +548,13 @@ function onMousemove(e: any) {
     currentPointData.value = {}; //置空标签数据
     dom!.style.cursor = "move"; //光标样式
   }
+};
+
+//窗口尺寸改变重设渲染器
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;//修改相机宽高比
+  camera.updateProjectionMatrix();// 更新投影的变换矩阵
+  renderer.setSize(window.innerWidth, window.innerHeight);//设置渲染器尺寸
 };
 
 //初始化图表
@@ -787,6 +795,7 @@ async function downloadReport() {
     .name-div {
       display: flex;
       justify-content: center;
+      align-items: center;
 
       .name-dv {
         width: 20vw;
@@ -825,7 +834,7 @@ async function downloadReport() {
     z-index: 5;
     height: 74vh;
     width: 300px;
-    margin: 13vh 0px 0px 20px;
+    margin: 13vh 0px 0px 5px;
 
     p {
       font-size: 20px;
@@ -866,7 +875,7 @@ async function downloadReport() {
   .numDiv {
     pointer-events: none;
     position: absolute;
-    right: 20px;
+    right: 10px;
     z-index: 5;
     width: auto;
     height: 74vh;
@@ -882,7 +891,6 @@ async function downloadReport() {
       text-align: center;
       color: #fff;
       font-weight: 900;
-      background-color: rgb(197, 178, 255, .2);
 
       .tit {
         font-size: 20px;
@@ -931,6 +939,7 @@ async function downloadReport() {
     .addcureDiv {
       display: flex;
       flex-direction: column;
+
       .tit,
       .day-tit,
       .addcure-div {
@@ -974,8 +983,7 @@ async function downloadReport() {
       margin: 10px;
 
       img {
-        height: 30px;
-        width: 30px;
+        height: 20px;
       }
     }
   }
