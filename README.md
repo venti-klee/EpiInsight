@@ -21,9 +21,9 @@
 6. dataV大屏可视化组件
 # 项目使用
 * 安装依赖：npm i
+* 修改dataV：https://blog.csdn.net/xi1213/article/details/127697760
 * 运行项目：npm run serve
 * 打包项目：npm run build
-* 修改dataV：https://blog.csdn.net/xi1213/article/details/127697760
 # 详情说明
 1. 疫情分布地球，背景为宇宙星空，球体可鼠标操控，拖拽缩放，光标移入红点会显示该国疫情数据。左侧为累计确诊前50国家，右侧为全球疫情实时总览数据，有数值增加动画。
 ![img](./md_img/1.jpg)
