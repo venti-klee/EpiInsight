@@ -34,7 +34,6 @@ onMounted(() => { })
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    cursor: pointer;
     background-color: rgba(255, 255, 255, 1);
   }
 }

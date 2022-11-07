@@ -1,7 +1,7 @@
 <!--疫情球体-->
 <template>
   <dv-border-box-1 class="container" :color="dvColor" v-loading="isLoading"
-    element-loading-background="rgba(255, 255, 255, 0.8)" element-loading-text="数据加载中...">
+    element-loading-background="rgba(0, 0, 0, 0.9)" element-loading-text="数据加载中...">
     <div class="isMobile-div" v-if="mobileDiv">
       <!--手机端遮罩-->
     </div>
@@ -85,7 +85,7 @@
         </el-icon>
         省内分析
       </el-button>
-      <el-button class="btn" :color=dvColor[0] @click="sureDownloadReport">
+      <el-button class="btn" :color=dvColor[0] @click="openPreview">
         <img :src="wordImg">
         生成报告
       </el-button>
@@ -107,6 +107,8 @@
       <!--省内图表分析-->
       <ProvinceEchartDrawer :isProvinceEchartDrawer="isProvinceEchartDrawer" @close="isProvinceEchartDrawer = false"
         :currentProvinceData="currentProvinceData" />
+      <!--报告抽屉-->
+      <ReportDrawer :isReport="isReport" :dvColor="dvColor" :reportData="reportData" @close="isReport = false" />
     </div>
   </dv-border-box-1>
 </template>
@@ -115,7 +117,6 @@ import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue'
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
-import { saveAs } from 'file-saver'
 import PK from "@/../package.json";
 import jsonp from "@/utils/jsonpUtils";
 import jsonp1 from "@/utils/jsonpUtils1";
@@ -138,6 +139,7 @@ import ChinaEchartDrawer from "@/views/ChinaEchartDrawer.vue";
 import SetDrawer from "@/components/SetDrawer.vue";
 import SphereTabDrawer from "@/views/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/views/ChinaTabDrawer.vue";
+import ReportDrawer from "@/views/ReportDrawer.vue";
 import ProvinceEchartDrawer from "@/views/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
 let version: any = ref(PK.version),//系统版本号
@@ -157,6 +159,7 @@ let version: any = ref(PK.version),//系统版本号
   isSphere = ref(false),//全球数据对话框状态
   isChina = ref(false),//国内数据对话框状态
   isEchart = ref(false),//图表分析对话框状态
+  isReport = ref(false),//报告对话框状态
   anId = ref(0), //动画id
   isLoading = ref(false), //加载状态
   allData: any = ref({}), //疫情所有数据
@@ -174,7 +177,8 @@ let version: any = ref(PK.version),//系统版本号
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
   dvColor: any = ["#7b52f7", "#c5b2ff"],//系统线框主题色
-  sysBackgroundColor: any = 'rgb(197, 178, 255, .1)';//系统背景主题色
+  sysBackgroundColor: any = 'rgb(197, 178, 255, .1)',//系统背景主题色
+  reportData: any = ref({ blobData: null, fileName: null });//报告数据
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -809,15 +813,8 @@ function provinceAnalyze() {
   isProvinceEchartDrawer.value = true;
 }
 
-//确认下载报告
-function sureDownloadReport() {
-  if (confirm("确认生成并下载当地疫情报告？")) {
-    downloadReport();//下载报告
-  }
-};
-
-//下载本地疫情报告
-async function downloadReport() {
+//预览疫情报告
+async function openPreview() {
   isLoading.value = true;
   let tempData: any = {};//当前省的临时数据
   await (tempData = JSON.parse(JSON.stringify(currentProvinceData.value)));
@@ -848,21 +845,21 @@ async function downloadReport() {
       wordData.wordName = c.name;//获取文件名
     }
   })
-  isLoading.value = false;
   //城市名未找到时将省名添加到文件名中
   if (!wordData.wordName) {
     wordData.hasCityData = false;
     wordData.wordName = wordData.overviewData.name;
   }
-  let fileName = wordData.wordName + "疫情报告.docx";//文件名
-  let blobData = null;//返回的blob数据
   await getWordBlob("docx/word.docx", wordData).
     then((res: any) => {
-      blobData = res;
+      isLoading.value = false;
+      reportData.value = {
+        fileName: wordData.wordName + "疫情报告.docx",//设置文件名
+        blobData: res,//获取blob数据
+      };
+      isReport.value = true;//打开报告抽屉
     })
-  console.log(blobData);
-  // saveAs(res, fileName);//通过返回的blob下载文件
-}
+};
 
 </script>
 <style scoped lang='scss'>

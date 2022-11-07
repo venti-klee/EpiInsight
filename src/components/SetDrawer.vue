@@ -47,7 +47,6 @@
             </dv-border-box-13>
         </el-drawer>
     </div>
-
 </template>
 
 <script lang='ts' setup>
