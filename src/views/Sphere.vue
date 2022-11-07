@@ -115,10 +115,11 @@ import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue'
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
+import { saveAs } from 'file-saver'
 import PK from "@/../package.json";
 import jsonp from "@/utils/jsonpUtils";
 import jsonp1 from "@/utils/jsonpUtils1";
-import { exportWord } from "@/utils/downloadDoc.js";
+import { getWordBlob } from "@/utils/getWordBlob.js";
 import addNumber from "@/components/addNumber.vue";
 import countryPosition from "@/assets/json/countryPosition.json";
 import { dataSource1, dataSource2 } from "@/api/request";
@@ -139,7 +140,6 @@ import SphereTabDrawer from "@/views/SphereTabDrawer.vue";
 import ChinaTabDrawer from "@/views/ChinaTabDrawer.vue";
 import ProvinceEchartDrawer from "@/views/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
-import { ElMessage } from 'element-plus'
 let version: any = ref(PK.version),//系统版本号
   mobileDiv: any = ref(true),//手机端遮罩
   scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
@@ -854,12 +854,14 @@ async function downloadReport() {
     wordData.hasCityData = false;
     wordData.wordName = wordData.overviewData.name;
   }
-  // console.log(wordData);
-  await exportWord("docx/word.docx", wordData, wordData.wordName + "疫情报告.docx");
-  ElMessage({
-    type: 'success',
-    message: '报告下载成功！',
-  })
+  let fileName = wordData.wordName + "疫情报告.docx";//文件名
+  let blobData = null;//返回的blob数据
+  await getWordBlob("docx/word.docx", wordData).
+    then((res: any) => {
+      blobData = res;
+    })
+  console.log(blobData);
+  // saveAs(res, fileName);//通过返回的blob下载文件
 }
 
 </script>

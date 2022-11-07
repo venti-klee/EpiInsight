@@ -11,6 +11,7 @@
 		"@jiaminghi/data-view": "^2.10.0",
 		"axios": "^0.27.2",
 		"core-js": "^3.8.3",
+		"docx-preview": "^0.1.14",
 		"docxtemplater": "^3.31.4",
 		"echarts": "^4.9.0",
 		"element-plus": "^2.2.16",
