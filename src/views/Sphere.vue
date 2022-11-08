@@ -132,7 +132,7 @@ import starImg from "@/assets/img/star.jpg";
 import earthImg from "@/assets/img/earth.jpg";
 import earthNightImg from "@/assets/img/earthNight.jpg";
 import normalImg from "@/assets/img/earthNormal.jpg";
-import virusImg from "@/assets/img/virus3.png";
+import virusImg from "@/assets/img/virus1.png";
 import earthGrayscale from "@/assets/img/map_inverted.png";
 import PointMsg from "@/components/PointMsg.vue";
 import ChinaEchartDrawer from "@/views/ChinaEchartDrawer.vue";
