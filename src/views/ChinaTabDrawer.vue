@@ -52,7 +52,7 @@
                             <el-table-column prop="econNum" label="现存确诊" sortable />
                             <el-table-column prop="deathNum" label="死亡数" sortable />
                             <el-table-column prop="cureNum" label="治愈数" sortable />
-                            <el-table-column prop="asymptomNum" label="较昨日新增数" sortable />
+                            <el-table-column prop="conadd" label="较昨日新增数" sortable />
                             <el-table-column prop="zerodays" label="0增天数" sortable />
                         </el-table>
                     </template>
@@ -61,7 +61,7 @@
                 <el-table-column prop="econNum" label="现存确诊" sortable />
                 <el-table-column prop="deathNum" label="死亡数" sortable />
                 <el-table-column prop="cureNum" label="治愈数" sortable />
-                <el-table-column prop="asymptomNum" label="较昨日新增数" sortable />
+                <el-table-column prop="conadd" label="较昨日新增数" sortable />
                 <el-table-column prop="jwsrNum" label="境外输入" sortable />
                 <el-table-column prop="isHM" label="风险地">
                     <template #default="props">
@@ -185,7 +185,7 @@ function clickXlsxBtn(type: string, name: string, data: any) {
         tabObj = {
             fileName: "国内疫情数据",
             tabHead: ["省份", "累计数", "现存确诊", "死亡数", "治愈数", "较昨日新增数", "境外输入"],
-            keyList: ["name", "value", "econNum", "econNum", "cureNum", "asymptomNum", "jwsrNum"],
+            keyList: ["name", "value", "econNum", "econNum", "cureNum", "conadd", "jwsrNum"],
             tabData: tabData.value
         };
     }
@@ -194,7 +194,7 @@ function clickXlsxBtn(type: string, name: string, data: any) {
         tabObj = {
             fileName: name + "疫情数据",
             tabHead: ["市/区", "累计数", "现存确诊", "死亡数", "治愈数", "较昨日新增数", "0增天数"],
-            keyList: ["name", "conNum", "econNum", "deathNum", "cureNum", "asymptomNum", "zerodays"],
+            keyList: ["name", "conNum", "econNum", "deathNum", "cureNum", "conadd", "zerodays"],
             tabData: data
         };
     }

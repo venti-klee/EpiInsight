@@ -140,7 +140,7 @@ let props = defineProps({
     props.allData.list.forEach((l: any) => {
       tempList.push({
         name: l.name,
-        value: Number(l.asymptomNum)
+        value: Number(l.conadd)
       })
     });
     tempList = sortFun(tempList);
@@ -479,7 +479,7 @@ async function chinaMapInit() {
       allNum: l.value,//累计数
       deathNum: l.deathNum,//死亡数
       cureNum: l.cureNum,//治愈数
-      asymptomNum: l.asymptomNum,//较昨日新增
+      conadd: Number(l.conadd),//较昨日新增
       jwsrNum: l.jwsrNum//境外输入
     })
   })
@@ -529,7 +529,7 @@ async function chinaMapInit() {
             "<div style='color:#888;font-weight:900;'>累计：" + params.data.allNum + "</div>" +
             "<div style='color:#888;font-weight:900;'>死亡：" + params.data.deathNum + "</div>" +
             "<div style='color:#888;font-weight:900;'>治愈：" + params.data.cureNum + "</div>" +
-            "<div style='color:#888;font-weight:900;'>较昨日新增：" + params.data.asymptomNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>较昨日新增：" + params.data.conadd + "</div>" +
             "<div style='color:#888;font-weight:900;'>境外输入：" + params.data.jwsrNum + "</div>"
         }
         return tipString;

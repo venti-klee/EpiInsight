@@ -31,8 +31,7 @@
                                     (今日{{ provinceBaseData.cureadd }})
                                 </h3>
                                 <h3>较昨日新增：
-                                    <addNumber :value="provinceBaseData.asymptomtotal" :time="10"
-                                        :thousandSign="true" />
+                                    <addNumber :value="provinceBaseData.conadd_n" :time="10" :thousandSign="true" />
                                 </h3>
                                 <!-- <h3>本土新增：
                                 <addNumber :value="provinceBaseData.locIncrNum" :time="10" :thousandSign="true" />
@@ -65,7 +64,7 @@
                                 <el-table-column prop="econNum" label="确诊数" sortable />
                                 <el-table-column prop="deathNum" label="死亡数" sortable />
                                 <el-table-column prop="cureNum" label="治愈数" sortable />
-                                <el-table-column prop="asymptomNum" label="较昨日新增" sortable />
+                                <el-table-column prop="conadd" label="较昨日新增" sortable />
                             </el-table>
                         </div>
                         <div class="rightEchart-btn">
@@ -139,6 +138,7 @@ watch(
                 econadd: props.currentProvinceData.adddaily.econadd,
                 cureadd: props.currentProvinceData.adddaily.cureadd,
                 conadd: props.currentProvinceData.adddaily.conadd,
+                conadd_n: props.currentProvinceData.adddaily.conadd_n,
             };
             provinceData.value = props.currentProvinceData.city;//获取省份的城市数据
             await provinceData.value.forEach((t: any) => {
@@ -146,7 +146,7 @@ watch(
                 t.econNum = Number(t.econNum);//确诊数
                 t.deathNum = Number(t.deathNum);//死亡数
                 t.cureNum = Number(t.cureNum);//治愈数
-                t.asymptomNum = Number(t.asymptomNum);//较昨日新增
+                t.conadd = Number(t.conadd);//较昨日新增
             });
             await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
             initEchart();//初始化图表
@@ -181,14 +181,14 @@ function initEchart() {
 
 //柱状图
 async function proHisEchartFun() {
-    let echartData: any = { cityName: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
+    let echartData: any = { cityName: [], conNum: [], econNum: [], deathNum: [], cureNum: [], conadd: [] };
     await provinceData.value.forEach((p: any) => {
         echartData.cityName.push(p.name);
         echartData.conNum.push(p.conNum);
         echartData.econNum.push(p.econNum);
         echartData.deathNum.push(p.deathNum);
         echartData.cureNum.push(p.cureNum);
-        echartData.asymptomNum.push(p.asymptomNum);
+        echartData.conadd.push(Number(p.conadd));
     })
     let option = {
         title: {
@@ -317,7 +317,7 @@ async function proHisEchartFun() {
                 itemStyle: {
                     color: '#794ebd'
                 },
-                data: echartData.asymptomNum
+                data: echartData.conadd
             },
             {
                 name: '死亡数',
@@ -345,7 +345,7 @@ async function proHisEchartFun() {
 
 //历史图表
 async function historyEchartFun() {
-    let echatrData: any = { time: [], conNum: [], econNum: [], deathNum: [], cureNum: [], asymptomNum: [] };
+    let echatrData: any = { time: [], conNum: [], econNum: [], deathNum: [], cureNum: [], conadd: [] };
     let histData = JSON.parse(JSON.stringify(historyList.value));
     await histData.reverse();
     await histData.forEach((h: any) => {
@@ -354,7 +354,7 @@ async function historyEchartFun() {
         echatrData.econNum.push(h.econNum);
         echatrData.deathNum.push(h.deathNum);
         echatrData.cureNum.push(h.cureNum);
-        echatrData.asymptomNum.push(h.asymptomNum);
+        echatrData.conadd.push(h.conadd);
     })
     let option = {
         title: {
@@ -488,7 +488,7 @@ async function historyEchartFun() {
                 emphasis: {
                     focus: 'series'
                 },
-                data: echatrData.asymptomNum
+                data: echatrData.conadd
             },
             {
                 name: '治愈数',
