@@ -1,6 +1,6 @@
 {
 	"name": "covid19-visualization",
-	"version": "0.2.18",
+	"version": "0.2.19",
 	"private": true,
 	"scripts": {
 		"serve": "vue-cli-service serve",
