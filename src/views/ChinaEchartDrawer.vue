@@ -240,12 +240,24 @@ function histogramOption(list: any, titName: string, color: string) {
       {
         data: [],
         type: 'bar',
+        animationDuration: 2000,//动画时间
+        animationEasing: "cubicInOut",//动画类型
         showBackground: true,
         backgroundStyle: {
           color: 'rgba(180, 180, 180, 0.2)'
         },
         itemStyle: {
-          color: color,
+          // color: "#7b52f7",
+          color: new echarts.graphic.LinearGradient(0, 1, 1, 1, [
+            {
+              offset: 0,
+              color: "#b9a2fd"
+            },
+            {
+              offset: 1,
+              color: "#372962"
+            }
+          ])
         },
         label: {
           color: "#fff",
@@ -392,6 +404,8 @@ async function historyLineChartFun(list: any) {
       {
         name: '确诊数',
         type: 'line',
+        animationDuration: 2000,//动画时间
+        animationEasing: "cubicInOut",//动画类型
         lineStyle: {
           color: '#f4c25e'
         },

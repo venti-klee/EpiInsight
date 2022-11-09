@@ -741,12 +741,24 @@ function histogramChartFun(list: any) {
       {
         data: [],
         type: "bar",
+        animationDuration: 2000,//动画时间
+        animationEasing: "cubicInOut",//动画类型
         showBackground: true,
         backgroundStyle: {
           color: "rgb(197, 178, 255,.2)",
         },
         itemStyle: {
-          color: "#7b52f7",
+          // color: "#7b52f7",
+          color: new echarts.graphic.LinearGradient(0, 1, 1, 1, [
+            {
+              offset: 0,
+              color: "#b9a2fd"
+            },
+            {
+              offset: 1,
+              color: "#372962"
+            }
+          ])
         },
         label: {
           color: "#fff",

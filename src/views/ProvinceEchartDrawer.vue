@@ -254,6 +254,8 @@ async function proHisEchartFun() {
             {
                 name: '累计数',
                 type: 'bar',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 // stack: 'total',
                 // label: {
                 //     show: true
@@ -269,6 +271,8 @@ async function proHisEchartFun() {
             {
                 name: '治愈数',
                 type: 'bar',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 // stack: 'total',
                 // label: {
                 //     show: true
@@ -285,6 +289,8 @@ async function proHisEchartFun() {
                 name: '确诊数',
                 type: 'bar',
                 stack: 'total',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 // label: {
                 //     show: true
                 // },
@@ -300,6 +306,8 @@ async function proHisEchartFun() {
                 name: '较昨日新增',
                 type: 'bar',
                 stack: 'total',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 // label: {
                 //     show: true
                 // },
@@ -315,6 +323,8 @@ async function proHisEchartFun() {
                 name: '死亡数',
                 type: 'bar',
                 stack: 'total',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 // label: {
                 //     show: true
                 // },
@@ -410,6 +420,8 @@ async function historyEchartFun() {
             {
                 name: '累计数',
                 type: 'line',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -431,6 +443,8 @@ async function historyEchartFun() {
             {
                 name: '确诊数',
                 type: 'line',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -452,6 +466,8 @@ async function historyEchartFun() {
             {
                 name: '较昨日新增',
                 type: 'line',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -477,6 +493,8 @@ async function historyEchartFun() {
             {
                 name: '治愈数',
                 type: 'line',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
@@ -498,6 +516,8 @@ async function historyEchartFun() {
             {
                 name: '死亡数',
                 type: 'line',
+                animationDuration: 2000,//动画时间
+                animationEasing: "cubicInOut",//动画类型
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
