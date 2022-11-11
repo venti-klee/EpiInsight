@@ -16,8 +16,8 @@
         <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
       </div>
       <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">v{{ version
-      }}(截止{{ allData.mtime }})</dv-decoration-7>
-      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:50%;height:60px;margin-top: -30px;" />
+      }}({{ isOffLineData ? "离线" : "在线" }}数据截止{{ allData.mtime }})</dv-decoration-7>
+      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:60%;height:60px;margin-top: -30px;" />
     </div>
 
     <!--球体盒子-->
@@ -178,7 +178,8 @@ let version: any = ref(PK.version),//系统版本号
   isProvinceEchartDrawer = ref(false),//省内图表对话框
   dvColor: any = ["#7b52f7", "#c5b2ff"],//系统线框主题色
   sysBackgroundColor: any = 'rgb(197, 178, 255, .1)',//系统背景主题色
-  reportData: any = ref({ blobData: null, fileName: null });//报告数据
+  reportData: any = ref({ blobData: null, fileName: null }),//报告数据
+  isOffLineData: any = ref(null);//是否使用离线数据
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -217,7 +218,12 @@ function changeSetData(type: string, setData: any) {
   (type == "isZoom") && (orbitControls.enableZoom = setData.value.isZoom);//鼠标缩放
   (type == "isTag") && (isTag = setData.value.isTag);//标签显示
   (type == "autoRotate") && (orbitControls.autoRotate = setData.value.autoRotate);//自转切换
-  (type == "rotateSpeed") && (orbitControls.autoRotateSpeed = setData.value.rotateSpeed / 10)//自转速度
+  (type == "rotateSpeed") && (orbitControls.autoRotateSpeed = setData.value.rotateSpeed / 10);//自转速度
+  if (type == "isOfLData") {
+    sessionStorage.setItem("isOffLineData", setData.value.isOfLData);//切换数据源
+    location.reload();//刷新页面重新获取数据源
+  }
+
 };
 
 //销毁场景
@@ -270,12 +276,20 @@ function decodingStr(str: any) {
 };
 
 //获取数据
-//开发环境用本地tempData数据
-//生产环境用vue代理dataSource1获取api数据
-//代理获取失败则使用jsonp获取api数据
+//未切换数据源，默认开发环境使用tempData，生产环境使用api。
+//切换数据源为非离线，开发环境使用vue代理dataSource1，生产环境用vue代理dataSource1(获取失败使用jsonp获取)
 function getCOVID19Data() {
   isLoading.value = true;
-  if (process.env.NODE_ENV !== "development") {
+  //有sessionStorage使用sessionStorage给isOffLineData赋值
+  if (sessionStorage.getItem("isOffLineData")) {
+    sessionStorage.getItem("isOffLineData") == "true" ? isOffLineData.value = true : isOffLineData.value = false;
+  } else {
+    //无sessionStorage使用process.env.NODE_ENV给isOffLineData赋值，同时存下sessionStorage
+    process.env.NODE_ENV == "development" ? isOffLineData.value = true : isOffLineData.value = false;//获取环境状态
+    sessionStorage.setItem("isOffLineData", isOffLineData.value);//存下数据来源状态
+  }
+  //使用isOffLineData状态决定数据源
+  if (!isOffLineData.value) {
     dataSource1()
       .then((res) => {
         console.log("vue代理dataSource1获取数据");
@@ -781,7 +795,8 @@ function histogramChartFun(list: any) {
 
 //获取用户ip信息
 function getLocationMsg() {
-  if (process.env.NODE_ENV !== "development") {
+  //使用isOffLineData状态决定数据源
+  if (!isOffLineData.value) {
     let jsonpUrl: any = process.env.VUE_APP_3;
     jsonp(jsonpUrl, (res: any) => {
       userMsg.value = res;
@@ -796,17 +811,15 @@ function getLocationMsg() {
 
 //获取当前省数据
 function getProvinceData() {
-  let pro = userMsg.value.pro;//当前省
+  let pro = userMsg.value.pro;//当前省中文名
   let ePro = "";//英文省名
-  //开发环境用临时数据
-  if (process.env.NODE_ENV !== "development") {
-    //遍历获取到英文名
+  //使用isOffLineData状态决定数据源
+  if (!isOffLineData.value) {
     allData.value.list.forEach((l: any) => {
       if (pro.search(l.name) >= 0) {
-        ePro = l.ename;
+        ePro = l.ename;//遍历获取到英文名
       }
     })
-    //jsonp获取到当前省数据
     jsonp1(
       process.env.VUE_APP_5,
       (res: any) => {
@@ -900,6 +913,7 @@ async function openPreview() {
     position: absolute;
     right: 0;
     z-index: 5;
+    color: #fff;
 
     .name-div {
       margin: 15px 0px 0px 0px;

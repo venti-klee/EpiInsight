@@ -31,7 +31,9 @@
                                     (今日{{ provinceBaseData.cureadd }})
                                 </h3>
                                 <h3>较昨日新增：
-                                    <addNumber :value="provinceBaseData.conadd_n" :time="10" :thousandSign="true" />
+                                    <span v-if="isNaN(Number(provinceBaseData.conadd_n))">{{ provinceBaseData.conadd_n }}</span>
+                                    <addNumber v-else :value="provinceBaseData.conadd_n" :time="10"
+                                        :thousandSign="true" />
                                 </h3>
                                 <!-- <h3>本土新增：
                                 <addNumber :value="provinceBaseData.locIncrNum" :time="10" :thousandSign="true" />

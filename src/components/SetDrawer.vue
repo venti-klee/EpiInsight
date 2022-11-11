@@ -3,7 +3,7 @@
     <div class="set-drawer">
         <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='400px'>
             <dv-border-box-13 :color="dvColor" class="drawer-div">
-                <h2>球体设置</h2>
+                <h2>系统设置</h2>
                 <el-form>
                     <el-form-item label="球体切换：">
                         <el-radio-group v-model="setData.isDay" @change="changeSetData('isDay')">
@@ -11,29 +11,34 @@
                                 style="--el-radio-button-checked-border-color:#7b52f7;--el-radio-button-checked-bg-color:#7b52f7" />
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="允许拖拽：">
+                    <el-form-item label="球体拖拽：">
                         <el-switch v-model="setData.isDrag" @change="changeSetData('isDrag')"
                             style="--el-switch-on-color: #7b52f7">
                         </el-switch>
                     </el-form-item>
-                    <el-form-item label="允许缩放：">
+                    <el-form-item label="球体缩放：">
                         <el-switch v-model="setData.isZoom" @change="changeSetData('isZoom')"
                             style="--el-switch-on-color: #7b52f7">
                         </el-switch>
                     </el-form-item>
-                    <el-form-item label="标签显示：">
+                    <el-form-item label="球体标签：">
                         <el-switch v-model="setData.isTag" @change="changeSetData('isTag')"
                             style="--el-switch-on-color: #7b52f7">
                         </el-switch>
                     </el-form-item>
-                    <el-form-item label="自动旋转：">
+                    <el-form-item label="球体自转：">
                         <el-switch v-model="setData.autoRotate" @change="changeSetData('autoRotate')"
                             style=" --el-switch-on-color: #7b52f7">
                         </el-switch>
                     </el-form-item>
-                    <el-form-item label="旋转速度：" v-if="setData.autoRotate">
+                    <el-form-item label="自转速度：" v-if="setData.autoRotate">
                         <el-slider v-model="setData.rotateSpeed" @input="changeSetData('rotateSpeed')"
                             style="--el-color-primary:#7b52f7" />
+                    </el-form-item>
+                    <el-form-item label="离线数据：">
+                        <el-switch v-model="setData.isOfLData" @change="changeSetData('isOfLData')"
+                            style="--el-switch-on-color: #7b52f7">
+                        </el-switch>
                     </el-form-item>
                 </el-form>
                 <div style="text-align:center;width:100%;">
@@ -55,13 +60,14 @@ let props = defineProps({
     isDrawer: Boolean,//抽屉状态
     dvColor: Array
 }),
-    setData = ref({
+    setData: any = ref({
         isDay: "粒子",//球体切换
         isDrag: true,//拖拽
         isZoom: true,//缩放
         isTag: true,//标签
         autoRotate: true,//自动旋转
         rotateSpeed: 10,//旋转速度
+        isOfLData: null,//离线数据
     }),
     isDrawer = ref(false),
     isDayList = ["粒子", "黑夜", "白昼"],//球体列表
@@ -70,7 +76,15 @@ let props = defineProps({
 //监听props值变化改变isDrawer
 watch(
     () => props.isDrawer,
-    (val) => { val && (isDrawer.value = true); }
+    (val) => {
+        if (val) {
+            isDrawer.value = true;
+            //通过sessionStorage给isOfLData赋值
+            sessionStorage.getItem("isOffLineData") == "true" ?
+                setData.value.isOfLData = true :
+                setData.value.isOfLData = false;
+        }
+    }
 )
 
 function handleClose() {
