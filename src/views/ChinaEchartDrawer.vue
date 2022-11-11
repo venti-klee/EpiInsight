@@ -366,6 +366,7 @@ async function historyLineChartFun(list: any) {
       },
     },
     legend: {
+      icon: 'rect',
       data: ['确诊数', '治愈数', '死亡数', '境外输入'],
       textStyle: {
         color: "#fff"
@@ -438,10 +439,10 @@ async function historyLineChartFun(list: any) {
         name: '死亡数',
         type: 'line',
         lineStyle: {
-          color: '#f00'
+          color: '#ff6a6a'
         },
         itemStyle: {
-          color: '#f00'
+          color: '#ff6a6a'
         },
         data: lineData.map(function (item: any) {
           return item.cn_deathNum;

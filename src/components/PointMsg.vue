@@ -1,7 +1,6 @@
 <!--球面点标签-->
 <template>
-  <div class="tag-div" v-show="props.currentPointData.name"
-    :style="{ top: props.position.y, left: props.position.x }">
+  <div class="tag-div" v-show="props.currentPointData.name" :style="{ top: props.position.y, left: props.position.x }">
     <div class="name">
       <span>{{ props.currentPointData.name }}</span>
     </div>
@@ -35,30 +34,29 @@ let props = defineProps({
 </script>
 <style scoped lang='scss'>
 .tag-div {
-  padding: 10px 20px;
+  padding: 5px 20px;
   background-color: rgba(0, 0, 0, .5);
   color: #fff;
   position: absolute;
   border: 2px solid #7b52f7;
-
-  div {
-    margin: 5px 0px;
-    font-size: 15px;
-    font-weight: 900;
-
-    span {
-      color: #ff6a6a;
-    }
-
-  }
+  font-size: 15px;
+  font-weight: 900;
 
   .name {
-    font-size: 20px;
+    font-size: 25px;
+    color: #ff6a6a;
+    margin: 0px 0px 10px 0px;
+  }
+
+  .die,
+  .cure,
+  .all {
+    margin: 0px 0px 5px 0px;
+    color: #ccc;
 
     span {
       color: #fff;
     }
-
   }
 }
 </style>

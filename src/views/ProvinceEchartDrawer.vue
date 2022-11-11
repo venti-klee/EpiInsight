@@ -120,7 +120,7 @@ let props = defineProps({
     historyEchart: any = null,//历史图表
     isProHisEchart = ref(true),//显示柱状图状态
     emits = defineEmits(["close"]),
-    dvColor = ["#7b52f7", "#c5b2ff"];
+    dvColor: any = ["#7b52f7", "#c5b2ff"];
 
 watch(
     () => props.isProvinceEchartDrawer,
@@ -222,6 +222,7 @@ async function proHisEchartFun() {
             }
         ],
         legend: {
+            icon: 'rect',
             data: ['累计数', '治愈数', '确诊数', '较昨日新增', '死亡数'],
             orient: "vertical",
             top: "15%",
@@ -382,6 +383,7 @@ async function historyEchartFun() {
             }
         },
         legend: {
+            icon: 'rect',
             data: ['累计数', '确诊数', '较昨日新增', '治愈数', '死亡数'],
             orient: "vertical",
             top: "15%",
@@ -432,12 +434,21 @@ async function historyEchartFun() {
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
-                    width: 0
+                    width: 1
                 },
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.8,
-                    color: "#f59158"
+                    color: new echarts.graphic.LinearGradient(1, 0, 1, 1, [
+                        {
+                            offset: 0,
+                            color: "#f59158"
+                        },
+                        {
+                            offset: 1,
+                            color: "#ffffff"
+                        }
+                    ])
                 },
                 emphasis: {
                     focus: 'series'
@@ -455,12 +466,21 @@ async function historyEchartFun() {
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
-                    width: 0
+                    width: 1
                 },
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.8,
-                    color: "#ffd889"
+                    color: new echarts.graphic.LinearGradient(1, 0, 1, 1, [
+                        {
+                            offset: 0,
+                            color: "#ffd889"
+                        },
+                        {
+                            offset: 1,
+                            color: "#ffffff"
+                        }
+                    ])
                 },
                 itemStyle: {
                     color: '#ffd889'
@@ -478,7 +498,7 @@ async function historyEchartFun() {
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
-                    width: 0
+                    width: 1
                 },
                 showSymbol: false,
                 label: {
@@ -487,7 +507,16 @@ async function historyEchartFun() {
                 },
                 areaStyle: {
                     opacity: 0.8,
-                    color: "#794ebd"
+                    color: new echarts.graphic.LinearGradient(1, 0, 1, 1, [
+                        {
+                            offset: 0,
+                            color: "#794ebd"
+                        },
+                        {
+                            offset: 1,
+                            color: "#ffffff"
+                        }
+                    ])
                 },
                 itemStyle: {
                     color: '#794ebd'
@@ -505,12 +534,21 @@ async function historyEchartFun() {
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
-                    width: 0
+                    width: 1
                 },
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.8,
-                    color: "#48c56b"
+                    color: new echarts.graphic.LinearGradient(1, 0, 1, 1, [
+                        {
+                            offset: 0,
+                            color: "#48c56b"
+                        },
+                        {
+                            offset: 1,
+                            color: "#ffffff"
+                        }
+                    ])
                 },
                 itemStyle: {
                     color: '#48c56b'
@@ -528,12 +566,21 @@ async function historyEchartFun() {
                 stack: 'Total',
                 smooth: true,
                 lineStyle: {
-                    width: 0
+                    width: 1
                 },
                 showSymbol: false,
                 areaStyle: {
                     opacity: 0.8,
-                    color: "#ff6a6a"
+                    color: new echarts.graphic.LinearGradient(1, 0, 1, 1, [
+                        {
+                            offset: 0,
+                            color: "#ff6a6a"
+                        },
+                        {
+                            offset: 1,
+                            color: "#ffffff"
+                        }
+                    ])
                 },
                 itemStyle: {
                     color: '#ff6a6a'
@@ -671,7 +718,7 @@ async function historyEchartFun() {
         }
 
         .historyEchart-dv {
-            height: 250px;
+            height: 300px;
             width: 99%;
             margin: auto;
 
