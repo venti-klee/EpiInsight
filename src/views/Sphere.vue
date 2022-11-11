@@ -843,7 +843,7 @@ async function openPreview() {
       econNum: tempData.econNum,//现存数
       curetotal: tempData.curetotal,//治愈数
       deathtotal: tempData.deathtotal,//死亡数
-      conadd: tempData.conadd,//新增数
+      conadd: tempData.conadd ? tempData.conadd : 0//新增数
     },
     tabData: [],//表格数据
     sourceUrl: window.location.href//来源url

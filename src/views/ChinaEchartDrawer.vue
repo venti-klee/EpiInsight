@@ -66,6 +66,7 @@ import { ref, computed, watch, watchEffect, onMounted } from 'vue';
 import * as echarts from "echarts";
 import "echarts/map/js/china.js";
 import addNumber from "@/components/addNumber.vue";
+import { autoToolTip } from "@/utils/echartsAutoTooltip.js";
 let props = defineProps({
   isEchart: {
     type: Boolean,
@@ -140,7 +141,7 @@ let props = defineProps({
     props.allData.list.forEach((l: any) => {
       tempList.push({
         name: l.name,
-        value: Number(l.conadd)
+        value: isNaN(Number(l.conadd)) ? 0 : Number(l.conadd)
       })
     });
     tempList = sortFun(tempList);
@@ -466,6 +467,12 @@ async function historyLineChartFun(list: any) {
     ]
   };
   await (option && historyLineChart.setOption(option));
+  // 自动轮播
+  // autoToolTip(historyLineChart, option, {
+  //   interval: 100,// 轮播间隔时间 默认2s
+  //   loopSeries: true,// 是否循环轮播所有序列
+  //   seriesIndex: 0,// 第1个被轮播的序列下标
+  // });
 };
 
 //中国地图初始化
@@ -479,7 +486,7 @@ async function chinaMapInit() {
       allNum: l.value,//累计数
       deathNum: l.deathNum,//死亡数
       cureNum: l.cureNum,//治愈数
-      conadd: Number(l.conadd),//较昨日新增
+      conadd: isNaN(Number(l.conadd)) ? 0 : Number(l.conadd),//较昨日新增
       jwsrNum: l.jwsrNum//境外输入
     })
   })
@@ -514,7 +521,7 @@ async function chinaMapInit() {
     tooltip: {
       padding: 10,
       enterable: true,
-      transitionDuration: 0,//动画时间
+      transitionDuration: 1,//动画时间
       backgroundColor: "rgb(0,0,0,.8)",
       borderRadius: 0,
       textStyle: {
@@ -536,7 +543,6 @@ async function chinaMapInit() {
       }
     },
     series: [{
-      name: '接入医院数量',
       type: 'map',
       mapType: 'china',
       zoom: 1.2,
@@ -576,6 +582,12 @@ async function chinaMapInit() {
   };
   await (option.series[0].data = echartData);//设置数据
   await (option && chinaMapChart.setOption(option));
+  // 自动轮播
+  autoToolTip(chinaMapChart, option, {
+    interval: 1000,// 轮播间隔时间 默认2s
+    loopSeries: true,// 是否循环轮播所有序列
+    seriesIndex: 0,// 第1个被轮播的序列下标
+  });
 }
 
 </script>

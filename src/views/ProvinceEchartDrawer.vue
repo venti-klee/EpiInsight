@@ -97,6 +97,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import * as echarts from "echarts";
 import addNumber from "@/components/addNumber.vue";
+import { autoToolTip } from "@/utils/echartsAutoTooltip.js";
 onMounted(() => { });
 
 let props = defineProps({
@@ -146,7 +147,7 @@ watch(
                 t.econNum = Number(t.econNum);//确诊数
                 t.deathNum = Number(t.deathNum);//死亡数
                 t.cureNum = Number(t.cureNum);//治愈数
-                t.conadd = Number(t.conadd);//较昨日新增
+                t.conadd = isNaN(Number(t.conadd)) ? 0 : Number(t.conadd);//较昨日新增
             });
             await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
             initEchart();//初始化图表
@@ -188,7 +189,7 @@ async function proHisEchartFun() {
         echartData.econNum.push(p.econNum);
         echartData.deathNum.push(p.deathNum);
         echartData.cureNum.push(p.cureNum);
-        echartData.conadd.push(Number(p.conadd));
+        echartData.conadd.push(isNaN(Number(p.conadd)) ? 0 : Number(p.conadd));
     })
     let option = {
         title: {
@@ -341,6 +342,12 @@ async function proHisEchartFun() {
     (proHisEchart) && (proHisEchart.dispose());//销毁实例
     proHisEchart = echarts.init(document.getElementsByClassName("rightEchart-div")[0]);
     option && proHisEchart.setOption(option);
+    // 自动轮播
+    autoToolTip(proHisEchart, option, {
+        interval: 1000,// 轮播间隔时间 默认2s
+        loopSeries: true,// 是否循环轮播所有序列
+        seriesIndex: 0,// 第1个被轮播的序列下标
+    });
 };
 
 //历史图表
@@ -541,6 +548,12 @@ async function historyEchartFun() {
     (historyEchart) && (historyEchart.dispose());//销毁实例
     historyEchart = echarts.init(document.getElementsByClassName("historyEchart-div")[0]);
     option && historyEchart.setOption(option);
+    // 自动轮播
+    // autoToolTip(historyEchart, option, {
+    //     interval: 100,// 轮播间隔时间 默认2s
+    //     loopSeries: true,// 是否循环轮播所有序列
+    //     seriesIndex: 0,// 第1个被轮播的序列下标
+    // });
 }
 </script>
 

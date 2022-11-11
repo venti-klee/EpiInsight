@@ -150,9 +150,9 @@ watch(
                         t.highAndMiddle = h;//添加风险对象
                     }
                 })
-                t.conadd = Number(t.conadd);//将较昨日新增值转换为数字类型，防止表格排序失效
+                t.conadd = isNaN(Number(t.conadd)) ? 0 : Number(t.conadd);//将较昨日新增值转换为数字类型，防止表格排序失效
                 t.city.forEach((c: any) => {
-                    c.conadd = Number(c.conadd);
+                    c.conadd = isNaN(Number(c.conadd)) ? 0 : Number(c.conadd);
                 })
             })
         }
