@@ -99,6 +99,7 @@ function changeSetData(type: string) {
 
 //刷新页面
 function refreshPage() {
+    sessionStorage.removeItem("isOffLineData");//清除sessionStorage中isOffLineData状态
     location.reload();
 };
 </script>
