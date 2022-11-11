@@ -151,6 +151,7 @@ watch(
             });
             await (historyList.value = props.currentProvinceData.historylist);//获取到省份的历史数据
             initEchart();//初始化图表
+            window.addEventListener('resize', initEchart, false);//监听窗口尺寸变化
         } else {
             provinceBaseData.value.contotal = 0;
             provinceBaseData.value.econNum = 0;

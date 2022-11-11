@@ -193,6 +193,7 @@ watch(
     if (val) {
       (isEchart.value = val);
       initChart();//初始化图表
+      window.addEventListener('resize', initChart, false);//监听窗口尺寸变化
     } else {
       addcon.value = 0;
       addDie.value = 0;
@@ -200,6 +201,137 @@ watch(
     }
   },
 )
+
+//关闭对话框
+function handleClose() {
+  isEchart.value = false;
+  emits("close")
+};
+
+//初始化图表
+function initChart() {
+  addcon.value = Number(props.allData.gntotal);
+  addcure.value = Number(props.allData.curetotal);
+  addDie.value = Number(props.allData.deathtotal);
+  chinaMapInit();//初始化中国地图
+  initHistogram();//绘制柱状图
+  historyLineChartFun(props.historylist);//绘制历史折线图
+}
+
+//中国地图初始化
+async function chinaMapInit() {
+  let list = JSON.parse(JSON.stringify(props.allData.list));//获取省份数据
+  let echartData: any = [];
+  await list.forEach((l: any) => {
+    echartData.push({
+      name: l.name,
+      value: l.econNum,//现存数
+      allNum: l.value,//累计数
+      deathNum: l.deathNum,//死亡数
+      cureNum: l.cureNum,//治愈数
+      conadd: isNaN(Number(l.conadd)) ? 0 : Number(l.conadd),//较昨日新增
+      jwsrNum: l.jwsrNum//境外输入
+    })
+  })
+  await echartData.push({
+    name: "南海诸岛"
+  })//添加南海诸岛，防止报错
+  await (chinaMapChart) && (chinaMapChart.dispose());//销毁实例
+  await (chinaMapChart = echarts.init(document.getElementsByClassName("china-map")[0]));
+  let option: any = {
+    title: {
+      text: '国内各省现存分布',
+      left: "center",
+      top: '1%',
+      textStyle: {
+        color: "#fff",
+      },
+    },
+    visualMap: {
+      min: 0,
+      max: 500,
+      left: '5%',
+      bottom: '5%',
+      text: ['高', '低'],
+      textStyle: {
+        color: '#fff',
+      },
+      calculable: true,
+      inRange: {
+        color: ['#fff', '#f00'],//颜色范围
+      },
+    },
+    tooltip: {
+      padding: 10,
+      enterable: true,
+      transitionDuration: 1,//动画时间
+      backgroundColor: "rgb(0,0,0,.8)",
+      borderRadius: 0,
+      textStyle: {
+        color: '#fff',
+      },
+      formatter: function (params: any) {
+        let tipString = "";
+        if (params.data.value) {
+          tipString =
+            "<div style='font-size:25px;font-weight:900;margin:10px 0px'>" + params.data.name + "</div>" +
+            "<div style='color:#f00;font-weight:900;'>现存：" + params.data.value + "</div>" +
+            "<div style='color:#888;font-weight:900;'>累计：" + params.data.allNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>死亡：" + params.data.deathNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>治愈：" + params.data.cureNum + "</div>" +
+            "<div style='color:#888;font-weight:900;'>较昨日新增：" + params.data.conadd + "</div>" +
+            "<div style='color:#888;font-weight:900;'>境外输入：" + params.data.jwsrNum + "</div>"
+        }
+        return tipString;
+      }
+    },
+    series: [{
+      type: 'map',
+      mapType: 'china',
+      zoom: 1.2,
+      roam: true,//缩放
+      scaleLimit: {
+        min: 1.2,//缩放限制
+        max: 2
+      },
+      itemStyle: {
+        normal: {
+          label: {
+            show: true
+          }
+        },
+        emphasis: {
+          show: true,
+          areaColor: '#6eb5ff',//鼠标滑过区域颜色
+          label: {
+            show: true
+          }
+        }
+      },
+      label: {
+        normal: { //静态的时候展示样式
+          show: true, //是否显示地图省份得名称
+          textStyle: {
+            color: "#000",
+            fontSize: 12
+          }
+        },
+        emphasis: { //动态展示的样式
+          color: '#fff',
+        },
+      },
+      data: []
+    }]
+  };
+  await (option.series[0].data = echartData);//设置数据
+  await (option && chinaMapChart.setOption(option));
+  // 自动轮播
+  autoToolTip(chinaMapChart, option, {
+    interval: 1000,// 轮播间隔时间 默认2s
+    loopSeries: true,// 是否循环轮播所有序列
+    seriesIndex: 0,// 第1个被轮播的序列下标
+  });
+}
 
 //柱状图数据
 function histogramOption(list: any, titName: string, color: string) {
@@ -314,22 +446,6 @@ function sortFun(arr: any) {
   });
   return arr;
 };
-
-//关闭对话框
-function handleClose() {
-  isEchart.value = false;
-  emits("close")
-};
-
-//初始化图表
-function initChart() {
-  addcon.value = Number(props.allData.gntotal);
-  addcure.value = Number(props.allData.curetotal);
-  addDie.value = Number(props.allData.deathtotal);
-  historyLineChartFun(props.historylist);//绘制历史折线图
-  initHistogram();//绘制柱状图
-  chinaMapInit();//初始化中国地图
-}
 
 //历史折线图
 async function historyLineChartFun(list: any) {
@@ -476,121 +592,6 @@ async function historyLineChartFun(list: any) {
   // });
 };
 
-//中国地图初始化
-async function chinaMapInit() {
-  let list = JSON.parse(JSON.stringify(props.allData.list));//获取省份数据
-  let echartData: any = [];
-  await list.forEach((l: any) => {
-    echartData.push({
-      name: l.name,
-      value: l.econNum,//现存数
-      allNum: l.value,//累计数
-      deathNum: l.deathNum,//死亡数
-      cureNum: l.cureNum,//治愈数
-      conadd: isNaN(Number(l.conadd)) ? 0 : Number(l.conadd),//较昨日新增
-      jwsrNum: l.jwsrNum//境外输入
-    })
-  })
-  await echartData.push({
-    name: "南海诸岛"
-  })//添加南海诸岛，防止报错
-  await (chinaMapChart) && (chinaMapChart.dispose());//销毁实例
-  await (chinaMapChart = echarts.init(document.getElementsByClassName("china-map")[0]));
-  let option: any = {
-    title: {
-      text: '国内各省现存分布',
-      left: "center",
-      top: '1%',
-      textStyle: {
-        color: "#fff",
-      },
-    },
-    visualMap: {
-      min: 0,
-      max: 500,
-      left: '5%',
-      bottom: '5%',
-      text: ['高', '低'],
-      textStyle: {
-        color: '#fff',
-      },
-      calculable: true,
-      inRange: {
-        color: ['#fff', '#f00'],//颜色范围
-      },
-    },
-    tooltip: {
-      padding: 10,
-      enterable: true,
-      transitionDuration: 1,//动画时间
-      backgroundColor: "rgb(0,0,0,.8)",
-      borderRadius: 0,
-      textStyle: {
-        color: '#fff',
-      },
-      formatter: function (params: any) {
-        let tipString = "";
-        if (params.data.value) {
-          tipString =
-            "<div style='font-size:25px;font-weight:900;margin:10px 0px'>" + params.data.name + "</div>" +
-            "<div style='color:#f00;font-weight:900;'>现存：" + params.data.value + "</div>" +
-            "<div style='color:#888;font-weight:900;'>累计：" + params.data.allNum + "</div>" +
-            "<div style='color:#888;font-weight:900;'>死亡：" + params.data.deathNum + "</div>" +
-            "<div style='color:#888;font-weight:900;'>治愈：" + params.data.cureNum + "</div>" +
-            "<div style='color:#888;font-weight:900;'>较昨日新增：" + params.data.conadd + "</div>" +
-            "<div style='color:#888;font-weight:900;'>境外输入：" + params.data.jwsrNum + "</div>"
-        }
-        return tipString;
-      }
-    },
-    series: [{
-      type: 'map',
-      mapType: 'china',
-      zoom: 1.2,
-      roam: true,//缩放
-      scaleLimit: {
-        min: 1.2,//缩放限制
-        max: 2
-      },
-      itemStyle: {
-        normal: {
-          label: {
-            show: true
-          }
-        },
-        emphasis: {
-          show: true,
-          areaColor: '#6eb5ff',//鼠标滑过区域颜色
-          label: {
-            show: true
-          }
-        }
-      },
-      label: {
-        normal: { //静态的时候展示样式
-          show: true, //是否显示地图省份得名称
-          textStyle: {
-            color: "#000",
-            fontSize: 12
-          }
-        },
-        emphasis: { //动态展示的样式
-          color: '#fff',
-        },
-      },
-      data: []
-    }]
-  };
-  await (option.series[0].data = echartData);//设置数据
-  await (option && chinaMapChart.setOption(option));
-  // 自动轮播
-  autoToolTip(chinaMapChart, option, {
-    interval: 1000,// 轮播间隔时间 默认2s
-    loopSeries: true,// 是否循环轮播所有序列
-    seriesIndex: 0,// 第1个被轮播的序列下标
-  });
-}
-
 </script>
 <style scoped lang='scss'>
 .chinaEchart-drawer {
@@ -717,11 +718,12 @@ async function chinaMapInit() {
       display: flex;
       flex-wrap: wrap;
       width: 98%;
-      margin: 10px auto;
-      padding: 10px 0px;
+      margin: 0px auto;
+      padding: 0px 0px;
 
       .histogram-dv {
-        margin: 10px auto;
+        margin: 5px auto;
+        padding: 5px 0px;
         height: 200px;
         width: 32%;
 
