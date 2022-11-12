@@ -16,7 +16,7 @@
         <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
       </div>
       <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">v{{ version
-      }}({{ isOffLineData ? "离线" : "在线" }}数据截止{{ allData.mtime }})</dv-decoration-7>
+      }}({{ dataType }}数据截止{{ allData.mtime }})</dv-decoration-7>
       <dv-decoration-5 :color="dvColor" style=" margin: auto;width:60%;height:60px;margin-top: -30px;" />
     </div>
 
@@ -154,8 +154,6 @@ let version: any = ref(PK.version),//系统版本号
   earthGroup: any = new THREE.Group(),//球体组
   earthSize: any = 100, //地球尺寸
   positionData = countryPosition, //国家位置数据
-  isDay = "粒子",//球体切换
-  isTag = true,//标签显示
   isSphere = ref(false),//全球数据对话框状态
   isChina = ref(false),//国内数据对话框状态
   isEchart = ref(false),//图表分析对话框状态
@@ -179,7 +177,7 @@ let version: any = ref(PK.version),//系统版本号
   dvColor: any = ["#7b52f7", "#c5b2ff"],//系统线框主题色
   sysBackgroundColor: any = 'rgb(197, 178, 255, .1)',//系统背景主题色
   reportData: any = ref({ blobData: null, fileName: null }),//报告数据
-  isOffLineData: any = ref(null);//是否使用离线数据
+  dataType: any = ref(null);//数据来源
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -208,22 +206,12 @@ function judgeDevice() {
 
 //设置切换
 function changeSetData(type: string, setData: any) {
-  //昼夜切换
-  if (type == "isDay") {
-    isDay = setData.value.isDay;
-    destroyScene(); //销毁
-    init(sphereData.value); //重新初始化
-  }
-  (type == "isDrag") && (orbitControls.enableRotate = setData.value.isDrag);//鼠标旋转
-  (type == "isZoom") && (orbitControls.enableZoom = setData.value.isZoom);//鼠标缩放
-  (type == "isTag") && (isTag = setData.value.isTag);//标签显示
+  (type == "sphereType") && (destroyScene(), init(sphereData.value));//球体类型切换
   (type == "autoRotate") && (orbitControls.autoRotate = setData.value.autoRotate);//自转切换
+  (type == "isDrag") && (orbitControls.enableRotate = setData.value.isDrag);//鼠标拖拽旋转
+  (type == "isZoom") && (orbitControls.enableZoom = setData.value.isZoom);//鼠标缩放
   (type == "rotateSpeed") && (orbitControls.autoRotateSpeed = setData.value.rotateSpeed / 10);//自转速度
-  if (type == "isOfLData") {
-    sessionStorage.setItem("isOffLineData", setData.value.isOfLData);//切换数据源
-    location.reload();//刷新页面重新获取数据源
-  }
-
+  (type == "dataType") && (location.reload());//刷新页面重新获取数据源
 };
 
 //销毁场景
@@ -280,16 +268,8 @@ function decodingStr(str: any) {
 //切换数据源为非离线，开发环境使用vue代理dataSource1，生产环境用vue代理dataSource1(获取失败使用jsonp获取)
 function getCOVID19Data() {
   isLoading.value = true;
-  //有sessionStorage使用sessionStorage给isOffLineData赋值
-  if (sessionStorage.getItem("isOffLineData")) {
-    sessionStorage.getItem("isOffLineData") == "true" ? isOffLineData.value = true : isOffLineData.value = false;
-  } else {
-    //无sessionStorage使用process.env.NODE_ENV给isOffLineData赋值，同时存下sessionStorage
-    process.env.NODE_ENV == "development" ? isOffLineData.value = true : isOffLineData.value = false;//获取环境状态
-    sessionStorage.setItem("isOffLineData", isOffLineData.value);//存下数据来源状态
-  }
-  //使用isOffLineData状态决定数据源
-  if (!isOffLineData.value) {
+  dataType.value = JSON.parse(sessionStorage.getItem("config") as any).dataType;
+  if (dataType.value == "在线") {
     dataSource1()
       .then((res) => {
         console.log("vue代理dataSource1获取数据");
@@ -490,7 +470,8 @@ function createLight() {
 
 //创建球体
 async function createSphere(data: any) {
-  isDay == "粒子" ? createSpotSphere() : createWBSphere();//判断需要创建的球体类型
+  let sphereType = JSON.parse(sessionStorage.getItem("config") as any).sphereType;//获取球体类型
+  sphereType == "粒子" ? createSpotSphere() : createWBSphere(sphereType);//判断需要创建的球体类型
   earthGroup.name = "地球组";
   createVirus(data, earthSize); //创建球面病毒
   scene.add(earthGroup);//将球体组添加到场景中
@@ -498,16 +479,16 @@ async function createSphere(data: any) {
 };
 
 //创建白昼黑夜球体
-async function createWBSphere() {
+async function createWBSphere(sphereType: any) {
   let earthGeometry = new THREE.SphereGeometry(earthSize, 100, 100); //地球几何体
   let nightColor = new THREE.Color(0x999999);
   let dayColor = new THREE.Color(0x444444);
   //地球材质
   let earthMaterial = new THREE.MeshPhongMaterial({
     map: new THREE.TextureLoader().load(
-      isDay == "白昼" ? earthImg : earthNightImg //区分昼夜纹理
+      sphereType == "白昼" ? earthImg : earthNightImg //区分昼夜纹理
     ),
-    color: isDay == "白昼" ? dayColor : nightColor,
+    color: sphereType == "白昼" ? dayColor : nightColor,
     // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
     // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
     normalScale: new THREE.Vector2(0, 5), //凹凸深度
@@ -639,16 +620,17 @@ function createVirus(data: any, earthSize: any) {
 
 //创建鼠标控件
 function createOrbitControls() {
+  let { autoRotate, isDrag, isZoom, rotateSpeed } = JSON.parse(sessionStorage.getItem("config") as any);//从sessionStorage中获取配置
   orbitControls = new OrbitControls(camera, renderer.domElement);
+  orbitControls.autoRotate = autoRotate; //自转(相机)
+  orbitControls.enableRotate = isDrag;//鼠标左键控制旋转
+  orbitControls.enableZoom = isZoom; //鼠标缩放
+  orbitControls.autoRotateSpeed = rotateSpeed / 10; //自转速度
   orbitControls.enablePan = false; //右键平移拖拽
-  orbitControls.enableZoom = true; //鼠标缩放
   orbitControls.enableDamping = true; //滑动阻尼
   orbitControls.dampingFactor = 0.05; //(默认.25)
   orbitControls.minDistance = 250; //相机距离目标最小距离
-  orbitControls.maxDistance = 400; //相机距离目标最大距离
-  orbitControls.autoRotate = true; //自转(相机)
-  orbitControls.autoRotateSpeed = 1; //自转速度
-  orbitControls.enableRotate = true;//鼠标左键控制旋转
+  orbitControls.maxDistance = 400; //相机距离目标最大距离  
 };
 
 //渲染
@@ -673,7 +655,7 @@ function onMousemove(e: any) {
   raycaster.setFromCamera(mouse, camera); //通过鼠标点的位置和当前相机的矩阵计算出raycaster
   let intersects = raycaster.intersectObjects(scene.children); // 获取raycaster直线与网格列表相交的集合
   if (intersects.length !== 0 && intersects[0].object.name == "病毒") {
-    (isTag) && (currentPointData.value = intersects[0].object.dotData); //intersects列表是按照距离屏幕距离排序的，第一个距屏幕最近
+    (JSON.parse(sessionStorage.getItem("config") as any).isTag) && (currentPointData.value = intersects[0].object.dotData); //intersects列表是按照距离屏幕距离排序的，第一个距屏幕最近
     dom!.style.cursor = "pointer"; //光标样式
     position.value = {
       x: e.pageX + 20 + "px",
@@ -795,8 +777,7 @@ function histogramChartFun(list: any) {
 
 //获取用户ip信息
 function getLocationMsg() {
-  //使用isOffLineData状态决定数据源
-  if (!isOffLineData.value) {
+  if (dataType.value == "在线") {
     let jsonpUrl: any = process.env.VUE_APP_3;
     jsonp(jsonpUrl, (res: any) => {
       userMsg.value = res;
@@ -813,8 +794,7 @@ function getLocationMsg() {
 function getProvinceData() {
   let pro = userMsg.value.pro;//当前省中文名
   let ePro = "";//英文省名
-  //使用isOffLineData状态决定数据源
-  if (!isOffLineData.value) {
+  if (dataType.value == "在线") {
     allData.value.list.forEach((l: any) => {
       if (pro.search(l.name) >= 0) {
         ePro = l.ename;//遍历获取到英文名
