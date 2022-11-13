@@ -91,13 +91,13 @@ let props = defineProps({
     isDrawer: Boolean,//抽屉状态
 }),
     setData: any = ref({
-        sysVer: "",//系统版本号
         sphereType: "粒子",//球体类型
         isDrag: true,//拖拽
         isZoom: true,//缩放
         isTag: true,//标签
         autoRotate: true,//自动旋转
         rotateSpeed: 10,//旋转速度
+        sysVer: "",//系统版本号
         dataType: "",//数据来源
         sysColor: ["#7b52f7", "#c5b2ff"],//系统配色
     }),
@@ -121,6 +121,9 @@ onBeforeMount(() => {
 //系统配置
 function sysConfig() {
     setData.value.sysVer = PK.version//获取系统版本号
+    process.env.NODE_ENV == "development" ?
+        setData.value.dataType = dataTypeList[0] ://开发环境使用离线数据
+        setData.value.dataType = dataTypeList[1];//生产环境使用在线数据
     let ss = sessionStorage.getItem("config");//获取缓存配置
     //缓存中有配置取出配置，无则使用初始配置
     if (ss) {
@@ -139,10 +142,6 @@ function sysConfig() {
             ) :
             (setData.value = JSON.parse(ss));
     } else {
-        //开发环境使用离线数据，生产环境使用在线数据
-        process.env.NODE_ENV == "development" ?
-            setData.value.dataType = dataTypeList[0] ://开发环境
-            setData.value.dataType = dataTypeList[1];//生产环境
         sessionStorage.setItem("config", JSON.stringify(setData.value));//设置缓存配置
     }
 };
