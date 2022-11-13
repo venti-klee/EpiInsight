@@ -71,7 +71,7 @@
 
                 <!--版本号盒子-->
                 <div class="ver-div">
-                    版本号：v{{ version }}
+                    版本号：v{{ setData.sysVer }}
                 </div>
 
             </dv-border-box-13>
@@ -91,6 +91,7 @@ let props = defineProps({
     isDrawer: Boolean,//抽屉状态
 }),
     setData: any = ref({
+        sysVer: "",//系统版本号
         sphereType: "粒子",//球体类型
         isDrag: true,//拖拽
         isZoom: true,//缩放
@@ -103,8 +104,7 @@ let props = defineProps({
     isDrawer = ref(false),
     sphereTypeList = ["粒子", "黑夜", "白昼"],//球体列表
     dataTypeList = ["离线", "在线"],//数据来源列表
-    emits = defineEmits(["close", "changeSetData"]),
-    version: any = ref(PK.version);//系统版本号;
+    emits = defineEmits(["close", "changeSetData"]);
 
 //监听props值变化改变isDrawer
 watch(
@@ -120,14 +120,30 @@ onBeforeMount(() => {
 
 //系统配置
 function sysConfig() {
-    //sessionStorage中有配置取出配置赋值setData，无则使用初始配置
-    if (sessionStorage.getItem("config")) {
-        setData.value = JSON.parse(sessionStorage.getItem("config") as any);
+    setData.value.sysVer = PK.version//获取系统版本号
+    let ss = sessionStorage.getItem("config");//获取缓存配置
+    //缓存中有配置取出配置，无则使用初始配置
+    if (ss) {
+        let cuVer = setData.value.sysVer,//当前版本号
+            ssVer = JSON.parse(ss).sysVer,//缓存版本号
+            isUpDate = null;//是否更新缓存
+        //当前版本号与缓存版本号若不等清除缓存使用当前配置，否则使用缓存配置
+        (cuVer !== ssVer) ?
+            (isUpDate = true) :
+            isUpDate = false;
+        // console.log(cuVer, ssVer, isUpDate);
+        isUpDate ?
+            (
+                (sessionStorage.removeItem("config")),//清除缓存
+                (sessionStorage.setItem("config", JSON.stringify(setData.value)))//设置缓存配置
+            ) :
+            (setData.value = JSON.parse(ss));
     } else {
+        //开发环境使用离线数据，生产环境使用在线数据
         process.env.NODE_ENV == "development" ?
-            setData.value.dataType = dataTypeList[0] ://开发环境默认使用离线数据
-            setData.value.dataType = dataTypeList[1];//生产环境默认api数据
-        sessionStorage.setItem("config", JSON.stringify(setData.value));//设置sessionStorage中配置
+            setData.value.dataType = dataTypeList[0] ://开发环境
+            setData.value.dataType = dataTypeList[1];//生产环境
+        sessionStorage.setItem("config", JSON.stringify(setData.value));//设置缓存配置
     }
 };
 
@@ -138,13 +154,13 @@ function handleClose() {
 
 //改变设置数据
 function changeSetData(type: string) {
-    sessionStorage.setItem("config", JSON.stringify(setData.value));//修改sessionStorage
-    emits("changeSetData", type, setData)//传递至父组件
+    sessionStorage.setItem("config", JSON.stringify(setData.value));//修改缓存配置
+    emits("changeSetData", type, setData)//传递至Sphere组件中
 }
 
 //刷新页面
 function refreshPage() {
-    sessionStorage.removeItem("config");//清除sessionStorage
+    sessionStorage.removeItem("config");//清除缓存
     location.reload();
 };
 </script>
