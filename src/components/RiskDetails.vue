@@ -10,7 +10,7 @@
             <div class="tit-num">
                 <div class="h-ap">高风险地区{{ currentDetails.province_high_num }}个</div>
                 <div class="m-ap">中风险地区{{ currentDetails.province_middle_num }}个</div>
-                <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn">
+                <el-button class="btn" @click="clickXlsxBtn" :color="dvColor[0]">
                     <img :src=xlsxImg />
                     {{ currentDetails.province }}风险地下载
                 </el-button>
@@ -72,11 +72,13 @@ let props = defineProps({
     currentDetails: {
         type: Object,
         default: {}
+    },
+    dvColor: {
+        default: []
     }
 }),
     isRiskDetails = ref(false),//抽屉状态
-    emits = defineEmits(["close"]),
-    dvColor: any = ["#7b52f7", "#c5b2ff"];
+    emits = defineEmits(["close"]);
 
 watch(
     () => props.isRiskDetails,//监听抽屉状态
@@ -175,8 +177,6 @@ function clickXlsxBtn() {
                     margin: 2px;
                     width: 96%;
                     overflow: hidden;
-                    // text-overflow: ellipsis !important;
-                    // display: flex;
                     padding: 0px 10px;
                     justify-content: left !important;
                 }

@@ -8,12 +8,12 @@
                         <el-input v-model="nameValue" size="small" placeholder="输入国家回车检索"
                             @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 0px;" />
                     </div>
-                    <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn">
+                    <el-button class="btn" @click="clickXlsxBtn" :color="dvColor[0]">
                         <img :src=xlsxImg />
                         全球数据下载
                     </el-button>
                 </div>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                <el-icon :size="40" @click="handleClose" class="close-icon" :color="dvColor[0]">
                     <Close />
                 </el-icon>
             </div>
@@ -53,6 +53,9 @@ let props = defineProps({
     sphereData: {
         type: Array,
         default: [],
+    },
+    dvColor: {
+        default: []
     }
 }),
     nameValue = ref(""),//检索名字
@@ -149,9 +152,11 @@ function clickXlsxBtn() {
 
         .close-icon {
             margin: auto 0px;
+            transition: all 0.3s linear;
 
             &:hover {
-                color: #7b52f7;
+                color: #fff;
+                transform: rotateZ(180deg);
                 cursor: pointer;
             }
         }

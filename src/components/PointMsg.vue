@@ -1,6 +1,7 @@
 <!--球面点标签-->
 <template>
-  <div class="tag-div" v-show="props.currentPointData.name" :style="{ top: props.position.y, left: props.position.x }">
+  <div class="tag-div" v-show="props.currentPointData.name"
+    :style="{ top: props.position.y, left: props.position.x,borderColor: props.dvColor[0] }">
     <div class="name">
       <span>{{ props.currentPointData.name }}</span>
     </div>
@@ -13,7 +14,6 @@
     <div class="die">
       死亡数：<span>{{ props.currentPointData.deathNum }}</span>
     </div>
-
   </div>
 </template>
 <script lang='ts' setup>
@@ -29,7 +29,11 @@ let props = defineProps({
     type: Object,
     default: {},
   },
-})
+  //标签位置
+  dvColor: {
+    default: []
+  },
+});
 
 </script>
 <style scoped lang='scss'>
@@ -38,7 +42,7 @@ let props = defineProps({
   background-color: rgba(0, 0, 0, .5);
   color: #fff;
   position: absolute;
-  border: 2px solid #7b52f7;
+  border: 2px solid #aaa;
   font-size: 15px;
   font-weight: 900;
 

@@ -8,12 +8,12 @@
                         <el-input v-model="nameValue" size="small" placeholder="输入省名回车检索"
                             @keyup.enter="enterSearch(nameValue)" style="--el-input-border-radius: 0px;" />
                     </div>
-                    <el-button class="btn" color="#7b52f7" @click="clickXlsxBtn('province', '', '')">
+                    <el-button class="btn" @click="clickXlsxBtn('province', '', '')" :color="dvColor[0]">
                         <img :src=xlsxImg />
                         国内数据下载
                     </el-button>
                 </div>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                <el-icon :size="40" @click="handleClose" class="close-icon" :color="dvColor[0]">
                     <Close />
                 </el-icon>
             </div>
@@ -32,7 +32,7 @@
                 <el-table-column type="expand">
                     <template #default="props">
                         <div class="tab-head-div">
-                            <el-button class="btn" color="#7b52f7"
+                            <el-button class="btn" :color="dvColor[0]"
                                 @click="clickXlsxBtn('city', props.row.name, props.row.city)">
                                 <img :src=xlsxImg />
                                 {{ props.row.name }}数据下载
@@ -68,7 +68,7 @@
                         <span v-if="props.row.isHM"
                             style="color: #ff7272;display: flex;justify-content: space-between;">
                             {{ props.row.highAndMiddle.province_total }}个
-                            <el-button class="btn" color="#7b52f7" @click="clickMore(props.row.highAndMiddle)"
+                            <el-button class="btn" @click="clickMore(props.row.highAndMiddle)" :color="dvColor[0]"
                                 style="color:#fff;padding: 0px 20px;margin: 0px 20px 0px 0px;border-radius: 0px;">
                                 详情
                             </el-button>
@@ -81,7 +81,7 @@
             </el-table>
         </el-drawer>
         <div class="components">
-            <RiskDetails :isRiskDetails="isRiskDetails" :currentDetails="currentDetails"
+            <RiskDetails :dvColor="dvColor" :isRiskDetails="isRiskDetails" :currentDetails="currentDetails"
                 @close="isRiskDetails = false" />
         </div>
     </div>
@@ -104,6 +104,9 @@ let props = defineProps({
     allData: {
         type: Object,
         default: {}
+    },
+    dvColor: {
+        default: []
     }
 }),
     isChina = ref(false),
@@ -255,9 +258,11 @@ function clickMore(moreData: any) {
 
         .close-icon {
             margin: auto 0px;
+            transition: all 0.3s linear;
 
             &:hover {
-                color: #7b52f7;
+                color: #fff;
+                transform: rotateZ(180deg);
                 cursor: pointer;
             }
         }

@@ -15,8 +15,11 @@
         </dv-decoration-11>
         <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
       </div>
-      <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">v{{ version
-      }}({{ dataType }}数据截止{{ allData.mtime }})</dv-decoration-7>
+      <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">
+        <span>
+          {{ dataType }}数据截止{{ allData.mtime }}
+        </span>
+      </dv-decoration-7>
       <dv-decoration-5 :color="dvColor" style=" margin: auto;width:60%;height:60px;margin-top: -30px;" />
     </div>
 
@@ -34,7 +37,7 @@
 
     <!--设置按钮-->
     <div class="set-div">
-      <el-icon color="#ffffff88" :size="40" @click="isDrawer = true">
+      <el-icon :color="dvColor[1]" :size="40" @click="isDrawer = true">
         <Setting />
       </el-icon>
     </div>
@@ -96,24 +99,26 @@
       <!--点的标签-->
       <PointMsg :dvColor="dvColor" :position="position" :currentPointData="currentPointData" />
       <!--设置抽屉-->
-      <SetDrawer :dvColor="dvColor" :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
+      <SetDrawer :isDrawer="isDrawer" @close="isDrawer = false" @changeSetData="changeSetData" />
       <!--全球数据表格-->
-      <SphereTabDrawer :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
+      <SphereTabDrawer :dvColor="dvColor" :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
       <!--国内数据表格-->
-      <ChinaTabDrawer :allData="allData" :isChina="isChina" :list="allData.list" @close="isChina = false" />
+      <ChinaTabDrawer :dvColor="dvColor" :allData="allData" :isChina="isChina" :list="allData.list"
+        @close="isChina = false" />
       <!--国内图表分析-->
-      <ChinaEchartDrawer :sphereData="sphereData" :daily="allData.add_daily" :jwsrTop="allData.jwsrTop"
-        :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist" :allData="allData" />
+      <ChinaEchartDrawer :dvColor="dvColor" :sphereData="sphereData" :daily="allData.add_daily"
+        :jwsrTop="allData.jwsrTop" :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist"
+        :allData="allData" />
       <!--省内图表分析-->
-      <ProvinceEchartDrawer :isProvinceEchartDrawer="isProvinceEchartDrawer" @close="isProvinceEchartDrawer = false"
-        :currentProvinceData="currentProvinceData" />
+      <ProvinceEchartDrawer :dvColor="dvColor" :isProvinceEchartDrawer="isProvinceEchartDrawer"
+        @close="isProvinceEchartDrawer = false" :currentProvinceData="currentProvinceData" />
       <!--报告抽屉-->
       <ReportDrawer :isReport="isReport" :dvColor="dvColor" :reportData="reportData" @close="isReport = false" />
     </div>
   </dv-border-box-1>
 </template>
 <script lang='ts' setup>
-import { ref, computed, watch, onMounted, getCurrentInstance, toRef } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
@@ -174,7 +179,7 @@ let version: any = ref(PK.version),//系统版本号
   userMsg: any = ref({}),//使用者信息
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
-  dvColor: any = ["#7b52f7", "#c5b2ff"],//系统线框主题色
+  dvColor: any = ref([]),//系统配色
   sysBackgroundColor: any = 'rgb(197, 178, 255, .1)',//系统背景主题色
   reportData: any = ref({ blobData: null, fileName: null }),//报告数据
   dataType: any = ref(null);//数据来源
@@ -200,6 +205,7 @@ function judgeDevice() {
     alert("当前项目暂未适配移动端，请在pc端打开！");
   } else {
     mobileDiv.value = false;//关闭手机端遮罩
+    dvColor.value = JSON.parse(sessionStorage.getItem("config") as any).sysColor;//获取系统配色
     getCOVID19Data(); //获取疫情数据
   }
 };
@@ -503,7 +509,7 @@ async function createWBSphere(sphereType: any) {
 async function createSpotSphere() {
   let globeBufferGeometry = new THREE.SphereGeometry(earthSize - 1, 50, 50);//球体几何体
   let globeInnerMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(dvColor[0]),//颜色
+    color: new THREE.Color(dvColor.value[0]),//颜色
     // blending: THREE.AdditiveBlending,//纹理融合的叠加方式
     // side: THREE.FrontSide,//前面显示
     transparent: true,//透明
@@ -554,13 +560,13 @@ function createSpot() {
     let positionVal = new THREE.BufferAttribute(l, 3); //设置缓冲区属性值
     globeCloudBufferGeometry.setAttribute("position", positionVal); //给缓冲几何体添加位置属性
     let globeCloudMaterial = new THREE.PointsMaterial({
-      color: new THREE.Color(dvColor[1]),//颜色
+      color: new THREE.Color(dvColor.value[1]),//颜色
       fog: true,
       size: 1,
     });//球面斑点材质
     let d = new Float32Array(3 * globeCloudVerticesArray.length), c = [];
     for (o = 0; o < globeCloudVerticesArray.length; o++) {
-      c[o] = new THREE.Color(dvColor[1]);//球面斑点颜色
+      c[o] = new THREE.Color(dvColor.value[1]);//球面斑点颜色
       d[3 * o] = c[o].r;//设置地球云数组rgb颜色
       d[3 * o + 1] = c[o].g;
       d[3 * o + 2] = c[o].b;
@@ -744,15 +750,14 @@ function histogramChartFun(list: any) {
           color: "rgb(197, 178, 255,.2)",
         },
         itemStyle: {
-          // color: "#7b52f7",
           color: new echarts.graphic.LinearGradient(0, 1, 1, 1, [
             {
               offset: 0,
-              color: "#b9a2fd"
+              color: dvColor.value[0]
             },
             {
               offset: 1,
-              color: "#372962"
+              color: "#555"
             }
           ])
         },
@@ -919,6 +924,10 @@ async function openPreview() {
       height: 100%;
       font-weight: 900;
       margin: 0px auto;
+
+      span {
+        margin: 0px 20px;
+      }
     }
   }
 
@@ -965,16 +974,18 @@ async function openPreview() {
     position: absolute;
     bottom: 0px;
     z-index: 5;
-    margin: 0px 0px 15px 20px;
+    margin: 30px;
 
     i {
-      color: #fff;
+      font-size: 40px;
+      transition: all 0.3s linear;
+
+      &:hover {
+        transform: rotateZ(180deg);
+        color: #fff;
+      }
     }
 
-    i:hover {
-      cursor: pointer;
-      color: #7b52f7;
-    }
   }
 
   .numDiv {

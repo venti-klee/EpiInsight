@@ -95,12 +95,12 @@ function downloadReport() {
 
 ::-webkit-scrollbar-track {
     /*滑轨*/
-    background-color: rgba(119, 56, 255, 0.2) !important;
+    background-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 ::-webkit-scrollbar-thumb {
     /*滑块*/
-    background-color: rgba(110, 34, 250, 0.5) !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 .reportDrawer-div {

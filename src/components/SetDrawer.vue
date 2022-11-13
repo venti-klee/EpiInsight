@@ -2,8 +2,9 @@
 <template>
     <div class="set-drawer">
         <el-drawer v-model="isDrawer" :with-header="false" direction="ltr" :before-close="handleClose" size='500px'>
-            <dv-border-box-13 :color="dvColor" class="drawer-div">
+            <dv-border-box-13 :color="setData.sysColor" class="drawer-div">
                 <h2>系统设置</h2>
+
                 <el-form>
                     <el-form-item label="球体自转：">
                         <el-switch v-model="setData.autoRotate" @change="changeSetData('autoRotate')"
@@ -59,7 +60,7 @@
                             style="--el-color-primary:#7b52f7" />
                     </el-form-item>
                     <el-form-item label="系统重置：">
-                        <el-button @click="refreshPage" color="#7b52f7" style="border-radius: 0px;">
+                        <el-button @click="refreshPage" :color="setData.sysColor[0]" style="border-radius: 0px;">
                             <el-icon style="margin-right:10px;" :size="20">
                                 <Refresh />
                             </el-icon>
@@ -67,13 +68,20 @@
                         </el-button>
                     </el-form-item>
                 </el-form>
+
+                <!--版本号盒子-->
+                <div class="ver-div">
+                    版本号：v{{ version }}
+                </div>
+
             </dv-border-box-13>
         </el-drawer>
     </div>
 </template>
 
 <script lang='ts' setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onBeforeMount, onMounted } from 'vue';
+import PK from "@/../package.json";
 import onImg from "@/assets/img/on.png";
 import offImg from "@/assets/img/off.png";
 import lzImg from "@/assets/img/lz.png";
@@ -81,7 +89,6 @@ import hyImg from "@/assets/img/hy.png";
 import bzImg from "@/assets/img/bz.png";
 let props = defineProps({
     isDrawer: Boolean,//抽屉状态
-    dvColor: Array
 }),
     setData: any = ref({
         sphereType: "粒子",//球体类型
@@ -91,11 +98,13 @@ let props = defineProps({
         autoRotate: true,//自动旋转
         rotateSpeed: 10,//旋转速度
         dataType: "",//数据来源
+        sysColor: ["#7b52f7", "#c5b2ff"],//系统配色
     }),
     isDrawer = ref(false),
     sphereTypeList = ["粒子", "黑夜", "白昼"],//球体列表
     dataTypeList = ["离线", "在线"],//数据来源列表
-    emits = defineEmits(["close", "changeSetData"]);
+    emits = defineEmits(["close", "changeSetData"]),
+    version: any = ref(PK.version);//系统版本号;
 
 //监听props值变化改变isDrawer
 watch(
@@ -105,9 +114,9 @@ watch(
     }
 )
 
-onMounted(() => {
+onBeforeMount(() => {
     sysConfig();//系统配置
-})
+});
 
 //系统配置
 function sysConfig() {
@@ -129,7 +138,6 @@ function handleClose() {
 
 //改变设置数据
 function changeSetData(type: string) {
-    console.log(type);
     sessionStorage.setItem("config", JSON.stringify(setData.value));//修改sessionStorage
     emits("changeSetData", type, setData)//传递至父组件
 }
@@ -158,6 +166,15 @@ function refreshPage() {
 
         h2 {
             margin: 0px 0px 30px 0px;
+        }
+
+        .ver-div {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            margin: 0px 0px 10px 0px;
+            font-weight: 900;
+            color: #aaa
         }
 
     }

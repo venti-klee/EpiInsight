@@ -5,7 +5,7 @@
       :before-close="handleClose" size='100%'>
       <div class="my-header">
         <span>国内分析</span>
-        <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+        <el-icon :size="40" @click="handleClose" class="close-icon" :color="dvColor[0]">
           <Close />
         </el-icon>
       </div>
@@ -97,6 +97,9 @@ let props = defineProps({
     type: Object,
     default: {}
   },
+  dvColor: {
+    default: []
+  }
 }),
   isEchart = ref(false),
   historyLineChart: any = null,//历史折线图
@@ -183,8 +186,7 @@ let props = defineProps({
     tempList = sortFun(tempList);
     return tempList.slice(0, sliceNum);
   }),
-  emits = defineEmits(["close"]),
-  dvColor = ["#7b52f7", "#c5b2ff"];
+  emits = defineEmits(["close"]);
 
 //watch可监听指定属性watchEffect不能
 watch(
@@ -380,15 +382,14 @@ function histogramOption(list: any, titName: string, color: string) {
           color: 'rgba(180, 180, 180, 0.2)'
         },
         itemStyle: {
-          // color: "#7b52f7",
           color: new echarts.graphic.LinearGradient(0, 1, 1, 1, [
             {
               offset: 0,
-              color: "#b9a2fd"
+              color: props.dvColor[0]
             },
             {
               offset: 1,
-              color: "#372962"
+              color: "#555"
             }
           ])
         },
@@ -415,22 +416,22 @@ function histogramOption(list: any, titName: string, color: string) {
 async function initHistogram() {
   await (diagnosedChart) && (diagnosedChart.dispose());//销毁实例
   await (diagnosedChart = echarts.init(document.getElementById("diagnosedChart")));//确诊图
-  await diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", "#7b52f7"));
+  await diagnosedChart.setOption(histogramOption(diagnosedList10.value, "确诊数前", props.dvColor[0]));
   await (dieChart) && (dieChart.dispose());//销毁实例
   await (dieChart = echarts.init(document.getElementById("dieChart")));//死亡图
-  await dieChart.setOption(histogramOption(dieList10.value, "死亡数前", "#7b52f7"));
+  await dieChart.setOption(histogramOption(dieList10.value, "死亡数前", props.dvColor[0]));
   await (dayAddChart) && (dayAddChart.dispose());//销毁实例
   await (dayAddChart = echarts.init(document.getElementById("dayAddChart")));//当日新增图
-  await dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", "#7b52f7"));
+  await dayAddChart.setOption(histogramOption(dayAddList10.value, "当日新增前", props.dvColor[0]));
   await (cureChart) && (cureChart.dispose());//销毁实例
   await (cureChart = echarts.init(document.getElementById("cureChart")));//治愈图
-  await cureChart.setOption(histogramOption(cureList.value, "治愈数前", "#7b52f7"));
+  await cureChart.setOption(histogramOption(cureList.value, "治愈数前", props.dvColor[0]));
   await (locIncrProTopChart) && (locIncrProTopChart.dispose());//销毁实例
   await (locIncrProTopChart = echarts.init(document.getElementById("locIncrProTopChart")));//本地新增图
-  await locIncrProTopChart.setOption(histogramOption(locIncrProTop.value, "本地新增前", "#7b52f7"));
+  await locIncrProTopChart.setOption(histogramOption(locIncrProTop.value, "本地新增前", props.dvColor[0]));
   await (jwsrTopChart) && (jwsrTopChart.dispose());//销毁实例
   await (jwsrTopChart = echarts.init(document.getElementById("jwsrTopChart")));//境外输入图
-  await jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", "#7b52f7"));
+  await jwsrTopChart.setOption(histogramOption(jwsrTop.value, "境外输入前", props.dvColor[0]));
 }
 
 //排序(冒泡法)
@@ -570,10 +571,10 @@ async function historyLineChartFun(list: any) {
         name: '境外输入',
         type: 'line',
         lineStyle: {
-          color: '#8903ba'
+          color: "#9574fb"
         },
         itemStyle: {
-          color: '#8903ba'
+          color: "#9574fb"
         },
         data: lineData.map(function (item: any) {
           return item.cn_jwsrNum;
@@ -613,9 +614,11 @@ async function historyLineChartFun(list: any) {
 
     .close-icon {
       margin: auto 0px;
+      transition: all 0.3s linear;
 
       &:hover {
-        color: #7b52f7;
+        color: #fff;
+        transform: rotateZ(180deg);
         cursor: pointer;
       }
     }

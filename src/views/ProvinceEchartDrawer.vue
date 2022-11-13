@@ -5,7 +5,7 @@
             :before-close="handleClose" size='100%'>
             <div class="my-header">
                 <span>省内分析</span>
-                <el-icon :size="40" @click="handleClose" class="close-icon" color="#fff">
+                <el-icon :size="40" @click="handleClose" :color="dvColor[0]" class="close-icon">
                     <Close />
                 </el-icon>
             </div>
@@ -31,7 +31,8 @@
                                     (今日{{ provinceBaseData.cureadd }})
                                 </h3>
                                 <h3>较昨日新增：
-                                    <span v-if="isNaN(Number(provinceBaseData.conadd_n))">{{ provinceBaseData.conadd_n }}</span>
+                                    <span v-if="isNaN(Number(provinceBaseData.conadd_n))">{{ provinceBaseData.conadd_n
+                                    }}</span>
                                     <addNumber v-else :value="provinceBaseData.conadd_n" :time="10"
                                         :thousandSign="true" />
                                 </h3>
@@ -70,13 +71,13 @@
                             </el-table>
                         </div>
                         <div class="rightEchart-btn">
-                            <el-button class="btn" color="#7b52f7" @click="clickEchartBtn">
+                            <el-button class="btn" @click="clickEchartBtn" :color="dvColor[0]">
                                 <el-icon style="margin-right: 10px;">
                                     <Histogram />
                                 </el-icon>
                                 图表
                             </el-button>
-                            <el-button class="btn" color="#7b52f7" @click="isProHisEchart = false">
+                            <el-button class="btn" @click="isProHisEchart = false" :color="dvColor[0]">
                                 <el-icon style="margin-right: 10px;">
                                     <List />
                                 </el-icon>
@@ -112,6 +113,9 @@ let props = defineProps({
     currentProvinceData: {
         type: Object,
         default: {}
+    },
+    dvColor: {
+        default: []
     }
 }),
     isProvinceEchartDrawer = ref(false),//对话框状态
@@ -121,8 +125,7 @@ let props = defineProps({
     historyList: any = ref([]),//省份历史数据
     historyEchart: any = null,//历史图表
     isProHisEchart = ref(true),//显示柱状图状态
-    emits = defineEmits(["close"]),
-    dvColor: any = ["#7b52f7", "#c5b2ff"];
+    emits = defineEmits(["close"]);
 
 watch(
     () => props.isProvinceEchartDrawer,
@@ -261,10 +264,6 @@ async function proHisEchartFun() {
                 type: 'bar',
                 animationDuration: 2000,//动画时间
                 animationEasing: "cubicInOut",//动画类型
-                // stack: 'total',
-                // label: {
-                //     show: true
-                // },
                 emphasis: {
                     focus: 'series'
                 },
@@ -278,10 +277,6 @@ async function proHisEchartFun() {
                 type: 'bar',
                 animationDuration: 2000,//动画时间
                 animationEasing: "cubicInOut",//动画类型
-                // stack: 'total',
-                // label: {
-                //     show: true
-                // },
                 emphasis: {
                     focus: 'series'
                 },
@@ -296,9 +291,6 @@ async function proHisEchartFun() {
                 stack: 'total',
                 animationDuration: 2000,//动画时间
                 animationEasing: "cubicInOut",//动画类型
-                // label: {
-                //     show: true
-                // },
                 emphasis: {
                     focus: 'series'
                 },
@@ -313,14 +305,11 @@ async function proHisEchartFun() {
                 stack: 'total',
                 animationDuration: 2000,//动画时间
                 animationEasing: "cubicInOut",//动画类型
-                // label: {
-                //     show: true
-                // },
                 emphasis: {
                     focus: 'series'
                 },
                 itemStyle: {
-                    color: '#794ebd'
+                    color: "#9574fb"
                 },
                 data: echartData.conadd
             },
@@ -330,9 +319,6 @@ async function proHisEchartFun() {
                 stack: 'total',
                 animationDuration: 2000,//动画时间
                 animationEasing: "cubicInOut",//动画类型
-                // label: {
-                //     show: true
-                // },
                 emphasis: {
                     focus: 'series'
                 },
@@ -397,9 +383,6 @@ async function historyEchartFun() {
         },
         grid: {
             left: '8%',
-            // right: '4%',
-            // bottom: '3%',
-            // containLabel: true
         },
         xAxis: [
             {
@@ -513,7 +496,7 @@ async function historyEchartFun() {
                     color: new echarts.graphic.LinearGradient(1, 0, 1, 1, [
                         {
                             offset: 0,
-                            color: "#794ebd"
+                            color: "#9574fb"
                         },
                         {
                             offset: 1,
@@ -598,12 +581,6 @@ async function historyEchartFun() {
     (historyEchart) && (historyEchart.dispose());//销毁实例
     historyEchart = echarts.init(document.getElementsByClassName("historyEchart-div")[0]);
     option && historyEchart.setOption(option);
-    // 自动轮播
-    // autoToolTip(historyEchart, option, {
-    //     interval: 100,// 轮播间隔时间 默认2s
-    //     loopSeries: true,// 是否循环轮播所有序列
-    //     seriesIndex: 0,// 第1个被轮播的序列下标
-    // });
 }
 </script>
 
@@ -627,9 +604,11 @@ async function historyEchartFun() {
 
         .close-icon {
             margin: auto 0px;
+            transition: all 0.3s linear;
 
             &:hover {
-                color: #7b52f7;
+                color: #fff;
+                transform: rotateZ(180deg);
                 cursor: pointer;
             }
         }
@@ -669,7 +648,7 @@ async function historyEchartFun() {
 
                         h3 {
                             font-size: 20px;
-                            color: #794ebd;
+                            color: #9574fb;
                         }
 
                         .all-num {
