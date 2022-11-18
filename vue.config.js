@@ -32,7 +32,7 @@ let devProxy = {
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-  publicPath: process.env.NODE_ENV === "production" ? "/covid19-visualization/" : "/",
+  publicPath: './',
   devServer: {
     port: 8080,//端口
     open: false,//项目启动后是否在浏览器自动打开
