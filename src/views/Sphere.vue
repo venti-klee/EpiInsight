@@ -767,7 +767,7 @@ function createUpDownRing() {
   let a = new THREE.RingGeometry(earthSize - 50, earthSize - 55, 100); //圆环几何体(内半径,外半径,分段数)
   let ringsOuterMaterial = new THREE.MeshBasicMaterial({
     color: dvColor.value[0],
-    opacity: .5,
+    // opacity: .3,
     side: THREE.DoubleSide,
     fog: true,
     depthWrite: false,
@@ -783,7 +783,7 @@ function createUpDownRing() {
   //创建外环
   let t = new THREE.RingGeometry(earthSize - 30, earthSize - 33, 100);
   let ringsInnerMaterial = new THREE.MeshBasicMaterial({
-    opacity: .5,
+    opacity: .2,
     side: THREE.DoubleSide,
     fog: true,
     depthWrite: false,
