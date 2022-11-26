@@ -120,6 +120,7 @@
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import * as THREE from "three";
+import { MeshLine, MeshLineMaterial } from 'three.meshline';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as echarts from "echarts";
 import PK from "@/../package.json";
@@ -182,7 +183,9 @@ let version: any = ref(PK.version),//系统版本号
   dvColor: any = ref([]),//系统配色
   sysBackgroundColor: any = 'rgb(197, 178, 255, .1)',//系统背景主题色
   reportData: any = ref({ blobData: null, fileName: null }),//报告数据
-  dataType: any = ref(null);//数据来源
+  dataType: any = ref(null),//数据来源
+  dotLineRingMesh: any = null,//点线组
+  flylineMesh: any = null;//飞线组
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -361,7 +364,7 @@ function init(data: any) {
   let height = dom.clientHeight;
   scene = new THREE.Scene(); //场景场景
   camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000); //创建透视相机(视场、长宽比、近面、远面)
-  camera.position.set(0, 0, 325); //设置相机位置
+  camera.position.set(0, 50, 350); //设置相机位置
   camera.lookAt(0, 0, 0);
   //创建渲染器
   renderer = new THREE.WebGLRenderer({
@@ -434,7 +437,6 @@ function createStars() {
     blending: THREE.AdditiveBlending,
     fog: true,
     depthTest: false, //(不能与blending一起使用)
-    // depthWrite: false, //(深度写入)防止星辰在球体前面出现黑块
   });
   //星辰的集合
   let starsMesh = new THREE.Points(starsGeometry, starsMaterial);
@@ -510,12 +512,10 @@ async function createSpotSphere() {
   let globeBufferGeometry = new THREE.SphereGeometry(earthSize - 1, 50, 50);//球体几何体
   let globeInnerMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(dvColor.value[0]),//颜色
-    // blending: THREE.AdditiveBlending,//纹理融合的叠加方式
-    // side: THREE.FrontSide,//前面显示
     transparent: true,//透明
-    // depthWrite: false,//深度写入
-    // depthTest: false,//黑洞效果
-    opacity: .3,//不透明度
+    opacity: .4,//不透明度
+    fog: new THREE.Fog(0x050505, 2000, 3500),
+
   });
   let globeInnerMesh = new THREE.Mesh(
     globeBufferGeometry,
@@ -562,7 +562,8 @@ function createSpot() {
     let globeCloudMaterial = new THREE.PointsMaterial({
       color: new THREE.Color(dvColor.value[1]),//颜色
       fog: true,
-      size: 1,
+      size: 1.5,
+      transparent: false,
     });//球面斑点材质
     let d = new Float32Array(3 * globeCloudVerticesArray.length), c = [];
     for (o = 0; o < globeCloudVerticesArray.length; o++) {
@@ -575,7 +576,7 @@ function createSpot() {
     globeCloudBufferGeometry.setAttribute("color", color_val);//给缓冲几何体添加颜色属性,修改颜色直接修改globeCloudBufferGeometry的setAttribute
     let globeCloud = new THREE.Points(//球面的象素点
       globeCloudBufferGeometry,
-      globeCloudMaterial
+      globeCloudMaterial,
     );
     globeCloud.name = "globeCloud";
     earthGroup.add(globeCloud); //将地球云添加到地球对象中
@@ -584,7 +585,7 @@ function createSpot() {
 
 //经纬度坐标变换（传入e:纬度、a经度、t球半径、o球额外距离）
 function latLongToVector3(e: any, a: any, t: any, o: any) {
-  var r = (e * Math.PI) / 180,
+  let r = (e * Math.PI) / 180,
     i = ((a - 180) * Math.PI) / 180,
     n = -(t + o) * Math.cos(r) * Math.cos(i),
     s = (t + o) * Math.sin(r),
@@ -609,7 +610,9 @@ function createVirus(data: any, earthSize: any) {
       let virusMaterial = new THREE.SpriteMaterial({
         color: e.color,
         map: new THREE.TextureLoader().load(virusImg),
-        side: THREE.FrontSide, //只显示前面
+        transparent: true,
+        depthWrite: true,
+        fog: true,
       }); //病毒材质
       let Sprite = new THREE.Sprite(virusMaterial); //点精灵材质
       Sprite.scale.set(virSize, virSize, 1); //点大小
@@ -622,6 +625,177 @@ function createVirus(data: any, earthSize: any) {
       earthGroup.add(Sprite); //将病毒添加进球体组中
     }
   });
+  createRings();
+};
+
+//创建环
+function createRings() {
+  createEquatorSolidRing();//创建赤道实线环
+  createEquatorFlyline();//创建赤道飞线环
+  createEquatorDottedLineRing();//创建赤道虚线环
+  createSpikes();//创建赤道尖刺
+  createUpDownRing();//创建上下环
+};
+
+//创建赤道实线环
+function createEquatorSolidRing() {
+  //创建里层的环
+  let ringGeometry = new THREE.RingGeometry(earthSize + 5, earthSize + 10, 100);
+  let ringMaterial = new THREE.MeshBasicMaterial({
+    color: dvColor.value[0],
+    opacity: .5,
+    side: THREE.DoubleSide,
+    fog: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  let ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
+  ringMesh.rotation.x = 90 * Math.PI / 180;
+  earthGroup.add(ringMesh);
+};
+
+//创建赤道飞线
+function createEquatorFlyline() {
+  const geometry = new THREE.BufferGeometry();
+  const path = new THREE.Path();
+  path.arc(0, 0, earthSize + 15, 0, Math.PI * 2);
+  const points = path.getPoints(100);//切割段数
+  geometry.setFromPoints(points);
+  const line = new MeshLine();
+  // 设置几何体
+  line.setGeometry(geometry)
+  const material = new MeshLineMaterial({
+    lineWidth: 1, // 线条的宽度
+    dashArray: .5, // 该数值倒数为线段数量
+    dashRatio: .5, // 不可见与可见比例
+    transparent: true, // 设置透明度
+  })
+  flylineMesh = new THREE.Mesh(line.geometry, material);
+  flylineMesh.rotation.x = 90 * Math.PI / 180;
+  earthGroup.add(flylineMesh);
+};
+
+//创建赤道虚线环
+function createEquatorDottedLineRing() {
+  const positions = [];
+  let ringPointGeometry = new THREE.BufferGeometry(); //环形点几何体
+  let pointNum = 50;//点的数量
+  let ringPointAngle = (2 * Math.PI) / pointNum; //环形点角度
+  for (let o = 0; o < 500; o++) {
+    let n = new THREE.Vector3(); //点的向量
+    n.x = (earthSize + 20) * Math.cos(ringPointAngle * o); //计算点的角度
+    n.y = 0;
+    n.z = (earthSize + 20) * Math.sin(ringPointAngle * o);
+    // ringPointGeometry.vertices.push(n); //将位置信息n添加到环形点几何体中
+    positions.push(n.x, n.y, n.z);
+  }
+  ringPointGeometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(positions, 3)
+  );
+  let ringPointMaterial = new THREE.PointsMaterial({
+    //环形点材质
+    size: 3,
+    transparent: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  dotLineRingMesh = new THREE.Points(
+    ringPointGeometry,
+    ringPointMaterial
+  );
+  dotLineRingMesh.name = "赤道虚线";
+  earthGroup.add(dotLineRingMesh);
+};
+
+//创建赤道尖刺
+function createSpikes() {
+  let spikeRadius = earthSize + 25,//尖刺半径
+    spikesVerticesArray = [];
+  let spikesObject = new THREE.Group(); //创建尖刺的组
+  spikesObject.name = "赤道尖刺";
+  earthGroup.add(spikesObject); //将尖刺组添加到旋转组中
+  //创建尖刺
+  let spikeNum = 400;//尖刺数量
+  let o = (2 * Math.PI) / spikeNum;
+  for (let s = 0; s < spikeNum; s++) {
+    let r = new THREE.Vector3();
+    (r.x = spikeRadius * Math.cos(o * s)),
+      (r.y = 0),
+      (r.z = spikeRadius * Math.sin(o * s)),
+      r.normalize(),//归一化，将该向量转化为向量单位
+      r.multiplyScalar(spikeRadius);
+    let i = r.clone(); //克隆r至i
+    (s % 10 == 1) ? i.multiplyScalar(1.14) : i.multiplyScalar(1.07);//每10个计算一次向量与标量相乘
+    spikesVerticesArray.push(r); //将向量存入尖刺顶点列表
+    spikesVerticesArray.push(i);
+  }
+  let n = new Float32Array(3 * spikesVerticesArray.length); //创建顶点数组
+  for (let s = 0; s < spikesVerticesArray.length; s++) {
+    //给顶点数组设置坐标
+    (n[3 * s] = spikesVerticesArray[s].x),
+      (n[3 * s + 1] = spikesVerticesArray[s].y),
+      (n[3 * s + 2] = spikesVerticesArray[s].z);
+  }
+  //尖刺材质
+  let spikesMaterial = new THREE.LineBasicMaterial({
+    // linewidth: 1,//webgl渲染器限制,不能设置宽度，始终为1(three.meshline插件可解决)
+    // color: "#fff",
+    // color: dvColor.value[0],
+    color: new THREE.Color(dvColor.value[0]),//颜色
+    transparent: false,
+  });
+  let spikesBufferGeometry = new THREE.BufferGeometry(); //创建尖刺几何体
+  spikesBufferGeometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(n, 3)
+  ); //添加位置属性
+  let spikesMesh = new THREE.LineSegments(
+    spikesBufferGeometry,
+    spikesMaterial
+  );
+  spikesObject.add(spikesMesh); //将网格放进组
+};
+
+//创建上下环
+function createUpDownRing() {
+  let ringsObject = new THREE.Group(); //创建环的组
+  ringsObject.name = "南北极环";
+  earthGroup.add(ringsObject); //将环添加到场景中
+  //创建内环
+  let a = new THREE.RingGeometry(earthSize - 50, earthSize - 55, 100); //圆环几何体(内半径,外半径,分段数)
+  let ringsOuterMaterial = new THREE.MeshBasicMaterial({
+    color: dvColor.value[0],
+    opacity: .5,
+    side: THREE.DoubleSide,
+    fog: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  let o = new THREE.Mesh(a, ringsOuterMaterial);
+  o.rotation.x = 90 * Math.PI / 180; //设置旋转
+  let r = o.clone(); //克隆外环网格o至r
+  o.position.y = 95; //设置位置
+  r.position.y = -95;
+  ringsObject.add(o);
+  ringsObject.add(r);
+  //创建外环
+  let t = new THREE.RingGeometry(earthSize - 30, earthSize - 33, 100);
+  let ringsInnerMaterial = new THREE.MeshBasicMaterial({
+    opacity: .5,
+    side: THREE.DoubleSide,
+    fog: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  let i = new THREE.Mesh(t, ringsInnerMaterial);
+  i.rotation.x = 90 * Math.PI / 180;
+  let n = i.clone();
+  i.position.y = 100;
+  n.position.y = -100;
+  ringsObject.add(i);
+  ringsObject.add(n);
 };
 
 //创建鼠标控件
@@ -647,6 +821,8 @@ function render() {
       .getElementById("sphereDiv")!
       .addEventListener("mousemove", onMousemove, false);
   orbitControls.update(); //鼠标控件实时更新
+  dotLineRingMesh.rotation.y += 5;//虚线环自转
+  flylineMesh.rotation.z -= .15;//飞线自转
   renderer.render(scene, camera);
 };
 

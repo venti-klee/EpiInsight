@@ -5,6 +5,7 @@ declare module '*.vue' {
   export default component
 }
 declare module 'three'//防止import导入报错
+declare module 'three.meshline'
 declare module 'three/examples/jsm/controls/OrbitControls'
 declare module 'echarts'
 declare module '@jiaminghi/data-view'
