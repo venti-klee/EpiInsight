@@ -37,7 +37,7 @@
 
     <!--设置按钮-->
     <div class="set-div">
-      <el-icon :color="dvColor[1]" :size="40" @click="isDrawer = true">
+      <el-icon color="#777777" :size="40" @click="isDrawer = true">
         <Setting />
       </el-icon>
     </div>
@@ -184,7 +184,7 @@ let version: any = ref(PK.version),//系统版本号
   currentProvinceData: any = ref({}),//当前省数据
   isProvinceEchartDrawer = ref(false),//省内图表对话框
   dvColor: any = ref([]),//系统配色
-  sysBackgroundColor: any = 'rgb(197, 178, 255, .1)',//系统背景主题色
+  sysBackgroundColor: any = 'rgb(255, 255, 255, .1)',//系统背景主题色
   reportData: any = ref({ blobData: null, fileName: null }),//报告数据
   dataType: any = ref(null),//数据来源
   dotLineRingMesh: any = null,//点线组
@@ -988,7 +988,7 @@ function histogramChartFun(list: any) {
         animationEasing: "cubicInOut",//动画类型
         showBackground: true,
         backgroundStyle: {
-          color: "rgb(197, 178, 255,.2)",
+          color: sysBackgroundColor,
         },
         itemStyle: {
           color: new echarts.graphic.LinearGradient(0, 1, 1, 1, [
