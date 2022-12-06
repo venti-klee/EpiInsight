@@ -1,5 +1,5 @@
 # 疫情可视化
-* 浏览链接：https://xi1213.gitee.io/covid19-visualization/#/
+* 浏览链接：http://xisite.top/original/covid19-visualization/index.html#/
 * 项目链接：https://gitee.com/xi1213/covid19-visualization
 * CSDN文章：https://blog.csdn.net/xi1213/article/details/126824752
 # 项目简介
