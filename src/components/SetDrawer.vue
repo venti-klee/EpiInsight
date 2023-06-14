@@ -27,7 +27,8 @@
                     </el-form-item>
                     <el-form-item label="数据来源：">
                         <el-radio-group v-model="setData.dataType" @change="changeSetData('dataType')">
-                            <el-radio-button v-for="item in dataTypeList" :label="item" :key="item"
+                            <el-radio-button v-for="item in dataTypeList" :label="item" :key="item" :disabled="item == '在线'"
+                                :title="item == '在线' ? '在线api失效' : ''"
                                 style="--el-radio-button-checked-border-color:#555555;--el-radio-button-checked-bg-color:#555555;--el-border-radius-base: 0px;">
                                 <template #default="label">
                                     <div style="display:flex ;">
@@ -159,7 +160,7 @@ function sysConfig() {
     setData.value.sysVer = PK.version//获取系统版本号
     process.env.NODE_ENV == "development" ?
         setData.value.dataType = dataTypeList[0] ://开发环境使用离线数据
-        setData.value.dataType = dataTypeList[1];//生产环境使用在线数据
+        setData.value.dataType = dataTypeList[0];//生产环境使用在线数据(在线api失效)
     let ss = sessionStorage.getItem("config");//获取缓存配置
     //缓存中有配置取出配置，无则使用初始配置
     if (ss) {
