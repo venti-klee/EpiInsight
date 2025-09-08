@@ -1,5 +1,5 @@
 # 疫情可视化
-* 浏览链接：http://1.15.222.141:2222/original/bigScreen/28/index.html#/
+* 浏览链接：https://xiblogs.top/original/bigScreen/28/index.html
 * 项目链接：https://gitee.com/xi1213/covid19-visualization
 * CSDN文章：https://blog.csdn.net/xi1213/article/details/126824752
 # 项目简介
