@@ -1,27 +1,18 @@
 <!--疫情球体-->
 <template>
   <dv-border-box-1 class="container" :color="dvColor" v-loading="isLoading"
-    element-loading-background="rgba(0, 0, 0, 0.9)" element-loading-text="数据加载中...">
+                   element-loading-background="rgba(0, 0, 0, 0.9)" element-loading-text="数据加载中...">
     <div class="isMobile-div" v-if="mobileDiv">
       <!--手机端遮罩-->
     </div>
 
     <!--顶部标题-->
-    <div :color="dvColor" class="top-div">
-      <div class="name-div" :style="{ backgroundColor: sysBackgroundColor }">
-        <dv-decoration-3 class="name-dv" :color="dvColor" />
-        <dv-decoration-11 class="sys-name" :color="dvColor">
-          疫情可视化
-        </dv-decoration-11>
-        <dv-decoration-3 :reverse="true" class="name-dv" :color="dvColor" />
-      </div>
-      <dv-decoration-7 class="sys-msg" :style="{ backgroundColor: sysBackgroundColor }" :color="dvColor">
-        <span>
-          {{ dataType }}数据截止{{ allData.mtime }}
-        </span>
-      </dv-decoration-7>
-      <dv-decoration-5 :color="dvColor" style=" margin: auto;width:60%;height:60px;margin-top: -30px;" />
-    </div>
+    <topheader  :dvColor="dvColor"
+                :sysBackgroundColor="sysBackgroundColor"
+                :allData="allData"
+                :dataType="dataType"
+                @date-change="handleDateChange"
+    />
 
     <!--球体盒子-->
     <div id="sphereDiv"></div>
@@ -45,19 +36,19 @@
     <!--数字盒子-->
     <dv-border-box-4 :color="dvColor" class="numDiv">
       <div class="addconDiv" :style="{ backgroundColor: sysBackgroundColor }">
-        <div class="tit">全球现存确诊</div>
+        <div class="tit">全球累计确诊</div>
         <addNumber class="certain-div" :value="certain" :time="10" :thousandSign="true" />
-        <div class="day-tit">今日{{ othertotal.certain_inc }}</div>
+        <div class="day-tit">今日+{{ othertotal.certain_inc }}</div>
       </div>
       <div class="addcureDiv" :style="{ backgroundColor: sysBackgroundColor }">
         <div class="tit">全球累计治愈</div>
         <addNumber class="addcure-div" :value="addcure" :time="10" :thousandSign="true" />
-        <div class="day-tit">今日{{ othertotal.recure_inc }}</div>
+        <div class="day-tit">今日+{{ othertotal.recure_inc }}</div>
       </div>
       <div class="addDieDiv" :style="{ backgroundColor: sysBackgroundColor }">
         <div class="tit">全球累计死亡</div>
         <addNumber class="addDie-div" :value="addDie" :time="10" :thousandSign="true" />
-        <div class="day-tit">今日{{ othertotal.die_inc }}</div>
+        <div class="day-tit">今日+{{ othertotal.die_inc }}</div>
       </div>
     </dv-border-box-4>
 
@@ -104,19 +95,20 @@
       <SphereTabDrawer :dvColor="dvColor" :isSphere="isSphere" :sphereData="sphereData" @close="isSphere = false" />
       <!--国内数据表格-->
       <ChinaTabDrawer :dvColor="dvColor" :allData="allData" :isChina="isChina" :list="allData.list"
-        @close="isChina = false" />
+                      @close="isChina = false" />
       <!--国内图表分析-->
       <ChinaEchartDrawer :dvColor="dvColor" :sphereData="sphereData" :daily="allData.add_daily"
-        :jwsrTop="allData.jwsrTop" :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist"
-        :allData="allData" />
+                         :jwsrTop="allData.jwsrTop" :isEchart="isEchart" @close="isEchart = false" :historylist="allData.historylist"
+                         :allData="allData" />
       <!--省内图表分析-->
       <ProvinceEchartDrawer :dvColor="dvColor" :isProvinceEchartDrawer="isProvinceEchartDrawer"
-        @close="isProvinceEchartDrawer = false" :currentProvinceData="currentProvinceData" />
+                            @close="isProvinceEchartDrawer = false" :currentProvinceData="currentProvinceData" />
       <!--报告抽屉-->
       <ReportDrawer :isReport="isReport" :dvColor="dvColor" :reportData="reportData" @close="isReport = false" />
     </div>
   </dv-border-box-1>
 </template>
+
 <script lang='ts' setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import * as THREE from "three";
@@ -151,45 +143,92 @@ import ChinaTabDrawer from "@/views/ChinaTabDrawer.vue";
 import ReportDrawer from "@/views/ReportDrawer.vue";
 import ProvinceEchartDrawer from "@/views/ProvinceEchartDrawer.vue";
 import wordImg from "@/assets/img/word.png";
+import Topheader from "@/components/Topheader.vue";
+
+// 引入fetch API来调用Flask后端
+const fetchCovidData = async (date: string) => {
+  try {
+    const response = await fetch('http://localhost:5000/get_covid_stats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ date }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('获取COVID-19数据失败:', error);
+    return null;
+  }
+};
+
+const fetchAvailableDates = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/get_available_dates', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.available_dates;
+  } catch (error) {
+    console.error('获取可用日期失败:', error);
+    return [];
+  }
+};
+
 let version: any = ref(PK.version),//系统版本号
-  mobileDiv: any = ref(true),//手机端遮罩
-  scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
-  camera: any = null, //相机
-  dom: any = null, //需要使用canvas的dom
-  renderer: any = null, //渲染器
-  orbitControls: any = null, //鼠标控件
-  mouse = new THREE.Vector2(), //鼠标的二维平面
-  raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
-  earthGroup: any = new THREE.Group(),//球体组
-  earthSize: any = 100, //地球尺寸
-  positionData = countryPosition, //国家位置数据
-  isSphere = ref(false),//全球数据对话框状态
-  isChina = ref(false),//国内数据对话框状态
-  isEchart = ref(false),//图表分析对话框状态
-  isReport = ref(false),//报告对话框状态
-  anId = ref(0), //动画id
-  isLoading = ref(false), //加载状态
-  allData: any = ref({}), //疫情所有数据
-  othertotal: any = ref({}),//全球基本数据
-  sphereData: any = ref([]), //球体数据
-  currentPointData: any = ref({}), //当前选中点的数据
-  position = ref({ x: "", y: "" }), //标签位置
-  isDrawer = ref(false),//设置抽屉状态
-  histogramChart: any = null,//柱状图
-  sliceNum: number = 50,//柱状图截取数量
-  certain = ref(0),//全球现存确诊
-  addcure = ref(0),//全球治愈数
-  addDie = ref(0),//全球死亡数
-  userMsg: any = ref({}),//使用者信息
-  currentProvinceData: any = ref({}),//当前省数据
-  isProvinceEchartDrawer = ref(false),//省内图表对话框
-  dvColor: any = ref([]),//系统配色
-  sysBackgroundColor: any = 'rgb(255, 255, 255, .1)',//系统背景主题色
-  reportData: any = ref({ blobData: null, fileName: null }),//报告数据
-  dataType: any = ref(null),//数据来源
-  dotLineRingMesh: any = null,//点线组
-  flylineMesh: any = null,//飞线组
-  expandRingMesh: any = null;//放大环组
+    mobileDiv: any = ref(true),//手机端遮罩
+    scene: any = null, //场景(频繁变更的对象放置在vue的data中会导致卡顿)
+    camera: any = null, //相机
+    dom: any = null, //需要使用canvas的dom
+    renderer: any = null, //渲染器
+    orbitControls: any = null, //鼠标控件
+    mouse = new THREE.Vector2(), //鼠标的二维平面
+    raycaster = new THREE.Raycaster(), //光线投射器(用于鼠标点击时获取坐标)
+    earthGroup: any = new THREE.Group(),//球体组
+    earthSize: any = 100, //地球尺寸
+    positionData = countryPosition, //国家位置数据
+    isSphere = ref(false),//全球数据对话框状态
+    isChina = ref(false),//国内数据对话框状态
+    isEchart = ref(false),//图表分析对话框状态
+    isReport = ref(false),//报告对话框状态
+    anId = ref(0), //动画id
+    isLoading = ref(false), //加载状态
+    allData: any = ref({}), //疫情所有数据
+    othertotal: any = ref({}),//全球基本数据
+    sphereData: any = ref([]), //球体数据
+    currentPointData: any = ref({}), //当前选中点的数据
+    position = ref({ x: "", y: "" }), //标签位置
+    isDrawer = ref(false),//设置抽屉状态
+    histogramChart: any = null,//柱状图
+    sliceNum: number = 50,//柱状图截取数量
+    certain = ref(0),//全球累计确诊
+    addcure = ref(0),//全球累计治愈数
+    addDie = ref(0),//全球累计死亡数
+    userMsg: any = ref({}),//使用者信息
+    currentProvinceData: any = ref({}),//当前省数据
+    isProvinceEchartDrawer = ref(false),//省内图表对话框
+    dvColor: any = ref([]),//系统配色
+    sysBackgroundColor: any = 'rgb(255, 255, 255, .1)',//系统背景主题色
+    reportData: any = ref({ blobData: null, fileName: null }),//报告数据
+    dataType: any = ref(null),//数据来源
+    dotLineRingMesh: any = null,//点线组
+    flylineMesh: any = null,//飞线组
+    expandRingMesh: any = null;//放大环组
+const currentSelectedDate = ref(''); // 用于存储选中的日期
 
 onMounted(() => {
   judgeDevice();//判断设备
@@ -197,12 +236,12 @@ onMounted(() => {
 
 //当allData数据获取完成后开始获取用户ip信息
 watch(
-  () => allData.value,
-  (val) => {
-    if (val.times) {
-      getLocationMsg();//获取用户ip信息
+    () => allData.value,
+    (val) => {
+      if (val.times) {
+        getLocationMsg();//获取用户ip信息
+      }
     }
-  }
 )
 
 //判断设备
@@ -276,31 +315,224 @@ function decodingStr(str: any) {
   return jsonObj;
 };
 
-//获取数据
-//未切换数据源，默认开发环境使用tempData，生产环境使用api。
-//切换数据源为非离线，开发环境使用vue代理dataSource1，生产环境用vue代理dataSource1(获取失败使用jsonp获取)
-function getCOVID19Data() {
-  isLoading.value = true;
-  dataType.value = JSON.parse(sessionStorage.getItem("config") as any).dataType;
-  if (dataType.value == "在线") {
-    dataSource1()
-      .then((res) => {
-        console.log("vue代理dataSource1获取数据");
-        let decodingObj = decodingStr(res.data);//解码unicode
-        allData.value = decodingObj.data; //记录所有数据
-        structureData(allData.value); //构造数据  
-        isLoading.value = false;
-      })
-      .catch((err) => {
-        jsonpGetData();
-      });
-  } else {
-    console.log("使用tempData数据");
-    allData.value = tempData.data;
-    structureData(allData.value); //构造数据  
-    isLoading.value = false;
+// 处理日期变化的函数
+const handleDateChange = async (date: string) => {
+  console.log('原始日期:', date);
+
+  try {
+    const dateObj = new Date(date);
+    // 使用本地时间的年、月、日
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    console.log('转换后日期:', formattedDate);
+    currentSelectedDate.value = formattedDate;
+
+    await getCOVID19Data(formattedDate);
+  } catch (error) {
+    console.error('日期处理错误:', error);
+    // 使用当前日期作为默认值
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const defaultDate = `${year}-${month}-${day}`;
+    await getCOVID19Data(defaultDate);
   }
 };
+// 获取COVID-19数据的函数
+async function getCOVID19Data(selectedDate?: string) {
+  isLoading.value = true;
+  console.log(`开始获取COVID-19数据，日期: ${selectedDate || '最新日期'}`);
+
+  // 安全地获取配置数据，提供默认值以避免类型错误
+  let configData;
+  try {
+    const configStr = sessionStorage.getItem("config");
+    configData = configStr ? JSON.parse(configStr) : { dataType: "实时" };
+  } catch (error) {
+    console.error("解析配置数据失败:", error);
+    configData = { dataType: "实时" }; // 默认配置
+  }
+
+  dataType.value = configData.dataType;
+
+  // 默认使用Flask API，如果离线则使用tempData
+  if (dataType.value !== "离线") {
+    try {
+      let targetDate: string;
+
+      // 如果传入了特定日期，则使用该日期，否则获取最新日期
+      if (selectedDate) {
+        targetDate = selectedDate;
+      } else {
+        const availableDates = await fetchAvailableDates();
+        if (availableDates.length > 0) {
+          targetDate = availableDates[availableDates.length - 1];
+          console.log(`使用最新可用日期: ${targetDate}`);
+        } else {
+          throw new Error("无可用日期");
+        }
+      }
+
+      const data = await fetchCovidData(targetDate);
+
+      if (data && validateDataStructure(data)) {
+        console.log("成功从Flask获取数据", {
+          日期: data.date,
+          累计确诊: data.global_stats.total_confirmed,
+          累计治愈: data.global_stats.total_recovered,
+          累计死亡: data.global_stats.total_deaths,
+          国家数量: data.top_50_countries.length
+        });
+
+        structureFlaskData(data, targetDate);
+      } else {
+        console.error("从Flask获取的数据格式不正确", data);
+        useTempData();
+      }
+    } catch (error) {
+      console.error("从Flask获取数据失败:", error);
+      useTempData();
+    }
+  } else {
+    console.log("使用离线数据模式");
+    useTempData();
+  }
+}
+
+function useTempData() {
+  console.log("使用tempData数据");
+  allData.value = tempData.data;
+  structureData(allData.value); //构造数据
+  isLoading.value = false;
+}
+
+// 数据验证函数
+function validateDataStructure(data: any) {
+  if (!data || !data.global_stats) {
+    console.error("数据格式错误: 缺少global_stats字段");
+    return false;
+  }
+
+  const requiredFields = ['total_confirmed', 'total_recovered', 'total_deaths'];
+  const missingFields = requiredFields.filter(field => !(field in data.global_stats));
+
+  if (missingFields.length > 0) {
+    console.error(`数据格式错误: 缺少字段 ${missingFields.join(', ')}`);
+    return false;
+  }
+
+  console.log("数据结构验证通过");
+  return true;
+}
+
+// 重构Flask返回的数据结构以适应现有代码
+function structureFlaskData(flaskData: any, date: string) {
+  if (!validateDataStructure(flaskData)) {
+    console.error("数据结构验证失败，使用备用数据");
+    useTempData();
+    return;
+  }
+
+  // Flask返回格式:
+  // {
+  //   date: "2023-04-15",
+  //   top_50_countries: [{country: "US", confirmed: 1000000, ...}, ...],
+  //   global_stats: {total_confirmed: 500000000, ...}
+  // }
+
+  // 重新构造为原代码期望的格式
+  const worldlist = flaskData.top_50_countries.map((item: any) => ({
+    name: item.country,
+    value: item.confirmed, // 累计确诊
+    deathNum: item.deaths,
+    cureNum: item.recovered,
+    active: item.active,
+    position: getCountryPosition(item.country)
+  })).filter((item: any) => item.position); // 过滤掉没有位置信息的国家
+
+  // 模拟获取国家位置
+  function getCountryPosition(countryName: string) {
+    const positionMap: Record<string, [number, number]> = {
+      "US": [ -98.5795, 39.8283 ],
+      "India": [ 78.9629, 20.5937 ],
+      "Brazil": [ -51.9253, -14.2350 ],
+      "Russia": [ 105.3188, 61.5240 ],
+      "United Kingdom": [ -3.4360, 55.3781 ],
+      "Turkey": [ 35.2433, 38.9637 ],
+      "Italy": [ 12.5674, 41.8719 ],
+      "Spain": [ -3.7038, 40.4168 ],
+      "Germany": [ 10.4515, 51.1657 ],
+      "France": [ 2.2137, 46.6034 ],
+      "Iran": [ 53.6880, 32.4279 ],
+      "Colombia": [ -74.2973, 4.5709 ],
+      "Poland": [ 19.1451, 51.9194 ],
+      "Argentina": [ -63.6167, -38.4161 ],
+      "Ukraine": [ 31.1656, 48.3794 ],
+      "South Africa": [ 22.9375, -30.5595 ],
+      "Mexico": [ -102.5528, 23.6345 ],
+      "Japan": [ 138.2529, 36.2048 ],
+      "Indonesia": [ 113.9213, -0.7893 ],
+      "Netherlands": [ 5.2913, 52.1326 ],
+      "Malaysia": [ 101.9758, 4.2105 ],
+      "Thailand": [ 100.9925, 15.8700 ],
+      "Philippines": [ 121.7740, 12.8797 ],
+      "Belgium": [ 4.4699, 50.5039 ],
+      "Peru": [ -75.0152, -9.1900 ],
+      "Switzerland": [ 8.2275, 46.8182 ],
+      "Chile": [ -71.5430, -35.6751 ],
+      "Iraq": [ 43.6793, 33.2232 ],
+      "Bangladesh": [ 90.3563, 23.6850 ],
+      "Pakistan": [ 69.3451, 30.3753 ],
+      "Israel": [ 34.8516, 31.0461 ],
+      "Austria": [ 13.3455, 47.5162 ],
+      "Czechia": [ 15.4730, 49.8175 ],
+      "Ecuador": [ -78.1834, -1.8312 ],
+      "Canada": [ -106.3468, 56.1304 ],
+      "Sweden": [ 18.6435, 60.1282 ],
+      "Egypt": [ 30.8418, 26.8206 ],
+      "Portugal": [ -7.8537, 39.3999 ],
+      "Saudi Arabia": [ 45.0792, 23.8859 ],
+      "Romania": [ 24.9668, 45.9432 ],
+      "Jordan": [ 36.2828, 30.5852 ],
+      "Denmark": [ 9.5018, 56.2639 ],
+      "Singapore": [ 103.8198, 1.3521 ],
+      "Serbia": [ 21.0080, 44.0165 ],
+      "Finland": [ 25.7482, 61.9241 ],
+      "Lebanon": [ 35.8623, 33.8547 ],
+      "Norway": [ 8.4689, 60.4720 ],
+      "Australia": [ 133.7751, -25.2744 ],
+      "Greece": [ 21.8243, 39.0742 ]
+    };
+
+    return positionMap[countryName] || null;
+  }
+
+  // 构造allData格式
+  const reconstructedData = {
+    times: date,
+    worldlist: worldlist,
+    othertotal: {
+      certain: flaskData.global_stats.total_confirmed,    // 累计确诊
+      recure: flaskData.global_stats.total_recovered,     // 累计治愈
+      die: flaskData.global_stats.total_deaths,           // 累计死亡
+      econNum: flaskData.global_stats.total_active ||     // 现存确诊（活跃病例）
+          (flaskData.global_stats.total_confirmed - flaskData.global_stats.total_recovered - flaskData.global_stats.total_deaths),
+      // 新增字段 - 单日新增数据
+      certain_inc: flaskData.global_stats.new_confirmed || 0,  // 单日新增确诊
+      recure_inc: flaskData.global_stats.new_recovered || 0,   // 单日新增治愈
+      die_inc: flaskData.global_stats.new_deaths || 0          // 单日新增死亡
+    },
+    list: [] // 国内数据暂时为空，或从其他API获取
+  };
+
+  allData.value = reconstructedData;
+  structureData(allData.value);
+  isLoading.value = false;
+}
 
 //jsonp方式获取数据
 function jsonpGetData() {
@@ -314,7 +546,7 @@ function jsonpGetData() {
       console.log("使用tempData数据");
       allData.value = tempData.data;
     }
-    structureData(allData.value); //构造数据  
+    structureData(allData.value); //构造数据
     isLoading.value = false;
   }, callBackName)
 };
@@ -336,25 +568,27 @@ function structureData(COVID19Data: any) {
   sphereData.value = worldlist;
   othertotal.value = allData.value.othertotal;
   //国内省份数据类型转换
-  allData.value.list.forEach((l: any) => {
-    l.value = Number(l.value);
-    l.econNum = Number(l.econNum);
-    l.deathNum = Number(l.deathNum);
-    l.cureNum = Number(l.cureNum);
-    l.asymptomNum = Number(l.asymptomNum);
-    l.jwsrNum = Number(l.jwsrNum);
-    //市/区数据类型转换
-    if (l.city.length !== 0) {
-      l.city.forEach((c: any) => {
-        c.conNum = Number(c.conNum);
-        c.econNum = Number(c.econNum);
-        c.deathNum = Number(c.deathNum);
-        c.cureNum = Number(c.cureNum);
-        c.asymptomNum = Number(c.asymptomNum);
-        c.zerodays = Number(c.zerodays);
-      })
-    }
-  })
+  if (allData.value.list && allData.value.list.forEach) {
+    allData.value.list.forEach((l: any) => {
+      l.value = Number(l.value);
+      l.econNum = Number(l.econNum);
+      l.deathNum = Number(l.deathNum);
+      l.cureNum = Number(l.cureNum);
+      l.asymptomNum = Number(l.asymptomNum);
+      l.jwsrNum = Number(l.jwsrNum);
+      //市/区数据类型转换
+      if (l.city && l.city.length !== 0) {
+        l.city.forEach((c: any) => {
+          c.conNum = Number(c.conNum);
+          c.econNum = Number(c.econNum);
+          c.deathNum = Number(c.deathNum);
+          c.cureNum = Number(c.cureNum);
+          c.asymptomNum = Number(c.asymptomNum);
+          c.zerodays = Number(c.zerodays);
+        })
+      }
+    })
+  }
   init(sphereData.value); //初始化
   setTimeout(() => {
     initEchart();//初始化图表
@@ -427,12 +661,12 @@ function createStars() {
     colors.push(color.r, color.g, color.b);
   }
   starsGeometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(positions, 3)
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3)
   );
   starsGeometry.setAttribute(
-    "color",
-    new THREE.Float32BufferAttribute(colors, 3)
+      "color",
+      new THREE.Float32BufferAttribute(colors, 3)
   );
   //星辰材质
   let starsMaterial = new THREE.PointsMaterial({
@@ -455,11 +689,6 @@ function createLight() {
   let ambient = new THREE.AmbientLight(lightColor); //环境光
   ambient.name = "环境光";
   scene.add(ambient);
-  //   let pointLight = new THREE.PointLight(lightColor, 2, 1, 0); //点光源
-  //   pointLight.visible = true;
-  //   pointLight.position.set(0, 0, 1000); //点光源在原点充当太阳
-  //   pointLight.name = "点光源";
-  //   scene.add(pointLight); //点光源添加到场景中
   let directionalLight1 = new THREE.DirectionalLight(lightColor);
   directionalLight1.position.set(0, 0, 1000);
   scene.add(directionalLight1); //平行光源添加到场景中
@@ -498,11 +727,9 @@ async function createWBSphere(sphereType: any) {
   //地球材质
   let earthMaterial = new THREE.MeshPhongMaterial({
     map: new THREE.TextureLoader().load(
-      sphereType == "白昼" ? earthImg : earthNightImg //区分昼夜纹理
+        sphereType == "白昼" ? earthImg : earthNightImg //区分昼夜纹理
     ),
     color: sphereType == "白昼" ? dayColor : nightColor,
-    // metalness: 1, //生锈的金属外观(MeshStandardMaterial材质时使用)
-    // roughness: 0.5, // 材料的粗糙程度(MeshStandardMaterial材质时使用)
     normalScale: new THREE.Vector2(0, 5), //凹凸深度
     normalMap: new THREE.TextureLoader().load(normalImg), //法线贴图
   });
@@ -522,8 +749,8 @@ async function createSpotSphere() {
 
   });
   let globeInnerMesh = new THREE.Mesh(
-    globeBufferGeometry,
-    globeInnerMaterial
+      globeBufferGeometry,
+      globeInnerMaterial
   );
   earthGroup.add(globeInnerMesh); //将网格放入地球组
   createSpot();//创建球面斑点
@@ -545,12 +772,12 @@ function createSpot() {
     let o = null; //数组处理时的计数
     for (o = 0; o < canData.data.length; o += 4) {
       let r = (o / 4) % canvas.width,
-        i = (o / 4 - r) / canvas.width;
+          i = (o / 4 - r) / canvas.width;
       if ((o / 4) % 2 == 1 && i % 2 == 1)
         if (0 === canData.data[o]) {
           let n = r,
-            longitude = (i / (canvas.height / 180) - 90) / -1, //经度
-            latitude = n / (canvas.width / 360) - 180; //维度
+              longitude = (i / (canvas.height / 180) - 90) / -1, //经度
+              latitude = n / (canvas.width / 360) - 180; //维度
           let s = latLongToVector3(longitude, latitude, earthSize, .1); //经纬度变换
           globeCloudVerticesArray.push(s); //将变换后的顶点放入数组
         }
@@ -579,8 +806,8 @@ function createSpot() {
     let color_val = new THREE.BufferAttribute(d, 3);
     globeCloudBufferGeometry.setAttribute("color", color_val);//给缓冲几何体添加颜色属性,修改颜色直接修改globeCloudBufferGeometry的setAttribute
     let globeCloud = new THREE.Points(//球面的象素点
-      globeCloudBufferGeometry,
-      globeCloudMaterial,
+        globeCloudBufferGeometry,
+        globeCloudMaterial,
     );
     globeCloud.name = "globeCloud";
     earthGroup.add(globeCloud); //将地球云添加到地球对象中
@@ -590,10 +817,10 @@ function createSpot() {
 //经纬度坐标变换（传入e:纬度、a经度、t球半径、o球额外距离）
 function latLongToVector3(e: any, a: any, t: any, o: any) {
   let r = (e * Math.PI) / 180,
-    i = ((a - 180) * Math.PI) / 180,
-    n = -(t + o) * Math.cos(r) * Math.cos(i),
-    s = (t + o) * Math.sin(r),
-    l = (t + o) * Math.cos(r) * Math.sin(i);
+      i = ((a - 180) * Math.PI) / 180,
+      n = -(t + o) * Math.cos(r) * Math.cos(i),
+      s = (t + o) * Math.sin(r),
+      l = (t + o) * Math.cos(r) * Math.sin(i);
   return new THREE.Vector3(n, s, l); //计算三维向量
 };
 
@@ -604,7 +831,7 @@ function createVirus(data: any, earthSize: any) {
     new THREE.Color(0xfe4242),
     new THREE.Color(0xff0000),
   ]; //病毒颜色列表
-  let virSize = 4; //病毒大小
+  let virSize = 0; //病毒大小
   let list = JSON.parse(JSON.stringify(data));
   list.forEach((e: { value: number; color: any; position: any[]; }) => {
     e.value >= 10000000 && (e.color = colors[2]); //根据病毒数赋予不同颜色
@@ -626,7 +853,6 @@ function createVirus(data: any, earthSize: any) {
       Sprite.position.set(s.x, s.y, s.z); //设置点的位置
       Sprite.dotData = e; //将点的数据添加到dotData属性中
       Sprite.name = "病毒";
-      // Sprite.isHover = false;//鼠标是否移入
       earthGroup.add(Sprite); //将病毒添加进球体组中
     }
   });
@@ -697,21 +923,20 @@ function createEquatorDottedLineRing(r: any) {
     positions.push(n.x, n.y, n.z);
   }
   ringPointGeometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(positions, 3)
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3)
   );//设置位置属性
   let ringPointMaterial = new THREE.PointsMaterial({
     //环形点材质
     size: 3,
-    // color: dvColor.value[0],
     transparent: false,
     blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide,
     depthWrite: false,
   });
   dotLineRingMesh = new THREE.Points(
-    ringPointGeometry,
-    ringPointMaterial
+      ringPointGeometry,
+      ringPointMaterial
   );
   dotLineRingMesh.name = "赤道虚线";
   earthGroup.add(dotLineRingMesh);
@@ -746,20 +971,18 @@ function createSpikes(spikeRadius: any) {
   }
   //尖刺材质
   let spikesMaterial = new THREE.LineBasicMaterial({
-    // linewidth: 1,//webgl渲染器限制,不能设置宽度，始终为1(three.meshline插件可解决)
-    // color: "#fff",
     color: dvColor.value[0],
     transparent: true,
     opacity: .5
   });
   let spikesBufferGeometry = new THREE.BufferGeometry(); //创建尖刺几何体
   spikesBufferGeometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(n, 3)
+      "position",
+      new THREE.BufferAttribute(n, 3)
   ); //添加位置属性
   let spikesMesh = new THREE.LineSegments(
-    spikesBufferGeometry,
-    spikesMaterial
+      spikesBufferGeometry,
+      spikesMaterial
   );
   spikesObject.add(spikesMesh); //将网格放进组
 };
@@ -829,15 +1052,15 @@ function createExpandRing() {
 //创建渐变环动画
 function createExpandRingAnimation() {
   gsap.isTweening(expandRingMesh.scale) ||//环动画
-    (gsap.fromTo(
+  (gsap.fromTo(
       expandRingMesh.scale,//缩放渐变
       { x: 1, y: 1, },
       { x: 2.7, y: 2.7, duration: 1.5 }
-    ),
+  ),
       gsap.fromTo(
-        expandRingMesh.material,//材质的透明度渐变
-        { opacity: 1, },
-        { opacity: 0, duration: 1.5 }
+          expandRingMesh.material,//材质的透明度渐变
+          { opacity: 1, },
+          { opacity: 0, duration: 1.5 }
       ))
 };
 
@@ -871,14 +1094,14 @@ function createOrbitControls() {
   orbitControls.enableDamping = true; //滑动阻尼
   orbitControls.dampingFactor = 0.05; //(默认.25)
   orbitControls.minDistance = 250; //相机距离目标最小距离
-  orbitControls.maxDistance = 400; //相机距离目标最大距离  
+  orbitControls.maxDistance = 400; //相机距离目标最大距离
 };
 
 //渲染
 function render() {
   anId.value = requestAnimationFrame(render);
   document.getElementById("sphereDiv") &&
-    document
+  document
       .getElementById("sphereDiv")!
       .addEventListener("mousemove", onMousemove, false);
   orbitControls.update(); //鼠标控件实时更新
@@ -905,22 +1128,30 @@ function onMousemove(e: any) {
       x: e.pageX + 20 + "px",
       y: e.pageY + "px",
     }; //获取标签位置
-    // intersects[0].object.isHover = true;
-    // console.log(intersects[0].object);
   } else {
     currentPointData.value = {}; //置空标签数据
     dom!.style.cursor = "move"; //光标样式
   }
-  // console.log(scene.children.filter((c: any) => { return c.name == "地球组" }))
 };
 
 //初始化图表
 function initEchart() {
   let sortList: any = sortFun(sphereData.value);//球体数据排序
   histogramChartFun(sortList.slice(0, sliceNum)); //绘制国家排名柱状图
-  certain.value = Number(allData.value.othertotal.certain);//获取确诊值
-  addcure.value = Number(allData.value.othertotal.recure);///获取治愈值
-  addDie.value = Number(allData.value.othertotal.die);///获取死亡值
+
+  // 使用累计数据
+  certain.value = Number(allData.value.othertotal.certain);     // 累计确诊
+  addcure.value = Number(allData.value.othertotal.recure);     // 累计治愈
+  addDie.value = Number(allData.value.othertotal.die);         // 累计死亡
+
+  console.log("数据显示:", {
+    累计确诊: certain.value,
+    累计治愈: addcure.value,
+    累计死亡: addDie.value,
+    单日新增确诊: allData.value.othertotal.certain_inc,
+    单日新增治愈: allData.value.othertotal.recure_inc,
+    单日新增死亡: allData.value.othertotal.die_inc
+  });
 }
 
 //排序(冒泡法)
@@ -1047,12 +1278,12 @@ function getProvinceData() {
       }
     })
     jsonp1(
-      process.env.VUE_APP_5,
-      (res: any) => {
-        currentProvinceData.value = res.data;//获取到当前省数据
-      },
-      "val1",
-      "mod=province&province=" + ePro
+        process.env.VUE_APP_5,
+        (res: any) => {
+          currentProvinceData.value = res.data;//获取到当前省数据
+        },
+        "val1",
+        "mod=province&province=" + ePro
     );
   } else {
     currentProvinceData.value = tempProvinceData.data;
@@ -1102,17 +1333,19 @@ async function openPreview() {
     wordData.wordName = wordData.overviewData.name;
   }
   await getWordBlob("docx/word.docx", wordData).
-    then((res: any) => {
-      isLoading.value = false;
-      reportData.value = {
-        fileName: wordData.wordName + "疫情报告.docx",//设置文件名
-        blobData: res,//获取blob数据
-      };
-      isReport.value = true;//打开报告抽屉
-    })
+  then((res: any) => {
+    isLoading.value = false;
+    reportData.value = {
+      fileName: wordData.wordName + "疫情报告.docx",//设置文件名
+      blobData: res,//获取blob数据
+    };
+    isReport.value = true;//打开报告抽屉
+  })
 };
-
+// 组件挂载时获取初始数据
+getCOVID19Data();
 </script>
+
 <style scoped lang='scss'>
 .container {
   height: 100%;

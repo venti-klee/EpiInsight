@@ -27,7 +27,7 @@
                     </el-form-item>
                     <el-form-item label="数据来源：">
                         <el-radio-group v-model="setData.dataType" @change="changeSetData('dataType')">
-                            <el-radio-button v-for="item in dataTypeList" :label="item" :key="item" :disabled="item == '在线'"
+                            <el-radio-button v-for="item in dataTypeList" :label="item" :key="item"
                                 :title="item == '在线' ? '在线api失效' : ''"
                                 style="--el-radio-button-checked-border-color:#555555;--el-radio-button-checked-bg-color:#555555;--el-border-radius-base: 0px;">
                                 <template #default="label">
