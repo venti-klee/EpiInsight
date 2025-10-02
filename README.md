@@ -1,3 +1,6 @@
+#原作者：xi1213-79
+感谢大佬开源，救孩子课设于水火
+下述是大佬的原readme
 # 疫情可视化
 * 浏览链接：https://xiblogs.top/original/bigScreen/28/index.html
 * 项目链接：https://gitee.com/xi1213/covid19-visualization
