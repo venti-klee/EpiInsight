@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球疫情地图接口测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        input[type="date"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .loading {
+            background-color: #fff9e6;
+            color: #e67e22;
+        }
+        .error {
+            background-color: #ffe6e6;
+            color: #e74c3c;
+        }
+        .success {
+            background-color: #e6f7e6;
+            color: #27ae60;
+        }
+        .response-container {
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .response-header {
+            background-color: #f6f8fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            font-weight: 600;
+        }
+        pre {
+            padding: 15px;
+            background-color: #f8f9fa;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .summary {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f7ff;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>全球疫情地图接口测试</h1>
+
+    <div class="control-panel">
+        <div>
+            <label for="date-select">选择日期：</label>
+            <input type="date" id="date-select">
+        </div>
+        <div>
+            <button id="test-btn">测试接口</button>
+            <button id="dates-btn">获取可用日期</button>
+        </div>
+    </div>
+
+    <div id="status-message" class="status"></div>
+
+    <div id="summary" class="summary" style="display: none;"></div>
+
+    <div id="response-container" class="response-container" style="display: none;">
+        <div class="response-header">API响应结果</div>
+        <pre id="response-content"></pre>
+    </div>
+</div>
+
+<script>
+    // 获取DOM元素
+    const dateInput = document.getElementById('date-select');
+    const testBtn = document.getElementById('test-btn');
+    const datesBtn = document.getElementById('dates-btn');
+    const statusMessage = document.getElementById('status-message');
+    const summary = document.getElementById('summary');
+    const responseContainer = document.getElementById('response-container');
+    const responseContent = document.getElementById('response-content');
+
+    // 设置默认日期为今天
+    const today = new Date();
+    dateInput.value = today.toISOString().split('T')[0];
+    dateInput.max = dateInput.value;
+
+    // 显示状态消息
+    function showStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = 'status ' + type;
+
+        // 5秒后自动清除成功和错误消息
+        if (type !== 'loading') {
+            setTimeout(() => {
+                if (statusMessage.textContent === message) {
+                    statusMessage.textContent = '';
+                    statusMessage.className = 'status';
+                }
+            }, 5000);
+        }
+    }
+
+    // 格式化数字
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // 测试接口
+    async function testApi() {
+        const selectedDate = dateInput.value;
+        if (!selectedDate) {
+            showStatus('请选择日期', 'error');
+            return;
+        }
+
+        testBtn.disabled = true;
+        showStatus('正在请求接口...', 'loading');
+
+        try {
+            const response = await fetch('http://localhost:5000/get_global_map_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ date: selectedDate })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 显示响应结果
+            responseContent.textContent = JSON.stringify(data, null, 2);
+            responseContainer.style.display = 'block';
+
+            // 显示摘要
+            summary.innerHTML = `
+                    <strong>数据摘要：</strong>
+                    日期: ${data.date} |
+                    国家数量: ${data.countries_count} |
+                    全球确诊: ${formatNumber(data.global_total.confirmed)} |
+                    全球死亡: ${formatNumber(data.global_total.deaths)} |
+                    全球治愈: ${formatNumber(data.global_total.recovered)}
+                `;
+            summary.style.display = 'block';
+
+            showStatus(`接口请求成功，获取了 ${data.countries_count} 个国家/地区的数据`, 'success');
+        } catch (error) {
+            console.error('接口请求失败:', error);
+            showStatus('接口请求失败: ' + error.message, 'error');
+        } finally {
+            testBtn.disabled = false;
+        }
+    }
+
+    // 获取可用日期
+    async function getAvailableDates() {
+        datesBtn.disabled = true;
+        showStatus('正在获取可用日期...', 'loading');
+
+        try {
+            const response = await fetch('http://localhost:5000/get_available_dates');
+
+            if (!response.ok) {
+                throw new Error(`HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const dates = data.available_dates;
+
+            if (dates && dates.length > 0) {
+                dateInput.value = dates[dates.length - 1];
+                dateInput.max = dates[dates.length - 1];
+                showStatus(`获取到 ${dates.length} 个可用日期，已选择最新日期: ${dateInput.value}`, 'success');
+            } else {
+                showStatus('未找到可用日期', 'error');
+            }
+        } catch (error) {
+            console.error('获取可用日期失败:', error);
+            showStatus('获取可用日期失败: ' + error.message, 'error');
+        } finally {
+            datesBtn.disabled = false;
+        }
+    }
+
+    // 添加事件监听器
+    testBtn.addEventListener('click', testApi);
+    datesBtn.addEventListener('click', getAvailableDates);
+
+    // 页面加载时自动获取可用日期
+    window.addEventListener('load', getAvailableDates);
+</script>
+</body>
+</html>
