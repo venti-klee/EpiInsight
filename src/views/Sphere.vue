@@ -51,7 +51,7 @@
         <div class="day-tit">今日+{{ othertotal.die_inc }}</div>
       </div>
     </dv-border-box-4>
-<div v-if="false">
+<div v-show="false">
     <!--底部按钮-->
     <dv-decoration-1 class="btn-dv1" :reverse="true" :color="dvColor" />
     <dv-border-box-10 :color="dvColor" class="btn-div">
