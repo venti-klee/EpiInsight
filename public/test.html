@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全球疫情地图接口测试</title>
+    <title>疫情数据接口测试平台</title>
     <style>
         * {
             margin: 0;
@@ -16,24 +16,43 @@
             padding: 20px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 25px;
         }
         h1 {
             color: #2c3e50;
             margin-bottom: 20px;
             text-align: center;
         }
+        .description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
         .control-panel {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .date-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .api-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         input[type="date"] {
             padding: 8px 12px;
@@ -49,14 +68,30 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
         button:hover {
             background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         button:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #dates-btn {
+            background-color: #2ecc71;
+        }
+        #dates-btn:hover {
+            background-color: #27ae60;
+        }
+        #test-monthly-btn {
+            background-color: #9b59b6;
+        }
+        #test-monthly-btn:hover {
+            background-color: #8e44ad;
         }
         .status {
             padding: 10px;
@@ -76,16 +111,71 @@
             background-color: #e6f7e6;
             color: #27ae60;
         }
+        .data-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .data-display {
+                grid-template-columns: 1fr;
+            }
+        }
+        .summary {
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .global-stats {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .confirmed { color: #e74c3c; }
+        .deaths { color: #7f8c8d; }
+        .recovered { color: #27ae60; }
         .response-container {
             border: 1px solid #e1e4e8;
             border-radius: 4px;
             overflow: hidden;
+            margin-top: 20px;
         }
         .response-header {
             background-color: #f6f8fa;
             padding: 10px 15px;
             border-bottom: 1px solid #e1e4e8;
             font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .toggle-btn {
+            background: none;
+            border: 1px solid #ddd;
+            color: #7f8c8d;
+            padding: 4px 8px;
+            font-size: 12px;
         }
         pre {
             padding: 15px;
@@ -96,49 +186,140 @@
             font-size: 13px;
             line-height: 1.4;
         }
-        .summary {
+        .monthly-data {
+            margin-top: 20px;
+        }
+        .month-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
             margin-top: 15px;
+        }
+        .month-card {
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .month-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50;
+        }
+        .country-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        .country-name {
+            flex: 1;
+        }
+        .country-stats {
+            flex: 2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .data-range {
+            margin-top: 10px;
             padding: 10px;
-            background-color: #f0f7ff;
+            background-color: #f8f9fa;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>全球疫情地图接口测试</h1>
+    <h1>疫情数据接口测试平台</h1>
+    <p class="description">测试全球疫情数据API接口，支持地图数据、统计数据和月度数据</p>
 
     <div class="control-panel">
-        <div>
+        <div class="date-section">
             <label for="date-select">选择日期：</label>
             <input type="date" id="date-select">
         </div>
-        <div>
-            <button id="test-btn">测试接口</button>
+        <div class="api-buttons">
+            <button id="test-map-btn">测试地图接口</button>
+            <button id="test-stats-btn">测试统计接口</button>
+            <button id="test-monthly-btn">测试月度数据</button>
             <button id="dates-btn">获取可用日期</button>
         </div>
     </div>
 
     <div id="status-message" class="status"></div>
 
-    <div id="summary" class="summary" style="display: none;"></div>
+    <div id="map-response" class="response-section">
+        <div id="map-summary" class="summary" style="display: none;"></div>
 
-    <div id="response-container" class="response-container" style="display: none;">
-        <div class="response-header">API响应结果</div>
-        <pre id="response-content"></pre>
+        <div class="data-display" id="map-data-display" style="display: none;">
+            <div class="global-stats">
+                <h3>全球统计数据</h3>
+                <div class="stats-grid" id="global-stats-grid">
+                    <!-- 动态填充全球统计数据 -->
+                </div>
+            </div>
+            <div class="country-list">
+                <h3>前10位国家数据</h3>
+                <div id="top-countries">
+                    <!-- 动态填充国家列表 -->
+                </div>
+            </div>
+        </div>
+
+        <div id="map-response-container" class="response-container" style="display: none;">
+            <div class="response-header">
+                <span>地图接口响应结果</span>
+                <button class="toggle-btn" onclick="toggleResponse('map-response-content')">切换显示</button>
+            </div>
+            <pre id="map-response-content"></pre>
+        </div>
+    </div>
+
+    <div id="stats-response" class="response-section">
+        <div id="stats-summary" class="summary" style="display: none;"></div>
+
+        <div id="stats-response-container" class="response-container" style="display: none;">
+            <div class="response-header">
+                <span>统计接口响应结果</span>
+                <button class="toggle-btn" onclick="toggleResponse('stats-response-content')">切换显示</button>
+            </div>
+            <pre id="stats-response-content"></pre>
+        </div>
+    </div>
+
+    <div id="monthly-response" class="response-section">
+        <div id="monthly-summary" class="summary" style="display: none;"></div>
+
+        <div class="monthly-data" id="monthly-data-display" style="display: none;">
+            <div class="data-range" id="monthly-data-range"></div>
+            <div class="month-cards" id="month-cards-container">
+                <!-- 动态填充月度数据卡片 -->
+            </div>
+        </div>
+
+        <div id="monthly-response-container" class="response-container" style="display: none;">
+            <div class="response-header">
+                <span>月度数据接口响应结果</span>
+                <button class="toggle-btn" onclick="toggleResponse('monthly-response-content')">切换显示</button>
+            </div>
+            <pre id="monthly-response-content"></pre>
+        </div>
     </div>
 </div>
 
 <script>
     // 获取DOM元素
     const dateInput = document.getElementById('date-select');
-    const testBtn = document.getElementById('test-btn');
+    const testMapBtn = document.getElementById('test-map-btn');
+    const testStatsBtn = document.getElementById('test-stats-btn');
+    const testMonthlyBtn = document.getElementById('test-monthly-btn');
     const datesBtn = document.getElementById('dates-btn');
     const statusMessage = document.getElementById('status-message');
-    const summary = document.getElementById('summary');
-    const responseContainer = document.getElementById('response-container');
-    const responseContent = document.getElementById('response-content');
 
     // 设置默认日期为今天
     const today = new Date();
@@ -166,16 +347,26 @@
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    // 测试接口
-    async function testApi() {
+    // 切换响应内容显示
+    function toggleResponse(elementId) {
+        const element = document.getElementById(elementId);
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+
+    // 测试地图接口
+    async function testMapApi() {
         const selectedDate = dateInput.value;
         if (!selectedDate) {
             showStatus('请选择日期', 'error');
             return;
         }
 
-        testBtn.disabled = true;
-        showStatus('正在请求接口...', 'loading');
+        testMapBtn.disabled = true;
+        showStatus('正在请求地图接口...', 'loading');
 
         try {
             const response = await fetch('http://localhost:5000/get_global_map_data', {
@@ -193,26 +384,250 @@
             const data = await response.json();
 
             // 显示响应结果
-            responseContent.textContent = JSON.stringify(data, null, 2);
-            responseContainer.style.display = 'block';
+            document.getElementById('map-response-content').textContent = JSON.stringify(data, null, 2);
+            document.getElementById('map-response-container').style.display = 'block';
 
             // 显示摘要
+            const summary = document.getElementById('map-summary');
             summary.innerHTML = `
-                    <strong>数据摘要：</strong>
-                    日期: ${data.date} |
-                    国家数量: ${data.countries_count} |
-                    全球确诊: ${formatNumber(data.global_total.confirmed)} |
-                    全球死亡: ${formatNumber(data.global_total.deaths)} |
-                    全球治愈: ${formatNumber(data.global_total.recovered)}
-                `;
+                <strong>地图接口数据摘要：</strong>
+                日期: ${data.date} |
+                国家数量: ${data.countries_count} |
+                全球确诊: ${formatNumber(data.global_total.confirmed)} |
+                全球死亡: ${formatNumber(data.global_total.deaths)} |
+                全球治愈: ${formatNumber(data.global_total.recovered)}
+            `;
             summary.style.display = 'block';
 
-            showStatus(`接口请求成功，获取了 ${data.countries_count} 个国家/地区的数据`, 'success');
+            // 显示全球统计数据
+            const statsGrid = document.getElementById('global-stats-grid');
+            statsGrid.innerHTML = `
+                <div class="stat-item">
+                    <div>累计确诊</div>
+                    <div class="stat-value confirmed">${formatNumber(data.global_total.confirmed)}</div>
+                </div>
+                <div class="stat-item">
+                    <div>累计死亡</div>
+                    <div class="stat-value deaths">${formatNumber(data.global_total.deaths)}</div>
+                </div>
+                <div class="stat-item">
+                    <div>累计治愈</div>
+                    <div class="stat-value recovered">${formatNumber(data.global_total.recovered)}</div>
+                </div>
+            `;
+
+            // 显示前10位国家数据
+            const topCountries = document.getElementById('top-countries');
+            // 将国家数据转换为数组并按确诊数排序
+            const countriesArray = Object.entries(data.countries_data)
+                .map(([name, stats]) => ({ name, ...stats }))
+                .sort((a, b) => b.cumulative.confirmed - a.cumulative.confirmed)
+                .slice(0, 10);
+
+            let countriesHTML = '';
+            countriesArray.forEach(country => {
+                countriesHTML += `
+                    <div class="country-item">
+                        <div class="country-name">${country.name}</div>
+                        <div class="country-stats">
+                            <span class="confirmed">${formatNumber(country.cumulative.confirmed)}</span>
+                            <span class="deaths">${formatNumber(country.cumulative.deaths)}</span>
+                            <span class="recovered">${formatNumber(country.cumulative.recovered)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 添加表头
+            topCountries.innerHTML = `
+                <div class="country-item" style="font-weight: bold; border-bottom: 1px solid #ddd;">
+                    <div class="country-name">国家</div>
+                    <div class="country-stats">
+                        <span class="confirmed">确诊</span>
+                        <span class="deaths">死亡</span>
+                        <span class="recovered">治愈</span>
+                    </div>
+                </div>
+                ${countriesHTML}
+            `;
+
+            document.getElementById('map-data-display').style.display = 'grid';
+
+            showStatus(`地图接口请求成功，获取了 ${data.countries_count} 个国家/地区的数据`, 'success');
         } catch (error) {
-            console.error('接口请求失败:', error);
-            showStatus('接口请求失败: ' + error.message, 'error');
+            console.error('地图接口请求失败:', error);
+            showStatus('地图接口请求失败: ' + error.message, 'error');
         } finally {
-            testBtn.disabled = false;
+            testMapBtn.disabled = false;
+        }
+    }
+
+    // 测试统计接口
+    async function testStatsApi() {
+        const selectedDate = dateInput.value;
+        if (!selectedDate) {
+            showStatus('请选择日期', 'error');
+            return;
+        }
+
+        testStatsBtn.disabled = true;
+        showStatus('正在请求统计接口...', 'loading');
+
+        try {
+            const response = await fetch('http://localhost:5000/get_covid_stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ date: selectedDate })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 显示响应结果
+            document.getElementById('stats-response-content').textContent = JSON.stringify(data, null, 2);
+            document.getElementById('stats-response-container').style.display = 'block';
+
+            // 显示摘要
+            const summary = document.getElementById('stats-summary');
+            summary.innerHTML = `
+                <strong>统计接口数据摘要：</strong>
+                日期: ${data.date} |
+                全球确诊: ${formatNumber(data.global_stats.total_confirmed)} |
+                全球死亡: ${formatNumber(data.global_stats.total_deaths)} |
+                全球治愈: ${formatNumber(data.global_stats.total_recovered)} |
+                新增确诊: ${formatNumber(data.global_stats.new_confirmed)}
+            `;
+            summary.style.display = 'block';
+
+            showStatus(`统计接口请求成功，获取了 ${data.top_50_countries.length} 个国家的数据`, 'success');
+        } catch (error) {
+            console.error('统计接口请求失败:', error);
+            showStatus('统计接口请求失败: ' + error.message, 'error');
+        } finally {
+            testStatsBtn.disabled = false;
+        }
+    }
+
+    // 测试月度数据接口
+    async function testMonthlyApi() {
+        const selectedDate = dateInput.value;
+        if (!selectedDate) {
+            showStatus('请选择日期', 'error');
+            return;
+        }
+
+        testMonthlyBtn.disabled = true;
+        showStatus('正在请求月度数据接口...', 'loading');
+
+        try {
+            const response = await fetch('http://localhost:5000/get_monthly_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ date: selectedDate })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 显示响应结果
+            document.getElementById('monthly-response-content').textContent = JSON.stringify(data, null, 2);
+            document.getElementById('monthly-response-container').style.display = 'block';
+
+            // 显示摘要
+            const summary = document.getElementById('monthly-summary');
+            summary.innerHTML = `
+                <strong>月度数据接口摘要：</strong>
+                起始日期: ${data.monthly_data.start_date} |
+                数据范围: ${data.data_range.min_date} 至 ${data.data_range.max_date} |
+                月份数量: ${data.monthly_data.months.length}
+            `;
+            summary.style.display = 'block';
+
+            // 显示数据范围
+            document.getElementById('monthly-data-range').textContent =
+                `数据时间范围: ${data.data_range.min_date} 至 ${data.data_range.max_date}`;
+
+            // 显示月度数据卡片
+            const monthCardsContainer = document.getElementById('month-cards-container');
+            let monthCardsHTML = '';
+
+            data.monthly_data.months.forEach(month => {
+                // 获取前5个国家数据
+                const topCountries = Object.entries(month.countries_data)
+                    .sort((a, b) => b[1].cumulative_confirmed - a[1].cumulative_confirmed)
+                    .slice(0, 5);
+
+                let countriesHTML = '';
+                topCountries.forEach(([countryName, countryData]) => {
+                    countriesHTML += `
+                        <div class="country-item">
+                            <div class="country-name">${countryName}</div>
+                            <div class="country-stats">
+                                <span class="confirmed">${formatNumber(countryData.cumulative_confirmed)}</span>
+                                <span class="deaths">${formatNumber(countryData.cumulative_deaths)}</span>
+                                <span class="recovered">${formatNumber(countryData.cumulative_recovered)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                monthCardsHTML += `
+                    <div class="month-card">
+                        <div class="month-header">
+                            第${month.month_index}个月 (截至 ${month.month_end})
+                        </div>
+                        <div class="global-stats">
+                            <div style="margin-bottom: 10px; font-weight: bold;">全球数据</div>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div>累计确诊</div>
+                                    <div class="stat-value confirmed">${formatNumber(month.global_data.cumulative_confirmed)}</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div>累计死亡</div>
+                                    <div class="stat-value deaths">${formatNumber(month.global_data.cumulative_deaths)}</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div>累计治愈</div>
+                                    <div class="stat-value recovered">${formatNumber(month.global_data.cumulative_recovered)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div style="margin-bottom: 5px; font-weight: bold;">前5位国家</div>
+                            <div class="country-item" style="font-weight: bold; border-bottom: 1px solid #eee;">
+                                <div class="country-name">国家</div>
+                                <div class="country-stats">
+                                    <span class="confirmed">确诊</span>
+                                    <span class="deaths">死亡</span>
+                                    <span class="recovered">治愈</span>
+                                </div>
+                            </div>
+                            ${countriesHTML}
+                        </div>
+                    </div>
+                `;
+            });
+
+            monthCardsContainer.innerHTML = monthCardsHTML;
+            document.getElementById('monthly-data-display').style.display = 'block';
+
+            showStatus(`月度数据接口请求成功，获取了 ${data.monthly_data.months.length} 个月的数据`, 'success');
+        } catch (error) {
+            console.error('月度数据接口请求失败:', error);
+            showStatus('月度数据接口请求失败: ' + error.message, 'error');
+        } finally {
+            testMonthlyBtn.disabled = false;
         }
     }
 
@@ -247,7 +662,9 @@
     }
 
     // 添加事件监听器
-    testBtn.addEventListener('click', testApi);
+    testMapBtn.addEventListener('click', testMapApi);
+    testStatsBtn.addEventListener('click', testStatsApi);
+    testMonthlyBtn.addEventListener('click', testMonthlyApi);
     datesBtn.addEventListener('click', getAvailableDates);
 
     // 页面加载时自动获取可用日期
